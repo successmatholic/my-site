@@ -1,0 +1,42 @@
+# matholic-site
+
+MATHOLIC 팀이 만드는 여러 웹페이지를 한 저장소에서 관리하고, GitHub + Netlify로 자동 배포합니다.
+
+## 사이트 구조
+
+- 프로젝트마다 폴더를 하나씩 만들고, 그 안에 `index.html`을 둡니다.
+  - 예: `dapunee/index.html` → 실제 주소는 `https://<사이트주소>.netlify.app/dapunee/`
+- 루트의 `index.html`은 전체 프로젝트로 가는 링크 목록(허브 페이지)입니다. 새 프로젝트를 추가하면 이 파일에도 링크를 한 줄 추가해주세요.
+- GitHub 저장소(`successmatholic/my-site`)에 새 커밋이 올라가면 Netlify가 몇 초 안에 자동으로 재배포합니다. 사람이 Netlify를 직접 건드릴 일은 없습니다.
+
+## 새 프로젝트 추가하는 법
+
+### 방법 A — 클로드에게 요청 (추천)
+자기 컴퓨터를 클로드(Cowork) 세션에 연결한 상태에서, "이 HTML 파일을 `프로젝트이름` 폴더로 배포해줘"라고 요청하면 클로드가 폴더 생성, 파일 저장, 허브 페이지 링크 추가, git commit/push까지 처리합니다.
+
+### 방법 B — 직접 하기
+1. `matholic-site` 폴더(저장소를 복제해 둔 로컬 폴더) 안에 새 폴더를 만들고 `index.html`을 저장합니다.
+2. 루트 `index.html`의 목록(`<ul>` 안)에 새 프로젝트 링크를 한 줄 추가합니다.
+3. 터미널에서:
+   ```
+   git add -A
+   git commit -m "Add 프로젝트이름"
+   git push origin main
+   ```
+
+## 새 팀원 온보딩
+
+1. **컴퓨터 연결**: 자기 Claude(Cowork) 세션에서 데스크톱 앱의 "Add folder"로 로컬 폴더를 하나 연결합니다(예: `matholic-site`).
+2. **저장소 복제**: 클로드에게 "https://github.com/successmatholic/my-site 저장소를 이 폴더에 복제해줘"라고 요청합니다.
+3. **GitHub 개인 토큰 발급**: `successmatholic` 계정으로 github.com 로그인 → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token
+   - Repository access: Only select repositories → `my-site`
+   - Permissions → Contents → Read and write
+   - Expiration은 가장 길게(또는 No expiration)
+   - 생성된 토큰 문자열을 그 자리에서 복사해서, 회사 비밀번호 관리 도구에 "my-site 자동배포용 - (이름)"으로 저장
+4. **git 인증 설정**: 클로드에게 "이 토큰으로 이 컴퓨터에서 push 인증을 설정해줘"라고 하면서 토큰을 알려줍니다(이 저장소에서만 쓰이고, 이 컴퓨터 로컬에만 저장됩니다).
+5. 이후로는 방법 A대로 "이 페이지 배포해줘"라고만 하면 자동으로 처리됩니다.
+
+## 참고
+
+- 토큰은 비밀번호와 동일하게 취급하세요. 대화 로그나 파일에 평문으로 남기지 마세요(회사 비밀번호 관리 도구에만 보관).
+- 클로드가 클라우드에서 직접 GitHub/Netlify API를 호출하는 방식은 보안 제한으로 동작하지 않습니다. 반드시 "컴퓨터가 연결된 상태"에서 요청해야 자동 배포가 됩니다.
