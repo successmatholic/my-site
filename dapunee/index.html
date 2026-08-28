@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>다푸네 연간 커리큘럼 | MATHOLIC</title>
+<style>
+  :root{
+    --navy1:#1a1442; --navy2:#241a5c; --navy3:#2d1f6e;
+    --gold:#ffcf4d; --purple:#6a52d6; --purple-bg:#ece8fb;
+    --amber:#b8720d; --amber-bg:#fbead0; --amber-bg2:#fbf1de;
+    --ink:#16181d; --sub:#4a4d57; --body-bg:#f4f2fa;
+    --line:#e4e0f2; --platform-blue:#2f6feb;
+    --shadow: 0 14px 34px rgba(30,20,60,.07);
+    --shadow-sm: 0 6px 16px rgba(30,20,60,.06);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--body-bg); color:var(--ink); font-size:16px;
+    font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Malgun Gothic","Segoe UI",system-ui,sans-serif;
+    letter-spacing:-.011em; word-break:keep-all; line-height:1.6;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:0 20px;}
+
+  /* ===== Header ===== */
+  .hero{
+    background:
+      radial-gradient(circle at 85% 10%, rgba(124,92,255,.35) 0%, rgba(124,92,255,0) 55%),
+      linear-gradient(150deg,#1a1442 0%,#241a5c 55%,#2d1f6e 100%);
+    color:#fff;
+  }
+  .hero-inner{padding:32px 20px 28px;}
+  .brand{font-size:15px; font-weight:800; letter-spacing:.03em; color:rgba(255,255,255,.65); margin-bottom:12px;}
+  .brand b{color:var(--gold);}
+  .hero h1{font-size:30px; font-weight:800; letter-spacing:-.02em; margin:0 0 10px;}
+  .hero p{font-size:16px; color:rgba(255,255,255,.82); margin:0; max-width:600px; line-height:1.65;}
+
+  /* ===== Grade tabs (sticky) ===== */
+  .controls{
+    position:sticky; top:0; z-index:20; background:rgba(244,242,250,.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line); padding:16px 0;
+  }
+  .grade-tabs{display:flex; gap:8px;}
+  .grade-btn{
+    font-family:inherit; cursor:pointer; border:none; font-weight:800; font-size:17px;
+    padding:13px 20px; border-radius:999px; background:#fff; color:var(--sub); box-shadow:var(--shadow-sm);
+    min-height:50px; flex:1;
+  }
+  .grade-btn.active{background:var(--navy2); color:#fff;}
+
+  /* ===== Legend ===== */
+  .legend{display:flex; flex-wrap:wrap; gap:8px 14px; padding:18px 0 4px;}
+  .legend-item{display:flex; align-items:center; gap:6px; font-size:14px; color:var(--sub); font-weight:700;}
+  .legend-dot{width:11px; height:11px; border-radius:3px; flex:none;}
+
+  /* ===== Timeline ===== */
+  .timeline{position:relative; padding:28px 0 10px; margin-left:2px;}
+  .timeline::before{
+    content:""; position:absolute; left:32px; top:20px; bottom:20px; width:2px; background:var(--line);
+  }
+  .month-card{position:relative; padding-left:76px; margin-bottom:24px;}
+  .month-num{
+    position:absolute; left:0; top:0; width:66px; height:66px; border-radius:18px;
+    background:#fff; box-shadow:var(--shadow-sm); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; font-weight:800; color:var(--navy2); z-index:1;
+  }
+  .month-num .n{font-size:23px; line-height:1;}
+  .month-num .u{font-size:12px; color:var(--sub); font-weight:700; margin-top:3px;}
+  .month-body{background:#fff; border-radius:18px; box-shadow:var(--shadow); padding:18px 20px;}
+  .week-row{display:flex; gap:12px; padding:10px 0; border-top:1px dashed var(--line);}
+  .week-row:first-child{border-top:none;}
+  .wk-badge{
+    flex:none; align-self:flex-start; font-size:13.5px; font-weight:800; color:#fff;
+    padding:6px 10px; border-radius:8px; min-width:62px; text-align:center; margin-top:1px;
+  }
+  .wk-badge.개념익힘{background:#8f8fb0;}
+  .wk-badge.기본편{background:#e0ab19;}
+  .wk-badge.개념기본{background:linear-gradient(135deg,#8f8fb0 50%,#e0ab19 50%);}
+  .wk-badge.실력편{background:#e8853b;}
+  .wk-badge.유형편{background:#4f8ef7;}
+  .wk-badge.내신기간{background:#c9a45c;}
+  .wk-badge.방학{background:#9a9aa8;}
+  .wk-badge.새학년정비{background:#3fae76;}
+  .wk-badge.고등과정{background:#6a52d6;}
+  .wk-txt{flex:1; font-size:15.5px;}
+  .wk-txt .wkno{font-size:13px; color:#9a97ad; font-weight:700; margin-right:7px;}
+  .wk-txt .unit{font-weight:700;}
+  .wk-txt .sub{color:var(--sub);}
+
+  .note-card{
+    margin:-6px 0 24px 76px; background:var(--amber-bg2); border:1px solid var(--amber-bg);
+    border-radius:16px; padding:16px 18px;
+  }
+  .note-card .tag{
+    display:inline-block; font-size:13.5px; font-weight:800; color:var(--amber);
+    background:#fff; padding:4px 10px; border-radius:999px; margin-bottom:7px;
+  }
+  .note-card p{margin:0; font-size:15px; color:#7a5000; line-height:1.65;}
+
+  .plain-note{
+    margin-left:76px; margin-bottom:24px; font-size:15px; color:var(--sub);
+    background:#fff; border-radius:16px; box-shadow:var(--shadow-sm); padding:16px 18px;
+  }
+
+  .semester-banner{
+    margin:28px 0 16px 76px; padding:11px 18px; border-radius:12px; background:#fff;
+    border-left:5px solid var(--purple); box-shadow:var(--shadow-sm);
+    font-size:14.5px; font-weight:800; color:var(--navy2);
+  }
+  .month-card:first-child, .semester-banner:first-child{margin-top:0;}
+
+  footer{padding:22px 0 50px; text-align:center; font-size:14px; color:#9a97ad;}
+
+  /* ===== 교재 소개 섹션 ===== */
+  .intro{padding:36px 0 30px;}
+  .intro-head{margin-bottom:18px;}
+  .intro-head .eyebrow{
+    display:inline-block; font-size:14px; font-weight:800; color:var(--purple);
+    background:var(--purple-bg); padding:5px 12px; border-radius:999px; margin-bottom:10px;
+  }
+  .intro-head h2{font-size:24px; font-weight:800; letter-spacing:-.02em; margin:0 0 8px;}
+  .intro-head p{font-size:15.5px; color:var(--sub); margin:0; line-height:1.65;}
+
+  /* ===== 3D 교재 목업 ===== */
+  .book-shelf{
+    display:flex; gap:36px; flex-wrap:wrap; justify-content:center; align-items:flex-end;
+    padding:46px 10px 32px; perspective:2000px;
+  }
+  .book-item{position:relative; text-align:center; width:172px; padding-top:8px; cursor:pointer;}
+  .book-item:hover{z-index:50;}
+  .book{
+    width:172px; height:238px; position:relative; margin:0 auto 18px;
+    transform-style:preserve-3d; transform:rotateY(-24deg) rotateX(2deg);
+    transition:transform .45s cubic-bezier(.22,.85,.28,1);
+  }
+  .book-item:hover .book{transform:rotateY(-11deg) rotateX(2deg) translateY(-7px);}
+
+  .book-shadow{
+    position:absolute; left:50%; bottom:-6px; width:136px; height:22px; transform:translateX(-50%);
+    background:radial-gradient(ellipse at center, rgba(20,14,48,.36) 0%, rgba(20,14,48,0) 72%);
+    transition:all .45s ease; z-index:-1;
+  }
+  .book-item:hover .book-shadow{width:100px; opacity:.6;}
+
+  .book .spine{
+    position:absolute; width:30px; height:100%; left:-30px; top:0;
+    transform:rotateY(-90deg); transform-origin:right center; border-radius:4px 0 0 4px;
+    background:linear-gradient(180deg,#241c52,#150f34 55%,#241c52);
+    box-shadow:inset -5px 0 10px rgba(0,0,0,.35); overflow:hidden;
+  }
+  .book .spine .band{position:absolute; top:0; left:0; right:0; height:15%; background:var(--acc);}
+  .book .spine .stitch{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 1px, transparent 1px 13px);
+  }
+
+  .book .pages{
+    position:absolute; width:19px; height:calc(100% - 12px); top:6px; right:-19px;
+    transform:rotateY(90deg); transform-origin:left center; border-radius:0 3px 3px 0;
+    background:repeating-linear-gradient(180deg,#fbfaff,#fbfaff 2px,#e6e2f2 2px,#e6e2f2 3.2px);
+    box-shadow:inset 3px 0 6px rgba(20,10,50,.08);
+  }
+  .book .top-edge{
+    position:absolute; width:100%; height:23px; top:-23px; left:0;
+    transform:rotateX(90deg); transform-origin:bottom center; border-radius:4px 9px 0 0;
+    background:linear-gradient(180deg,#3a2f78,#221a4e 70%);
+  }
+
+  .book .cover{
+    position:absolute; inset:0; border-radius:4px 10px 10px 4px; overflow:hidden;
+    background:linear-gradient(168deg,#2b2266 0%,#170f38 100%);
+    box-shadow:16px 32px 44px rgba(14,9,38,.36), inset 0 0 0 1px rgba(255,255,255,.09);
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:19px 17px; color:#fff;
+  }
+  .book .cover .glow{
+    position:absolute; inset:0;
+    background:radial-gradient(60% 46% at 88% 8%, color-mix(in srgb, var(--acc) 65%, transparent) 0%, transparent 72%);
+    mix-blend-mode:screen; opacity:.75; pointer-events:none;
+  }
+  .book .cover .pattern{
+    position:absolute; right:-8px; bottom:-6px; width:128px; height:128px; opacity:.16;
+    pointer-events:none;
+  }
+  .book .cover .pattern svg{width:100%; height:100%;}
+  .book .cover::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:46%;
+    background:linear-gradient(180deg, rgba(8,5,22,0), rgba(8,5,22,.32));
+    pointer-events:none;
+  }
+  .book .ribbon{
+    position:absolute; top:0; right:23px; width:17px; height:50px; z-index:2;
+    background:var(--acc); clip-path:polygon(0 0,100% 0,100% 100%,50% 76%,0 100%);
+    box-shadow:0 4px 10px rgba(0,0,0,.28), inset 0 0 0 1px rgba(255,255,255,.2);
+  }
+
+  .book-head{position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between;}
+  .book-mark{display:flex; align-items:center; gap:6px;}
+  .book-mark .tri{width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-bottom:10px solid var(--gold); filter:drop-shadow(0 0 3px rgba(255,207,77,.5));}
+  .book-mark span{font-size:10.5px; font-weight:800; letter-spacing:.06em; color:var(--gold); opacity:.95;}
+  .book-step{
+    font-size:12.5px; font-weight:800; letter-spacing:.05em; color:rgba(255,255,255,.6);
+    border:1px solid rgba(255,255,255,.3); border-radius:999px; padding:3px 9px; margin-right:28px;
+  }
+
+  .book-title{position:relative; z-index:1;}
+  .book-rule{width:26px; height:2.5px; background:var(--gold); border-radius:2px; margin-bottom:9px; opacity:.85;}
+  .book-title .dapune{display:block; font-size:12.5px; font-weight:700; color:var(--gold); opacity:.95; margin-bottom:4px; letter-spacing:.01em;}
+  .book-title .level{display:block; font-size:25px; font-weight:800; letter-spacing:-.02em; line-height:1.22; color:#fff; text-shadow:0 3px 12px rgba(0,0,0,.3);}
+  .book-underline{width:30px; height:3.5px; border-radius:2px; background:var(--acc); margin-top:9px;}
+
+  .book-foot{position:relative; z-index:1; display:flex; align-items:center; gap:7px;}
+  .book-foot .dot{width:7px; height:7px; border-radius:50%; background:var(--acc); flex:none;}
+  .book-foot span{font-size:11.5px; font-weight:700; color:rgba(255,255,255,.8);}
+
+  .book-item .cap{font-size:16px; font-weight:700; color:var(--sub); margin-top:3px;}
+  .book-item .hint{font-size:13px; color:#8f8ba3; font-weight:600; margin-top:1px;}
+
+  /* ===== 난이도 구성 호버 팝오버 ===== */
+  .diff-pop{
+    position:absolute; left:50%; bottom:calc(100% + 4px); transform:translate(-50%,8px);
+    width:308px; background:#fff; border-radius:16px; padding:16px 16px 13px;
+    box-shadow:0 22px 48px rgba(20,10,50,.28), 0 0 0 1px rgba(30,20,60,.06);
+    opacity:0; pointer-events:none; transition:opacity .16s ease, transform .16s ease; z-index:5; text-align:left;
+  }
+  .diff-pop::after{
+    content:""; position:absolute; left:50%; top:100%; width:12px; height:12px;
+    transform:translate(-50%,-6px) rotate(45deg); background:#fff;
+  }
+  .book-item:hover .diff-pop, .book-item.show .diff-pop{opacity:1; transform:translate(-50%,0); pointer-events:auto;}
+  .diff-title{font-size:14.5px; font-weight:800; color:var(--ink); margin-bottom:12px; text-align:center;}
+  .diff-chart{display:flex; align-items:flex-end; justify-content:space-between; gap:4px; height:112px;}
+  .diff-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; gap:5px;}
+  .diff-val{font-size:11.5px; font-weight:800; color:var(--ink); white-space:nowrap;}
+  .diff-bar{width:100%; max-width:20px; border-radius:3px 3px 1px 1px;}
+  .diff-cat{font-size:10px; color:var(--sub); font-weight:700; white-space:nowrap; letter-spacing:-.02em;}
+  .diff-col.zero .diff-cat{color:#c2bfd4;}
+  .diff-note{
+    margin-top:10px; padding-top:9px; border-top:1px dashed var(--line);
+    font-size:12.5px; color:#9a97ad; text-align:center;
+  }
+
+  /* ===== 유형서 섹션 소제목 ===== */
+  .subhead{
+    font-size:15.5px; font-weight:800; color:var(--navy2); margin:24px 0 12px;
+    display:flex; align-items:center; gap:9px;
+  }
+  .subhead .idx{
+    width:22px; height:22px; border-radius:7px; background:var(--navy2); color:#fff;
+    font-size:12.5px; display:flex; align-items:center; justify-content:center; flex:none;
+  }
+
+  .type-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:8px;}
+  .type-card{background:#fff; border-radius:16px; box-shadow:var(--shadow-sm); padding:17px 19px;}
+  .type-card .target{
+    display:inline-block; font-size:12.5px; font-weight:800; color:#fff; background:var(--navy3);
+    padding:3px 10px; border-radius:999px; margin-bottom:8px;
+  }
+  .type-card h4{font-size:16.5px; font-weight:800; margin:0 0 6px;}
+  .type-card p{font-size:14.5px; color:var(--sub); margin:0; line-height:1.6;}
+  .type-card .flow{font-size:13.5px; color:var(--purple); font-weight:700; margin-top:8px;}
+
+  /* ===== 트랙 토글 ===== */
+  .track-row{display:flex; align-items:center; gap:12px; margin-top:16px; flex-wrap:wrap;}
+  .track-label{
+    font-size:14.5px; font-weight:800; color:var(--purple); background:var(--purple-bg);
+    padding:7px 14px; border-radius:999px; flex:none;
+  }
+  .track-toggle{
+    display:flex; gap:6px; background:#fff; border:2px solid var(--purple); border-radius:999px;
+    padding:5px; box-shadow:var(--shadow-sm);
+  }
+  .track-btn{
+    font-family:inherit; cursor:pointer; border:none; font-weight:800; font-size:16px;
+    padding:12px 22px; border-radius:999px; background:transparent; color:var(--navy2); min-height:46px;
+  }
+  .track-btn.active{background:var(--purple); color:#fff;}
+  .track-desc{font-size:14.5px; color:var(--sub); margin:10px 2px 0;}
+
+  /* ===== 다푸네 만드는 방법 (인터랙티브 가이드) ===== */
+  .tour-section{margin-top:36px;}
+  .tour-steps{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;}
+  .tour-step-chip{
+    display:flex; align-items:center; gap:9px; background:#fff; border:1.5px solid var(--line);
+    border-radius:999px; padding:8px 16px 8px 8px; font-size:14.5px; font-weight:700; color:var(--sub);
+    cursor:pointer; transition:all .2s; user-select:none;
+  }
+  .tour-step-chip .num{
+    width:26px; height:26px; border-radius:50%; background:#c9c5de; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; flex:none;
+    transition:all .2s;
+  }
+  .tour-step-chip:hover{border-color:var(--purple);}
+  .tour-step-chip.active{border-color:var(--purple); color:var(--navy2); background:var(--purple-bg);}
+  .tour-step-chip.active .num{background:var(--purple);}
+  .tour-step-chip.done .num{background:#9a97ad;}
+
+  .tour-frame{
+    position:relative; background:#eef1f6; border-radius:20px; padding:20px;
+    box-shadow:var(--shadow); border:1px solid #e3e7ee; overflow-x:auto;
+  }
+  .mock-app{
+    min-width:800px; background:#fff; border-radius:14px; overflow:hidden;
+    box-shadow:0 8px 24px rgba(20,20,40,.08); position:relative;
+  }
+  .mock-topnav{display:flex; gap:22px; padding:14px 24px; border-bottom:1px solid #edf0f5; font-size:14.5px; font-weight:600; color:#8a8fa3;}
+  .mock-nav-item{position:relative; padding-bottom:14px;}
+  .mock-nav-item.active{color:var(--platform-blue); font-weight:800;}
+  .mock-nav-item.active::after{content:''; position:absolute; left:0; right:0; bottom:0; height:2.5px; background:var(--platform-blue); border-radius:2px;}
+  .mock-body{padding:24px 24px 26px;}
+  .mock-title{font-size:22px; font-weight:800; color:#1c1f2a; margin:0 0 14px;}
+  .mock-btn-primary{
+    background:var(--platform-blue); color:#fff; border:none; border-radius:10px; font-size:14.5px; font-weight:700;
+    padding:11px 18px; display:inline-block; margin-bottom:20px;
+  }
+  .mock-btn-outline{
+    background:#fff; color:var(--platform-blue); border:1.5px solid var(--platform-blue); border-radius:10px;
+    font-size:13px; font-weight:700; padding:8px 14px; margin-left:auto; white-space:nowrap;
+  }
+  .mock-breadcrumb{
+    display:flex; align-items:center; gap:18px; padding-bottom:14px; margin-bottom:18px; border-bottom:1px solid #edf0f5;
+    font-size:14px; color:#9296a8; font-weight:600;
+  }
+  .mock-crumb{color:#b7bbc9;}
+  .mock-tab{padding-bottom:14px; margin-bottom:-15px;}
+  .mock-tab.active{color:var(--platform-blue); font-weight:800; border-bottom:2.5px solid var(--platform-blue);}
+  .mock-filterrow{display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+  .mock-pill{font-size:13px; font-weight:700; color:#8a8fa3; background:#f2f4f8; padding:7px 13px; border-radius:9px; white-space:nowrap;}
+  .mock-pill.active{background:var(--platform-blue); color:#fff;}
+  .mock-dropdown{font-size:13px; font-weight:700; color:#4a4f60; background:#f2f4f8; padding:7px 13px; border-radius:9px; white-space:nowrap;}
+  .mock-dropdown.accent{background:#eaf1ff; color:var(--platform-blue); margin-left:auto;}
+  .mock-search{font-size:13px; color:#b0b4c2; background:#f2f4f8; padding:7px 13px; border-radius:9px; flex:1; min-width:100px; white-space:nowrap;}
+  .mock-bookgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  .mock-book-card{border:1px solid #edf0f5; border-radius:14px; padding:14px; text-align:left; position:relative;}
+  .mock-checkbox{
+    display:inline-block; width:17px; height:17px; border-radius:5px; border:2px solid #c7cbd6;
+    background:#fff; margin-bottom:8px;
+  }
+  .mock-book-thumb{
+    width:100%; aspect-ratio:1; border-radius:8px; margin-bottom:10px; position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 10px rgba(20,20,40,.14);
+  }
+  .mock-book-thumb::before{
+    content:''; position:absolute; inset:0;
+    background:repeating-linear-gradient(135deg, rgba(255,255,255,.11) 0 7px, transparent 7px 20px);
+  }
+  .mock-book-thumb::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(160deg, rgba(255,255,255,.28), transparent 48%);
+  }
+  .mock-book-thumb.lv-concept{background:linear-gradient(150deg,#8f8bbf,#6f6ba0);}
+  .mock-book-thumb.lv-basic{background:linear-gradient(150deg,#ffd166,#e0ab19);}
+  .mock-book-thumb.lv-skill{background:linear-gradient(150deg,#ffab6b,#e8853b);}
+  .mock-book-thumb.lv-deep{background:linear-gradient(150deg,#ff8a97,#e0566a);}
+  .mt-icon{position:absolute; font-weight:800; color:rgba(255,255,255,.42); line-height:1; z-index:1; pointer-events:none;}
+  .mt-icon.i1{top:11%; left:12%; font-size:15px; transform:rotate(-10deg);}
+  .mt-icon.i2{top:14%; right:13%; font-size:19px; color:rgba(255,255,255,.3);}
+  .mt-icon.i3{bottom:30%; left:14%; font-size:13px; transform:rotate(9deg);}
+  .mt-icon.i4{bottom:13%; right:16%; font-size:17px;}
+  .mt-glyph{position:relative; z-index:1; font-size:24px; font-weight:900; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.18);}
+  .mt-brand{position:absolute; left:9px; bottom:7px; font-size:7.5px; font-weight:800; letter-spacing:1.3px; color:rgba(255,255,255,.8); z-index:1;}
+  .mock-book-name{font-size:13px; font-weight:700; color:#333; line-height:1.4; text-align:center;}
+  .mock-scroll-hint{display:none; font-size:12.5px; color:var(--sub); text-align:center; margin-top:8px;}
+
+  .tour-highlight{
+    position:absolute; border:2.5px solid var(--gold); border-radius:12px; pointer-events:none;
+    box-shadow:0 0 0 4px rgba(255,207,77,.25), 0 0 22px rgba(255,207,77,.45);
+    transition:top .45s cubic-bezier(.4,0,.2,1), left .45s cubic-bezier(.4,0,.2,1), width .45s cubic-bezier(.4,0,.2,1), height .45s cubic-bezier(.4,0,.2,1), opacity .3s;
+    opacity:0; z-index:5; animation:tourPulse 1.8s ease-in-out infinite;
+  }
+  .tour-clickable{cursor:pointer; transition:transform .15s;}
+  .tour-clickable:hover{transform:scale(1.015);}
+  @keyframes tourPulse{
+    0%,100%{box-shadow:0 0 0 4px rgba(255,207,77,.25), 0 0 22px rgba(255,207,77,.45);}
+    50%{box-shadow:0 0 0 7px rgba(255,207,77,.14), 0 0 30px rgba(255,207,77,.6);}
+  }
+
+  .tour-caption-box{
+    display:flex; align-items:center; gap:16px; background:var(--navy1); color:#fff; border-radius:16px;
+    padding:18px 22px; margin-top:18px; flex-wrap:wrap;
+  }
+  .tour-step-num{
+    width:36px; height:36px; border-radius:50%; background:var(--gold); color:var(--navy1); flex:none;
+    display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15.5px;
+  }
+  .tour-caption-box p{margin:0; font-size:15.5px; line-height:1.6; flex:1; min-width:200px;}
+  .tour-nav-btns{display:flex; gap:8px;}
+  .tour-nav-btns button{
+    font-family:inherit; background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.28); border-radius:9px;
+    padding:10px 18px; font-size:14.5px; font-weight:700; cursor:pointer; transition:background .15s; min-height:44px;
+  }
+  .tour-nav-btns button:hover:not(:disabled){background:rgba(255,255,255,.22);}
+  .tour-nav-btns button:disabled{opacity:.35; cursor:default;}
+
+  @media (max-width:700px){
+    .type-grid{grid-template-columns:1fr;}
+    .mock-scroll-hint{display:block;}
+    .tour-caption-box{padding:16px 18px;}
+  }
+  @media (max-width:600px){
+    .hero h1{font-size:26px;}
+    .month-card{padding-left:68px;}
+    .month-num{width:58px; height:58px; border-radius:16px;}
+    .month-num .n{font-size:19px;}
+    .timeline::before{left:29px;}
+    .note-card, .plain-note, .semester-banner{margin-left:68px;}
+    .book-shelf{gap:24px;}
+    .book, .book-item{width:140px;}
+    .book{height:194px;}
+    .diff-pop{width:264px;}
+    .diff-chart{height:96px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner wrap">
+    <div class="brand">MATHOLIC <b>PREMIUM</b> · 다푸네 교재</div>
+    <h1>다푸네 연간 커리큘럼</h1>
+    <p>학년별·월별 학습 단원과 난이도별 교재 라인업을 한눈에 확인하고 체계적인 연간 진도를 설계합니다.</p>
+  </div>
+</div>
+
+<div class="intro wrap">
+  <div class="intro-head">
+    <span class="eyebrow">정규 커리큘럼</span>
+    <h2>다푸네란?</h2>
+    <p>개념서(개념익힘)로 기초를 다진 뒤 기본편 → 실력편 → 심화편 순으로 난이도를 확장하는 단계별 학습 교재입니다.</p>
+  </div>
+
+  <div class="book-shelf" id="bookShelf"></div>
+
+  <div class="intro-head" style="margin-top:8px;">
+    <span class="eyebrow">유형서</span>
+    <p>목적에 맞춰 조합해 쓰는 부교재입니다. 초등은 월 교재, 중·고등은 시기별 유형서로 구성됩니다.</p>
+  </div>
+
+  <div class="subhead"><span class="idx">1</span>초등 월 교재</div>
+  <div class="type-grid">
+    <div class="type-card">
+      <span class="target">초등</span>
+      <h4>월간다푸네 기본편 1~3호</h4>
+      <p>개념확인 → 수학익힘 개념다지기 → 유형별 개념확장하기 → 단원평가하기 (1~3회)</p>
+      <div class="flow">- 디*돌 유사</div>
+    </div>
+    <div class="type-card">
+      <span class="target">초등</span>
+      <h4>월간다푸네 응용편 1~3호</h4>
+      <p>개념확인 → 유형 완성하기 → 레벨업 문제 도전하기 → 시험대비하기 (1~3회)</p>
+      <div class="flow">- S**N 유사</div>
+    </div>
+  </div>
+
+  <div class="subhead"><span class="idx">2</span>중·고등 유형서</div>
+  <div class="type-grid">
+    <div class="type-card">
+      <span class="target">중·고등</span>
+      <h4>교과서 핵심 유형편</h4>
+      <p>개념을 점검할 수 있는 교과서 필수 핵심 유형 수록</p>
+    </div>
+    <div class="type-card">
+      <span class="target">중·고등</span>
+      <h4>기본기가 강해지는 유형편</h4>
+      <p>쉬운 난이도의 문제 비중이 높은 기본 유형서 교재</p>
+      <div class="flow">- 개**리 R*M 유사</div>
+    </div>
+    <div class="type-card">
+      <span class="target">중·고등</span>
+      <h4>학교시험에 강한 유형편</h4>
+      <p>학교 시험에 자주 나오고 시중 교재에서 많이 다뤄지는 중요 유형 수록</p>
+      <div class="flow">- S**N 유사</div>
+    </div>
+    <div class="type-card">
+      <span class="target">중·고등</span>
+      <h4>전국연합학력평가편</h4>
+      <p>2015~2024 10개년 전국연합학력평가 문항을 배점(2·3점/4점)별로 수록</p>
+    </div>
+  </div>
+
+  <div class="tour-section">
+    <div class="intro-head" style="margin-top:8px;">
+      <span class="eyebrow">사용 안내</span>
+      <h2>다푸네 교재, 수업에 이렇게 담으세요</h2>
+      <p>매쓰홀릭 플랫폼에서 다푸네 교재를 수업에 추가하는 5단계입니다. 아래 단계를 클릭하면 화면에서 해당 위치가 노란색으로 강조됩니다.</p>
+    </div>
+
+    <div class="tour-steps" id="tourSteps"></div>
+
+    <div class="tour-frame" id="tourFrame">
+      <div class="tour-highlight" id="tourHighlight"></div>
+
+      <div class="mock-app">
+        <div class="mock-topnav">
+          <span class="mock-nav-item active" data-tour="nav">수업</span>
+          <span class="mock-nav-item">학습지</span>
+          <span class="mock-nav-item">교재채점</span>
+          <span class="mock-nav-item">학습현황</span>
+          <span class="mock-nav-item">진단평가</span>
+          <span class="mock-nav-item">연산대장</span>
+          <span class="mock-nav-item">시험대장</span>
+          <span class="mock-nav-item">더보기 +</span>
+        </div>
+        <div class="mock-body">
+          <h3 class="mock-title">수업</h3>
+          <button class="mock-btn-primary" data-tour="newclass">+ 새 수업 만들기</button>
+          <div class="mock-breadcrumb">
+            <span class="mock-crumb">수업목록 /</span>
+            <span class="mock-tab active" data-tour="matholic-tab">매쓰홀릭</span>
+            <span class="mock-tab">시중교재</span>
+            <span class="mock-tab">교과서</span>
+            <span class="mock-tab">학원교재</span>
+            <span class="mock-tab">저장된 교재</span>
+            <button class="mock-btn-outline">+ 새 교재 만들기</button>
+          </div>
+          <div class="mock-filterrow">
+            <span class="mock-pill">전체</span>
+            <span class="mock-pill">초등</span>
+            <span class="mock-pill">중등</span>
+            <span class="mock-pill active">고등</span>
+            <span class="mock-dropdown">미적분1 (2022 개정) ▾</span>
+            <span class="mock-search">🔍 교재검색</span>
+            <span class="mock-dropdown accent" data-tour="dapune">다푸네 ▾</span>
+          </div>
+          <div class="mock-bookgrid" data-tour="bookgrid">
+            <div class="mock-book-card">
+              <span class="mock-checkbox"></span>
+              <div class="mock-book-thumb lv-concept">
+                <span class="mt-icon i1">+</span><span class="mt-icon i2">△</span>
+                <span class="mt-icon i3">□</span><span class="mt-icon i4">∞</span>
+                <span class="mt-glyph">Σ</span>
+                <span class="mt-brand">MATHOLIC</span>
+              </div>
+              <div class="mock-book-name">다푸네 개념익힘편</div>
+            </div>
+            <div class="mock-book-card">
+              <span class="mock-checkbox"></span>
+              <div class="mock-book-thumb lv-basic">
+                <span class="mt-icon i1">+</span><span class="mt-icon i2">△</span>
+                <span class="mt-icon i3">□</span><span class="mt-icon i4">∞</span>
+                <span class="mt-glyph">Σ</span>
+                <span class="mt-brand">MATHOLIC</span>
+              </div>
+              <div class="mock-book-name">다푸네 기본편</div>
+            </div>
+            <div class="mock-book-card">
+              <span class="mock-checkbox"></span>
+              <div class="mock-book-thumb lv-skill">
+                <span class="mt-icon i1">+</span><span class="mt-icon i2">△</span>
+                <span class="mt-icon i3">□</span><span class="mt-icon i4">∞</span>
+                <span class="mt-glyph">Σ</span>
+                <span class="mt-brand">MATHOLIC</span>
+              </div>
+              <div class="mock-book-name">다푸네 실력편</div>
+            </div>
+            <div class="mock-book-card">
+              <span class="mock-checkbox"></span>
+              <div class="mock-book-thumb lv-deep">
+                <span class="mt-icon i1">+</span><span class="mt-icon i2">△</span>
+                <span class="mt-icon i3">□</span><span class="mt-icon i4">∞</span>
+                <span class="mt-glyph">Σ</span>
+                <span class="mt-brand">MATHOLIC</span>
+              </div>
+              <div class="mock-book-name">다푸네 심화편</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mock-scroll-hint">← 좌우로 스크롤해 화면 전체를 확인하세요 →</div>
+
+    <div class="tour-caption-box">
+      <span class="tour-step-num" id="tourStepNum">1</span>
+      <p id="tourCaptionText"></p>
+      <div class="tour-nav-btns">
+        <button id="tourPrev">← 이전</button>
+        <button id="tourNext">다음 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <div class="wrap">
+    <div class="grade-tabs" id="gradeTabs">
+      <button class="grade-btn" data-grade="중1">중등 1학년</button>
+      <button class="grade-btn" data-grade="중2">중등 2학년</button>
+      <button class="grade-btn" data-grade="중3">중등 3학년</button>
+    </div>
+    <div class="track-row">
+      <span class="track-label">학습 트랙</span>
+      <div class="track-toggle" id="trackToggle">
+        <button class="track-btn" data-track="regular">정규수업</button>
+        <button class="track-btn" data-track="special">특강</button>
+      </div>
+    </div>
+    <p class="track-desc" id="trackDesc"></p>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:linear-gradient(135deg,#8f8fb0 50%,#e0ab19 50%)"></span>개념익힘+기본편</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#e0ab19"></span>기본편</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#e8853b"></span>실력편</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#4f8ef7"></span>난이도별 유형편</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#c9a45c"></span>내신기간</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#9a9aa8"></span>방학</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#3fae76"></span>새학년 정비</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="note-card" style="margin-top:20px;">
+    <span class="tag">유형서 안내</span>
+    <p>아래 커리큘럼의 "유형편"은 학생 난이도에 따라 <strong>교과서 핵심 유형편, 기본기가 강해지는 유형편, </br>학교시험에 강한 유형편</strong> 중 선택하여 진행할 수 있습니다.</p>
+  </div>
+  <div class="timeline" id="timeline"></div>
+</div>
+
+<footer>매쓰홀릭 프리미엄 다푸네 교재 · 연간 커리큘럼 안내 · 내부 참고용</footer>
+
+<script>
+/* ===================== 데이터 ===================== */
+// phase key -> badge label
+const PN = { 개념익힘:'개념익힘', 기본편:'기본편', 개념기본:'개념+기본', 실력편:'실력편', 유형편:'유형편', 내신기간:'내신기간', 방학:'방학', 새학년정비:'새학년정비', 고등과정:'고등과정' };
+
+/* ===================== 교재 목업 + 난이도 구성 ===================== */
+const DIFF_CATS = [
+  {key:'개념',      color:'#8f8fb0'},
+  {key:'기본',      color:'#e0ab19'},
+  {key:'실력(하)',  color:'#f2b06e'},
+  {key:'실력(중)',  color:'#e8853b'},
+  {key:'심화(하)',  color:'#ff97a1'},
+  {key:'심화(중)',  color:'#ff5f6d'},
+];
+
+// 표지는 통일된 딥네이비로 시리즈감을 주고, 리본/밑줄/스파인 밴드의 accent 컬러로만 단계를 구분
+const BOOKS = [
+  { roman:'I', level:'개념<br>익힘편', cap:'개념익힘편', foot:'중단원별 개념 · 유형학습', acc:'#9b98c9',
+    diff:{'개념':100},
+    pattern:`<circle cx="50" cy="50" r="32" fill="none" stroke="white" stroke-width="2.4"/><circle cx="50" cy="50" r="3.4" fill="white"/>` },
+  { roman:'II', level:'기본편', cap:'기본편', foot:'기초 개념 · 기본 유형', acc:'#ffcf4d',
+    diff:{'기본':50, '실력(하)':50},
+    pattern:`<g stroke="white" stroke-width="2" fill="none"><line x1="0" y1="34" x2="100" y2="34"/><line x1="0" y1="67" x2="100" y2="67"/><line x1="34" y1="0" x2="34" y2="100"/><line x1="67" y1="0" x2="67" y2="100"/></g>` },
+  { roman:'III', level:'실력편', cap:'실력편', foot:'응용 유형 · 실전 훈련', acc:'#ff9a5a',
+    diff:{'실력(중)':100},
+    pattern:`<polygon points="12,88 88,88 88,22" fill="none" stroke="white" stroke-width="2.4"/><path d="M 64 88 A 24 24 0 0 0 88 64" fill="none" stroke="white" stroke-width="2.4"/>` },
+  { roman:'IV', level:'심화편', cap:'심화편', foot:'고난도 · 최상위 문항', acc:'#ff6b7a',
+    diff:{'심화(하)':80, '심화(중)':20},
+    pattern:`<g stroke="white" stroke-width="2.4" fill="none"><line x1="8" y1="90" x2="96" y2="90"/><line x1="14" y1="96" x2="14" y2="6"/><path d="M 18 84 Q 55 4 92 84"/></g>` },
+];
+
+function renderDiffChart(diff){
+  const cols = DIFF_CATS.map(c=>{
+    const val = diff[c.key] || 0;
+    const isZero = val === 0;
+    const h = isZero ? 4 : Math.round(val * 0.76); // 0%→4px baseline, 100%→76px (label+gap+cat fits 112px row)
+    return `<div class="diff-col ${isZero?'zero':''}">
+      ${isZero ? '' : `<span class="diff-val">${val}%</span>`}
+      <div class="diff-bar" style="height:${h}px; background:${isZero ? '#e8e5f3' : c.color};"></div>
+      <span class="diff-cat">${c.key}</span>
+    </div>`;
+  }).join('');
+  return `<div class="diff-chart">${cols}</div>`;
+}
+
+function renderBookShelf(){
+  const html = BOOKS.map(b=>`
+    <div class="book-item">
+      <div class="book" style="--acc:${b.acc};">
+        <div class="book-shadow"></div>
+        <div class="spine"><div class="band"></div><div class="stitch"></div></div>
+        <div class="pages"></div>
+        <div class="top-edge"></div>
+        <div class="ribbon"></div>
+        <div class="cover">
+          <div class="glow"></div>
+          <div class="pattern"><svg viewBox="0 0 100 100">${b.pattern}</svg></div>
+          <div class="book-head">
+            <div class="book-mark"><span class="tri"></span><span>MATHOLIC</span></div>
+            <span class="book-step">${b.roman}</span>
+          </div>
+          <div class="book-title">
+            <div class="book-rule"></div>
+            <span class="dapune">다푸네</span><span class="level">${b.level}</span>
+            <div class="book-underline"></div>
+          </div>
+          <div class="book-foot"><span class="dot"></span><span>${b.foot}</span></div>
+        </div>
+      </div>
+      <div class="cap">${b.cap}</div>
+      <div class="hint">마우스를 올리면, 난이도를 볼 수 있어요</div>
+      <div class="diff-pop">
+        <div class="diff-title">다푸네 ${b.cap} · 난이도 구성</div>
+        ${renderDiffChart(b.diff)}
+        <div class="diff-note">*과정별로 난이도가 상이할 수 있음</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('bookShelf').innerHTML = html;
+
+  // 터치 기기용: 탭하면 난이도 팝업 토글 (호버가 없는 환경 보완)
+  document.querySelectorAll('#bookShelf .book-item').forEach(item=>{
+    item.addEventListener('click', (e)=>{
+      const wasOpen = item.classList.contains('show');
+      document.querySelectorAll('#bookShelf .book-item').forEach(i=>i.classList.remove('show'));
+      if(!wasOpen) item.classList.add('show');
+      e.stopPropagation();
+    });
+  });
+  document.addEventListener('click', ()=>{
+    document.querySelectorAll('#bookShelf .book-item').forEach(i=>i.classList.remove('show'));
+  });
+}
+renderBookShelf();
+
+// 정규수업(재원생) 연간 흐름 — [주차, 단계, 대단원, 세부내용]
+const DATA = {
+  중1: {
+    months:{
+      '1월':[['12월5주','개념기본','1. 수와 연산','1.1 소인수분해'],
+             ['1주','개념기본','1. 수와 연산','1.2 최대공약수와 최소공배수'],
+             ['2주','개념기본','1. 수와 연산','1.3 정수와 유리수'],
+             ['3주','개념기본','1. 수와 연산','1.4 유리수의 계산'],
+             ['4주','개념기본','2. 문자와 식','2.1 문자의 사용과 식의 계산']],
+      '2월':[['1주','개념기본','2. 문자와 식','2.2 일차방정식'],
+             ['2주','개념기본','2. 문자와 식','2.3 일차방정식의 활용'],
+             ['3주','개념기본','3. 좌표평면과 그래프','3.1 좌표평면과 그래프'],
+             ['4주','개념기본','3. 좌표평면과 그래프','3.2 정비례와 반비례']],
+      '3월':[['1주','실력편','1. 수와 연산','전체'],
+             ['2~3주','실력편','1. 수와 연산','전체 (이어서)'],
+             ['4주','실력편','2. 문자와 식','2.1~2.2 (시험범위까지)']],
+      '4월':[['1~2주','유형편','1. 수와 연산','전체'],
+             ['3주','유형편','2. 문자와 식','2.1~2.2 (시험범위까지)'],
+             ['4주','내신기간','내신기간','—']],
+      '5월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','2. 문자와 식','2.2 일차방정식'],
+             ['3주','실력편','2. 문자와 식','2.3 일차방정식의 활용'],
+             ['4주','실력편','3. 좌표평면과 그래프','3.1~3.2']],
+      '6월':[['1주','유형편','2. 문자와 식','2.2 일차방정식'],
+             ['2주','유형편','2. 문자와 식','2.3 일차방정식의 활용'],
+             ['3주','유형편','3. 좌표평면과 그래프','3.1~3.2'],
+             ['4주','내신기간','내신기간','—']],
+      '7월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','1. 기본 도형','1.1 기본 도형'],
+             ['3주','실력편','1. 기본 도형','1.2 위치 관계'],
+             ['4주','실력편','1. 기본 도형','1.3 작도와 합동']],
+      '8월':[['1주','방학','여름방학','—'],
+             ['2주','실력편','2. 평면 도형','2.1 다각형'],
+             ['3주','실력편','2. 평면 도형','2.2 원과 부채꼴'],
+             ['4주','유형편','1. 기본 도형','전체']],
+      '9월':[['1주','유형편','1. 기본 도형','전체 (이어서)'],
+             ['2주','유형편','2. 평면 도형','2.1 다각형'],
+             ['3주','유형편','2. 평면 도형','2.2 원과 부채꼴'],
+             ['4주','내신기간','내신기간','—']],
+      '10월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','3. 입체 도형','3.1 다면체와 회전체'],
+             ['3주','실력편','3. 입체 도형','3.2 겉넓이와 부피'],
+             ['4주','실력편','4. 통계','4.1 대표값']],
+      '11월':[['1주','실력편','4. 통계','4.2 도수분포표와 상대도수'],
+             ['2주','유형편','3. 입체 도형','3.1 다면체와 회전체'],
+             ['3주','유형편','3. 입체 도형','3.2 겉넓이와 부피'],
+             ['4주','유형편','4. 통계','전체']],
+      '12월':[['1~2주','내신기간','내신기간','—'],
+             ['3~4주','새학년정비','새학년 과정 정비기간','—']],
+    },
+  },
+  중2: {
+    months:{
+      '1월':[['12월5주','개념기본','1. 수와 식','1.1 유리수와 소수'],
+             ['1주','개념기본','1. 수와 식','1.2 단항식의 계산'],
+             ['2주','개념기본','1. 수와 식','1.3 다항식의 계산'],
+             ['3주','개념기본','2. 부등식과 방정식','2.1 일차부등식'],
+             ['4주','개념기본','2. 부등식과 방정식','2.2 연립일차방정식']],
+      '2월':[['1주','개념기본','2. 부등식과 방정식','2.2 연립일차방정식 (활용)'],
+             ['2주','개념기본','3. 일차함수','3.1 일차함수와 그래프 (1)'],
+             ['3주','개념기본','3. 일차함수','3.2 일차함수와 그래프 (2)'],
+             ['4주','개념기본','3. 일차함수','3.3 일차함수와 일차방정식의 관계']],
+      '3월':[['1주','실력편','1. 수와 식','1.1 유리수와 소수'],
+             ['2주','실력편','1. 수와 식','1.2 단항식의 계산'],
+             ['3주','실력편','1. 수와 식','1.3 다항식의 계산'],
+             ['4주','실력편','2. 부등식과 방정식','2.1 일차부등식']],
+      '4월':[['1~2주','유형편','1. 수와 식','전체'],
+             ['3주','유형편','2. 부등식과 방정식','2.1~2.2 (시험범위까지)'],
+             ['4주','내신기간','내신기간','—']],
+      '5월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','2. 부등식과 방정식','2.2 연립일차방정식 (활용)'],
+             ['3~4주','실력편','3. 일차함수','전체']],
+      '6월':[['1주','유형편','2. 부등식과 방정식','2.2 연립일차방정식 (활용)'],
+             ['2~3주','유형편','3. 일차함수','전체'],
+             ['4주','내신기간','내신기간','—']],
+      '7월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','1. 도형의 성질','1.1 삼각형의 성질'],
+             ['3주','실력편','1. 도형의 성질','1.1+1.2 사각형의 성질'],
+             ['4주','실력편','1. 도형의 성질','1.2 사각형의 성질']],
+      '8월':[['1주','방학','여름방학','—'],
+             ['2주','실력편','2. 도형의 닮음','2.1 도형의 닮음'],
+             ['3주','실력편','2. 도형의 닮음','2.2 평행선과 선분의 길이의 비'],
+             ['4주','유형편','1. 도형의 성질','전체']],
+      '9월':[['1주','유형편','1. 도형의 성질','전체 (이어서)'],
+             ['2주','유형편','2. 도형의 닮음','2.1 도형의 닮음'],
+             ['3주','유형편','2. 도형의 닮음','2.2 평행선과 선분의 길이의 비'],
+             ['4주','내신기간','내신기간','—']],
+      '10월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','2. 도형의 닮음','2.2+2.3 피타고라스 정리'],
+             ['3주','실력편','2. 도형의 닮음','2.3 피타고라스 정리'],
+             ['4주','실력편','3. 확률','3.1 경우의 수']],
+      '11월':[['1주','실력편','3. 확률','3.2 확률'],
+             ['2주','유형편','2. 도형의 닮음','2.3 피타고라스 정리'],
+             ['3주','유형편','3. 확률','3.1 경우의 수'],
+             ['4주','유형편','3. 확률','3.2 확률']],
+      '12월':[['1~2주','내신기간','내신기간','—'],
+             ['3~4주','새학년정비','새학년 과정 정비기간','—']],
+    },
+  },
+  중3: {
+    months:{
+      '1월':[['12월5주','개념기본','1. 제곱근과 실수','1.1 제곱근과 실수'],
+             ['1주','개념기본','1. 제곱근과 실수','1.2 근호를 포함한 식의 계산'],
+             ['2주','개념기본','2. 이차방정식','2.1 곱셈공식'],
+             ['3주','개념기본','2. 이차방정식','2.2 인수분해와 인수분해 공식'],
+             ['4주','개념기본','2. 이차방정식','2.3 이차방정식']],
+      '2월':[['1주','개념기본','2. 이차방정식','2.3 이차방정식 (이어서)'],
+             ['2주','개념기본','2. 이차방정식','2.4 이차방정식 활용'],
+             ['3주','개념기본','3. 이차함수와 그래프','3.1 이차함수와 그래프'],
+             ['4주','개념기본','3. 이차함수와 그래프','3.2 y=ax²+bx+c 그래프']],
+      '3월':[['1주','실력편','1. 제곱근과 실수','전체'],
+             ['2주','실력편','2. 이차방정식','2.1 곱셈공식'],
+             ['3주','실력편','2. 이차방정식','2.2 인수분해와 인수분해 공식'],
+             ['4주','실력편','2. 이차방정식','2.3 이차방정식']],
+      '4월':[['1주','유형편','1. 제곱근과 실수','전체'],
+             ['2~3주','유형편','2. 이차방정식','2.1 / 2.2 / 2.3'],
+             ['4주','내신기간','내신기간','—']],
+      '5월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','2. 이차방정식','2.4 이차방정식 활용'],
+             ['3주','실력편','3. 이차함수와 그래프','3.1 이차함수와 그래프'],
+             ['4주','실력편','3. 이차함수와 그래프','3.2 y=ax²+bx+c 그래프']],
+      '6월':[['1주','유형편','2. 이차방정식','2.4 이차방정식 활용'],
+             ['2주','유형편','3. 이차함수와 그래프','3.1 이차함수와 그래프'],
+             ['3주','유형편','3. 이차함수와 그래프','3.2 y=ax²+bx+c 그래프'],
+             ['4주','내신기간','내신기간','—']],
+      '7월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','1. 삼각비','1.1 삼각비의 뜻'],
+             ['3주','실력편','1. 삼각비','1.2 삼각비의 활용'],
+             ['4주','실력편','2. 원의 성질','2.1 원과 직선']],
+      '8월':[['1주','방학','여름방학','—'],
+             ['2주','실력편','2. 원의 성질','2.1+2.2 원주각'],
+             ['3주','실력편','2. 원의 성질','2.2 원주각'],
+             ['4주','유형편','1. 삼각비','1.1 삼각비의 뜻']],
+      '9월':[['1주','유형편','1. 삼각비','1.2 삼각비의 활용'],
+             ['2주','유형편','2. 원의 성질','2.1 원과 직선'],
+             ['3주','유형편','2. 원의 성질','2.2 원주각'],
+             ['4주','내신기간','내신기간','—']],
+      '10월':[['1주','내신기간','내신기간','—'],
+             ['2주','실력편','2. 원의 성질','2.2 원주각'],
+             ['3주','실력편','3. 통계','전체'],
+             ['4주','유형편','2. 원의 성질','2.2 원주각']],
+      '11월':[['1주','유형편','3. 통계','전체'],
+             ['2주','내신기간','내신기간','—'],
+             ['3~4주','고등과정','고교 과정 선행 진입','—']],
+      '12월':[['전체','고등과정','고교 과정 진행 중','별도 고등 커리큘럼(시간표) 기준으로 진행']],
+    },
+  },
+};
+
+// 특강 흐름 — 겨울방학특강(재원생, 12월~2월: 다음 학기 기본편 선행) + 정규수업(신규생, 7월~12월: 같은 단원을 기본편 난이도로 진행)
+const DATA_SPECIAL = {
+  중1: {
+    gapAfter:'2월',
+    gapText:'겨울방학특강(2학기 선행)은 2월에 종료됩니다. 3월~6월은 별도 특강 커리큘럼이 없으며, 이 기간 재원생은 [정규수업] 탭의 실력편·학교시험 유형편을 따릅니다. 신규생 정규수업은 7월부터 다시 시작됩니다.',
+    months:{
+      '12월':[['5주','기본편','1. 기본 도형','1.1 기본 도형 (겨울방학특강 시작)']],
+      '1월':[['1주','기본편','1. 기본 도형','1.2 위치 관계'],
+             ['2주','기본편','1. 기본 도형','1.3 작도와 합동'],
+             ['3주','기본편','2. 평면 도형','2.1 다각형'],
+             ['4주','기본편','2. 평면 도형','2.2 원과 부채꼴']],
+      '2월':[['1주','기본편','3. 입체 도형','3.1 다면체와 회전체'],
+             ['2주','기본편','3. 입체 도형','3.2 겉넓이와 부피'],
+             ['3주','기본편','4. 통계','4.1 대표값'],
+             ['4주','기본편','4. 통계','4.2 도수분포표와 상대도수']],
+      '7월':[['2주','기본편','1. 기본 도형','1.1 기본 도형 (신규생 정규수업 시작)'],
+             ['3주','기본편','1. 기본 도형','1.2 위치 관계'],
+             ['4주','기본편','1. 기본 도형','1.3 작도와 합동']],
+      '8월':[['1주','방학','여름방학','—'],
+             ['2주','기본편','2. 평면 도형','2.1 다각형'],
+             ['3주','기본편','2. 평면 도형','2.2 원과 부채꼴'],
+             ['4주','유형편','1. 기본 도형','전체']],
+      '9월':[['1주','유형편','1. 기본 도형','전체 (이어서)'],
+             ['2주','유형편','2. 평면 도형','2.1 다각형'],
+             ['3주','유형편','2. 평면 도형','2.2 원과 부채꼴'],
+             ['4주','내신기간','내신기간','—']],
+      '10월':[['1주','내신기간','내신기간','—'],
+             ['2주','기본편','3. 입체 도형','3.1 다면체와 회전체'],
+             ['3주','기본편','3. 입체 도형','3.2 겉넓이와 부피'],
+             ['4주','기본편','4. 통계','4.1 대표값']],
+      '11월':[['1주','기본편','4. 통계','4.2 도수분포표와 상대도수'],
+             ['2주','유형편','3. 입체 도형','3.1 다면체와 회전체'],
+             ['3주','유형편','3. 입체 도형','3.2 겉넓이와 부피'],
+             ['4주','유형편','4. 통계','전체']],
+    },
+  },
+  중2: {
+    gapAfter:'2월',
+    gapText:'겨울방학특강(2학기 선행)은 2월에 종료됩니다. 3월~6월은 별도 특강 커리큘럼이 없으며, 이 기간 재원생은 [정규수업] 탭의 실력편·학교시험 유형편을 따릅니다. 신규생 정규수업은 7월부터 다시 시작됩니다.',
+    months:{
+      '12월':[['5주','기본편','1. 도형의 성질','1.1 삼각형의 성질 (겨울방학특강 시작)']],
+      '1월':[['1주','기본편','1. 도형의 성질','1.1+1.2 사각형의 성질'],
+             ['2주','기본편','1. 도형의 성질','1.2 사각형의 성질'],
+             ['3주','기본편','2. 도형의 닮음','2.1 도형의 닮음'],
+             ['4주','기본편','2. 도형의 닮음','2.2 평행선과 선분의 길이의 비']],
+      '2월':[['1주','기본편','2. 도형의 닮음','2.2+2.3 피타고라스 정리'],
+             ['2주','기본편','2. 도형의 닮음','2.3 피타고라스 정리'],
+             ['3주','기본편','3. 확률','3.1 경우의 수'],
+             ['4주','기본편','3. 확률','3.2 확률']],
+      '7월':[['2주','기본편','1. 도형의 성질','1.1 삼각형의 성질 (신규생 정규수업 시작)'],
+             ['3주','기본편','1. 도형의 성질','1.1+1.2 사각형의 성질'],
+             ['4주','기본편','1. 도형의 성질','1.2 사각형의 성질']],
+      '8월':[['1주','방학','여름방학','—'],
+             ['2주','기본편','2. 도형의 닮음','2.1 도형의 닮음'],
+             ['3주','기본편','2. 도형의 닮음','2.2 평행선과 선분의 길이의 비'],
+             ['4주','유형편','1. 도형의 성질','전체']],
+      '9월':[['1주','유형편','1. 도형의 성질','전체 (이어서)'],
+             ['2주','유형편','2. 도형의 닮음','2.1 도형의 닮음'],
+             ['3주','유형편','2. 도형의 닮음','2.2 평행선과 선분의 길이의 비'],
+             ['4주','내신기간','내신기간','—']],
+      '10월':[['1주','내신기간','내신기간','—'],
+             ['2주','기본편','2. 도형의 닮음','2.2+2.3 피타고라스 정리'],
+             ['3주','기본편','2. 도형의 닮음','2.3 피타고라스 정리'],
+             ['4주','기본편','3. 확률','3.1 경우의 수']],
+      '11월':[['1주','기본편','3. 확률','3.2 확률'],
+             ['2주','유형편','2. 도형의 닮음','2.3 피타고라스 정리'],
+             ['3주','유형편','3. 확률','3.1 경우의 수'],
+             ['4주','유형편','3. 확률','3.2 확률']],
+    },
+  },
+  중3: {
+    gapAfter:'2월',
+    gapText:'겨울방학특강(2학기 선행)은 2월에 종료됩니다. 3월~6월은 별도 특강 커리큘럼이 없으며, 이 기간 재원생은 [정규수업] 탭의 실력편·학교시험 유형편을 따릅니다. 신규생 정규수업은 7월부터 다시 시작됩니다.',
+    months:{
+      '12월':[['5주','기본편','1. 삼각비','1.1 삼각비의 뜻 (겨울방학특강 시작)']],
+      '1월':[['1주','기본편','1. 삼각비','1.2 삼각비의 활용'],
+             ['2주','기본편','2. 원의 성질','2.1 원과 직선'],
+             ['3주','기본편','2. 원의 성질','2.1+2.2 원주각'],
+             ['4주','기본편','2. 원의 성질','2.2 원주각']],
+      '2월':[['1주','기본편','3. 통계','3.1 대표값과 산포도'],
+             ['2주','기본편','3. 통계','3.2 상관관계'],
+             ['3주','기본편','(중3-1 과정) 3. 이차함수와 그래프','3.1 이차함수와 그래프'],
+             ['4주','기본편','(중3-1 과정) 3. 이차함수와 그래프','3.2 y=ax²+bx+c 그래프']],
+      '7월':[['2주','기본편','1. 삼각비','1.1 삼각비의 뜻 (신규생 정규수업 시작)'],
+             ['3주','기본편','1. 삼각비','1.2 삼각비의 활용'],
+             ['4주','기본편','2. 원의 성질','2.1 원과 직선']],
+      '8월':[['1주','방학','여름방학','—'],
+             ['2주','기본편','2. 원의 성질','2.1+2.2 원주각'],
+             ['3주','기본편','2. 원의 성질','2.2 원주각'],
+             ['4주','유형편','1. 삼각비','1.1 삼각비의 뜻']],
+      '9월':[['1주','유형편','1. 삼각비','1.2 삼각비의 활용'],
+             ['2주','유형편','2. 원의 성질','2.1 원과 직선'],
+             ['3주','유형편','2. 원의 성질','2.2 원주각'],
+             ['4주','내신기간','내신기간','—']],
+      '10월':[['1주','내신기간','내신기간','—'],
+             ['2주','기본편','2. 원의 성질','2.2 원주각'],
+             ['3주','기본편','3. 통계','전체'],
+             ['4주','유형편','2. 원의 성질','2.2 원주각']],
+      '11월':[['1주','유형편','3. 통계','전체'],
+             ['2주','내신기간','내신기간','—'],
+             ['3~4주','고등과정','고교 과정 선행 진입','재원생과 동일하게 진입']],
+      '12월':[['전체','고등과정','고교 과정 진행 중','별도 고등 커리큘럼(시간표) 기준으로 진행']],
+    },
+  },
+};
+
+const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const TRACK_DESC = {
+  regular: '정규수업(재원생) 기준 다푸네를 활용한 연간 커리큘럼입니다.',
+  special: '겨울방학특강(재원생, 12월~2월 · 2학기 선행 구간) + 정규수업(신규생, 7월~11월) 트랙입니다.',
+};
+const MONTHS_SPECIAL = ['12월','1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월'];
+const SEMESTER_BANNERS = {
+  special: {
+    '12월': '2학기 선행 구간',
+  },
+};
+
+let currentGrade = '중1';
+let currentTrack = 'regular';
+
+/* ===================== 렌더 ===================== */
+function render(){
+  const source = currentTrack === 'special' ? DATA_SPECIAL : DATA;
+  const g = source[currentGrade];
+  const gapShownAfter = g.gapAfter;
+  let gapRendered = false;
+  const monthOrder = currentTrack === 'special' ? MONTHS_SPECIAL : MONTHS;
+  const banners = SEMESTER_BANNERS[currentTrack] || {};
+
+  const html = monthOrder.map(m=>{
+    const rows = g.months[m];
+    const banner = banners[m] ? `<div class="semester-banner">${banners[m]}</div>` : '';
+
+    if(!rows){
+      return '';
+    }
+
+    const weekHtml = rows.map(r=>{
+      const [wk, phase, unit, sub] = r;
+      return `<div class="week-row">
+        <span class="wk-badge ${phase}">${PN[phase]}</span>
+        <div class="wk-txt"><span class="wkno">${wk}</span><span class="unit">${unit}</span> · <span class="sub">${sub}</span></div>
+      </div>`;
+    }).join('');
+
+    const monthCard = `<div class="month-card">
+      <div class="month-num"><span class="n">${m.replace('월','')}</span><span class="u">월</span></div>
+      <div class="month-body">${weekHtml}</div>
+    </div>`;
+
+    let gapNote = '';
+    if(gapShownAfter === m && !gapRendered){
+      gapNote = `<div class="plain-note">${g.gapText}</div>`;
+      gapRendered = true;
+    }
+
+    return banner + monthCard + gapNote;
+  }).join('');
+
+  document.getElementById('timeline').innerHTML = html;
+  document.getElementById('trackDesc').textContent = TRACK_DESC[currentTrack];
+}
+
+document.querySelectorAll('.grade-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.grade-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    currentGrade = btn.dataset.grade;
+    render();
+  });
+});
+
+document.querySelectorAll('.track-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.track-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    currentTrack = btn.dataset.track;
+    render();
+  });
+});
+
+document.querySelector('.grade-btn[data-grade="중1"]').classList.add('active');
+document.querySelector('.track-btn[data-track="regular"]').classList.add('active');
+render();
+
+/* ===================== 다푸네 만드는 방법 (인터랙티브 가이드) ===================== */
+const TOUR_STEPS = [
+  {key:'nav', label:'① 수업 탭', caption:'매쓰홀릭 플랫폼 상단 메뉴에서 [수업]을 클릭합니다.'},
+  {key:'newclass', label:'② 새 수업 만들기', caption:'[+ 새 수업 만들기] 버튼을 클릭해 교재 선택 화면으로 이동합니다.'},
+  {key:'matholic-tab', label:'③ 매쓰홀릭 · 필터', caption:'[매쓰홀릭] 탭이 기본 선택되어 있는지 확인한 뒤, 좌측 필터에서 학년(중등·고등)과 과정을 지정합니다.'},
+  {key:'dapune', label:'④ 다푸네 검색', caption:'우측 교재 필터에서 [다푸네]를 선택하면 해당 학년·과목의 다푸네 교재만 모아서 볼 수 있습니다.'},
+  {key:'bookgrid', label:'⑤ 교재 담기', caption:'개념익힘편 → 기본편 → 실력편 → 심화편 중 원하는 교재를 선택해 수업으로 생성합니다.'},
+];
+let tourStep = 0;
+
+function renderTourSteps(){
+  document.getElementById('tourSteps').innerHTML = TOUR_STEPS.map((s,i)=>
+    `<div class="tour-step-chip ${i===tourStep?'active':(i<tourStep?'done':'')}" data-idx="${i}">
+      <span class="num">${i+1}</span>${s.label}
+    </div>`
+  ).join('');
+  document.querySelectorAll('.tour-step-chip').forEach(el=>{
+    el.addEventListener('click', ()=>{ tourStep = +el.dataset.idx; renderTour(); });
+  });
+}
+
+function positionTourHighlight(){
+  const frame = document.getElementById('tourFrame');
+  const hi = document.getElementById('tourHighlight');
+  const target = document.querySelector('[data-tour="'+TOUR_STEPS[tourStep].key+'"]');
+  if(!frame || !hi || !target){ if(hi) hi.style.opacity = 0; return; }
+  const fRect = frame.getBoundingClientRect();
+  const tRect = target.getBoundingClientRect();
+  const pad = 6;
+  hi.style.left = (tRect.left - fRect.left + frame.scrollLeft - pad) + 'px';
+  hi.style.top = (tRect.top - fRect.top + frame.scrollTop - pad) + 'px';
+  hi.style.width = (tRect.width + pad*2) + 'px';
+  hi.style.height = (tRect.height + pad*2) + 'px';
+  hi.style.opacity = 1;
+}
+
+function renderTour(){
+  renderTourSteps();
+  document.getElementById('tourStepNum').textContent = tourStep + 1;
+  document.getElementById('tourCaptionText').textContent = TOUR_STEPS[tourStep].caption;
+  document.getElementById('tourPrev').disabled = tourStep === 0;
+  document.getElementById('tourNext').disabled = tourStep === TOUR_STEPS.length - 1;
+  positionTourHighlight();
+
+  document.querySelectorAll('[data-tour]').forEach(el=>el.classList.remove('tour-clickable'));
+  if(tourStep < TOUR_STEPS.length - 1){
+    const activeTarget = document.querySelector('[data-tour="'+TOUR_STEPS[tourStep].key+'"]');
+    if(activeTarget) activeTarget.classList.add('tour-clickable');
+  }
+}
+
+document.getElementById('tourPrev').addEventListener('click', ()=>{
+  if(tourStep > 0){ tourStep--; renderTour(); }
+});
+document.getElementById('tourNext').addEventListener('click', ()=>{
+  if(tourStep < TOUR_STEPS.length - 1){ tourStep++; renderTour(); }
+});
+document.getElementById('tourFrame').addEventListener('click', (e)=>{
+  if(tourStep >= TOUR_STEPS.length - 1) return;
+  const activeKey = TOUR_STEPS[tourStep].key;
+  if(e.target.closest('[data-tour="'+activeKey+'"]')){
+    tourStep++; renderTour();
+  }
+});
+window.addEventListener('resize', positionTourHighlight);
+
+renderTour();
+</script>
+</body>
+</html>
