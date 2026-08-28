@@ -2,27 +2,204 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Matholic 프로젝트 목록</title>
+<title>MATHOLIC 내부 페이지 목록</title>
 <style>
-  body { font-family: -apple-system, "Malgun Gothic", sans-serif; max-width: 640px; margin: 60px auto; padding: 0 20px; color: #222; }
-  h1 { font-size: 1.5rem; margin-bottom: 8px; }
-  p.sub { color: #666; margin-top: 0; }
-  ul { line-height: 2.2; padding-left: 20px; }
-  a { color: #2563eb; text-decoration: none; font-size: 1.05rem; }
-  a:hover { text-decoration: underline; }
-  p.empty { color: #888; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 85% 8%, rgba(124,92,255,.35) 0%, rgba(124,92,255,0) 55%),
+      linear-gradient(150deg,#1a1442 0%,#241a5c 55%,#2d1f6e 100%);
+    color:#fff;
+    font-family:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Malgun Gothic","Segoe UI",system-ui,sans-serif;
+    letter-spacing:-.011em; word-break:keep-all;
+    padding:56px 20px 80px;
+  }
+  .wrap{max-width:760px; margin:0 auto;}
+
+  /* header */
+  .brand{font-size:14px; font-weight:800; letter-spacing:.03em; color:rgba(255,255,255,.65); margin-bottom:14px;}
+  .brand b{color:#ffcf4d;}
+  h1{font-size:28px; font-weight:800; letter-spacing:-.02em; margin:0 0 10px;}
+  .lead{font-size:15px; color:rgba(255,255,255,.78); margin:0 0 4px; line-height:1.6;}
+  .warn{
+    display:inline-flex; align-items:center; gap:6px; margin-top:16px;
+    font-size:12.5px; font-weight:600; color:#ffd9a8;
+    background:rgba(255,159,10,.12); border:1px solid rgba(255,159,10,.28);
+    padding:7px 12px; border-radius:999px;
+  }
+
+  /* section */
+  section{margin-top:44px;}
+  .sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .sec-title{font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.55);}
+  .sec-desc{font-size:13px; color:rgba(255,255,255,.5); margin:2px 0 0;}
+  .count{font-size:12px; font-weight:700; color:rgba(255,255,255,.55); background:rgba(255,255,255,.08); padding:3px 10px; border-radius:999px;}
+
+  /* cards */
+  .cards{display:grid; gap:10px;}
+  a.card{
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    padding:16px 18px; border-radius:14px;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09);
+    text-decoration:none; color:#fff;
+    transition:.15s;
+  }
+  a.card:hover{background:rgba(255,255,255,.09); border-color:rgba(255,255,255,.18); transform:translateY(-1px);}
+  .card-title{font-size:15.5px; font-weight:700;}
+  .card-sub{font-size:12.5px; color:rgba(255,255,255,.5); margin-top:3px;}
+  .card-arrow{font-size:16px; color:rgba(255,255,255,.4); flex-shrink:0;}
+
+  a.tool-card{
+    background:linear-gradient(135deg, rgba(124,92,255,.28), rgba(255,207,77,.10));
+    border:1px solid rgba(124,92,255,.4);
+  }
+  a.tool-card:hover{border-color:rgba(124,92,255,.65);}
+  .tool-badge{
+    display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em;
+    color:#1a1442; background:#ffcf4d; padding:3px 9px; border-radius:999px; margin-bottom:8px;
+  }
+
+  /* search */
+  .search-wrap{position:relative; margin-bottom:14px;}
+  input#search{
+    width:100%; font:inherit; font-size:14px; color:#fff;
+    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
+    border-radius:12px; padding:12px 16px; outline:none;
+  }
+  input#search::placeholder{color:rgba(255,255,255,.4);}
+  input#search:focus{border-color:rgba(124,92,255,.6); background:rgba(255,255,255,.09);}
+
+  .empty{
+    padding:28px 18px; text-align:center; border-radius:14px;
+    border:1px dashed rgba(255,255,255,.18); color:rgba(255,255,255,.5); font-size:13.5px;
+  }
+
+  footer{margin-top:56px; padding-top:20px; border-top:1px solid rgba(255,255,255,.1);
+    font-size:12px; color:rgba(255,255,255,.4); text-align:center;}
+
+  @media (max-width:480px){
+    h1{font-size:23px;}
+    body{padding:40px 16px 60px;}
+  }
 </style>
 </head>
 <body>
-<h1>Matholic 프로젝트 목록</h1>
-<p class="sub">이 사이트에 올라와 있는 프로젝트들이에요.</p>
-<ul>
-  <!-- 새 프로젝트를 추가할 때마다 아래처럼 한 줄씩 추가하세요 -->
-  <!-- <li><a href="/폴더이름/">프로젝트 이름</a></li> -->
-  <li><a href="/dapunee/">다푸네 연간 커리큘럼</a></li>
-  <li><a href="/tutorialbuilder/">튜토리얼 빌더</a></li>
-  <li><a href="/g15report/">모바일 보고서</a></li>
-</ul>
+<div class="wrap">
+
+  <div class="brand">MATHOLIC <b>PREMIUM</b></div>
+  <h1>내부 페이지 목록</h1>
+  <p class="lead">지금까지 만든 프로젝트 페이지와 도구를 모아둔 팀 전용 화면이에요.</p>
+  <div class="warn">⚠️ 팀 내부용 — 고객에게 이 주소를 공유하지 마세요</div>
+
+  <!-- 일반 프로젝트 -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">제작 페이지</div>
+        <p class="sec-desc">고객·프로젝트별로 만든 개별 페이지</p>
+      </div>
+      <span class="count" id="project-count"></span>
+    </div>
+    <div class="cards" id="project-list"></div>
+  </section>
+
+  <!-- 튜토리얼 빌더 -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">제작 도구</div>
+        <p class="sec-desc">페이지를 직접 만들 수 있는 내부 툴</p>
+      </div>
+    </div>
+    <div class="cards">
+      <a class="card tool-card" href="/tutorialbuilder/">
+        <div>
+          <span class="tool-badge">TOOL</span>
+          <div class="card-title">튜토리얼 빌더</div>
+          <div class="card-sub">인터랙티브 튜토리얼 페이지를 만들어서 바로 배포할 수 있는 제작기</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- 튜토리얼 빌더로 생성된 페이지 -->
+  <section>
+    <div class="sec-head">
+      <div>
+        <div class="sec-title">생성된 튜토리얼</div>
+        <p class="sec-desc">튜토리얼 빌더로 만들어서 배포한 페이지 (tutorials/ 폴더)</p>
+      </div>
+      <span class="count" id="tutorial-count"></span>
+    </div>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="제목으로 검색…" autocomplete="off">
+    </div>
+    <div class="cards" id="tutorial-list"></div>
+  </section>
+
+  <footer>이 목록은 검색엔진에 노출되지 않도록 처리되어 있지만, 링크를 아는 사람은 접근할 수 있습니다. 주소를 외부에 전달하지 마세요.</footer>
+</div>
+
+<script>
+  // ── 일반 프로젝트 ──────────────────────────────────────────
+  // 새 프로젝트를 추가할 때는 이 배열에 한 줄 추가하세요.
+  const PROJECTS = [
+    { title: "다푸네 연간 커리큘럼", path: "/dapunee/" },
+    { title: "모바일 보고서", path: "/g15report/" },
+  ];
+
+  // ── 튜토리얼 빌더로 생성된 페이지 ────────────────────────────
+  // 튜토리얼 빌더에서 새 페이지를 배포할 때마다 이 배열에 한 줄씩 추가하세요.
+  // path는 "tutorials/폴더이름/" 형식입니다.
+  const TUTORIALS = [
+    // { title: "예시: 분수의 덧셈", path: "/tutorials/fraction-add/", date: "2026-08-28" },
+  ];
+
+  function renderCards(container, items, emptyText) {
+    if (!items.length) {
+      container.innerHTML = `<div class="empty">${emptyText}</div>`;
+      return;
+    }
+    container.innerHTML = items.map(it => `
+      <a class="card" href="${it.path}">
+        <div>
+          <div class="card-title">${it.title}</div>
+          ${it.date ? `<div class="card-sub">${it.date}</div>` : ""}
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+    `).join("");
+  }
+
+  const projectListEl = document.getElementById("project-list");
+  const projectCountEl = document.getElementById("project-count");
+  renderCards(projectListEl, PROJECTS, "아직 등록된 프로젝트가 없습니다.");
+  projectCountEl.textContent = PROJECTS.length + "개";
+
+  const tutorialListEl = document.getElementById("tutorial-list");
+  const tutorialCountEl = document.getElementById("tutorial-count");
+  const searchEl = document.getElementById("search");
+
+  function renderTutorials(filter) {
+    const q = (filter || "").trim().toLowerCase();
+    const filtered = q
+      ? TUTORIALS.filter(it => it.title.toLowerCase().includes(q))
+      : TUTORIALS;
+    renderCards(
+      tutorialListEl,
+      filtered,
+      q ? "검색 결과가 없습니다." : "아직 생성된 튜토리얼이 없습니다. 튜토리얼 빌더에서 첫 페이지를 만들어보세요."
+    );
+    tutorialCountEl.textContent = TUTORIALS.length + "개";
+  }
+
+  renderTutorials("");
+  searchEl.addEventListener("input", (e) => renderTutorials(e.target.value));
+</script>
 </body>
 </html>

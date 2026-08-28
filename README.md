@@ -8,6 +8,7 @@ MATHOLIC 팀이 만드는 여러 웹페이지를 한 저장소에서 관리하�
   - 예: `dapunee/index.html` → 실제 주소는 `https://<사이트주소>.netlify.app/dapunee/`
 - 루트(`index.html`)는 MATHOLIC 브랜드 소개 화면입니다. 프로젝트 목록은 여기에 넣지 않습니다(고객이 들어와도 다른 프로젝트가 보이면 안 되기 때문입니다).
 - 전체 프로젝트 목록은 `success_team_list/index.html`에 따로 있고, 팀만 아는 `https://<사이트주소>.netlify.app/success_team_list/` 로 확인합니다. 이 주소는 고객에게 공유하지 마세요. 새 프로젝트를 추가하면 `success_team_list/index.html`에 링크를 한 줄 추가해주세요(루트 `index.html`은 건드리지 않습니다).
+- (2026-08-28) `success_team_list/index.html`은 이제 브랜드 톤(다크 퍼플 그라데이션)에 맞춰 디자인되어 있고, 프로젝트/도구/튜토리얼 세 섹션으로 나뉩니다. 각 섹션의 목록은 파일 안 `<script>`의 `PROJECTS`, `TUTORIALS` 배열에 있으므로, 새 프로젝트나 튜토리얼을 추가할 때는 그 배열에 한 줄(`{ title, path }`)만 추가하면 됩니다. 튜토리얼 빌더가 만드는 페이지는 이제 `tutorials/<폴더이름>/index.html`처럼 `tutorials/` 하위에 모아서 저장하고, 목록 주소는 `/tutorials/<폴더이름>/`이 됩니다(일반 프로젝트처럼 저장소 루트에 바로 폴더를 만들지 않습니다). `TUTORIALS` 배열이 많아질 걸 감안해 검색창도 붙어 있습니다.
 - GitHub 저장소(`successmatholic/my-site`)에 새 커밋이 올라가면 Netlify가 몇 초 안에 자동으로 재배포합니다. 사람이 Netlify를 직접 건드릴 일은 없습니다.
 
 ## 새 프로젝트 추가하는 법
