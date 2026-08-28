@@ -34,10 +34,21 @@
 
   /* section */
   section{margin-top:44px;}
-  .sec-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .sec-head{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
   .sec-title{font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.55);}
   .sec-desc{font-size:13px; color:rgba(255,255,255,.5); margin:2px 0 0;}
+  .sec-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
   .count{font-size:12px; font-weight:700; color:rgba(255,255,255,.55); background:rgba(255,255,255,.08); padding:3px 10px; border-radius:999px;}
+
+  .tool-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12.5px; font-weight:800; letter-spacing:.01em;
+    color:#1a1442; background:#ffcf4d;
+    padding:7px 14px; border-radius:999px;
+    text-decoration:none; white-space:nowrap;
+    transition:.15s;
+  }
+  .tool-link:hover{background:#ffdb73; transform:translateY(-1px);}
 
   /* cards */
   .cards{display:grid; gap:10px;}
@@ -52,26 +63,6 @@
   .card-title{font-size:15.5px; font-weight:700;}
   .card-sub{font-size:12.5px; color:rgba(255,255,255,.5); margin-top:3px;}
   .card-arrow{font-size:16px; color:rgba(255,255,255,.4); flex-shrink:0;}
-
-  a.tool-card{
-    background:linear-gradient(135deg, rgba(124,92,255,.28), rgba(255,207,77,.10));
-    border:1px solid rgba(124,92,255,.4);
-  }
-  a.tool-card:hover{border-color:rgba(124,92,255,.65);}
-  .tool-badge{
-    display:inline-block; font-size:11px; font-weight:800; letter-spacing:.03em;
-    color:#1a1442; background:#ffcf4d; padding:3px 9px; border-radius:999px; margin-bottom:8px;
-  }
-
-  /* search */
-  .search-wrap{position:relative; margin-bottom:14px;}
-  input#search{
-    width:100%; font:inherit; font-size:14px; color:#fff;
-    background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
-    border-radius:12px; padding:12px 16px; outline:none;
-  }
-  input#search::placeholder{color:rgba(255,255,255,.4);}
-  input#search:focus{border-color:rgba(124,92,255,.6); background:rgba(255,255,255,.09);}
 
   .empty{
     padding:28px 18px; text-align:center; border-radius:14px;
@@ -107,37 +98,17 @@
     <div class="cards" id="project-list"></div>
   </section>
 
-  <!-- 튜토리얼 빌더 -->
+  <!-- 튜토리얼 빌더 + 생성된 튜토리얼 -->
   <section>
     <div class="sec-head">
       <div>
-        <div class="sec-title">제작 도구</div>
-        <p class="sec-desc">페이지를 직접 만들 수 있는 내부 툴</p>
-      </div>
-    </div>
-    <div class="cards">
-      <a class="card tool-card" href="/tutorialbuilder/">
-        <div>
-          <span class="tool-badge">TOOL</span>
-          <div class="card-title">튜토리얼 빌더</div>
-          <div class="card-sub">인터랙티브 튜토리얼 페이지를 만들어서 바로 배포할 수 있는 제작기</div>
-        </div>
-        <div class="card-arrow">→</div>
-      </a>
-    </div>
-  </section>
-
-  <!-- 튜토리얼 빌더로 생성된 페이지 -->
-  <section>
-    <div class="sec-head">
-      <div>
-        <div class="sec-title">생성된 튜토리얼</div>
+        <div class="sec-title">튜토리얼</div>
         <p class="sec-desc">튜토리얼 빌더로 만들어서 배포한 페이지 (tutorials/ 폴더)</p>
       </div>
-      <span class="count" id="tutorial-count"></span>
-    </div>
-    <div class="search-wrap">
-      <input id="search" type="text" placeholder="제목으로 검색…" autocomplete="off">
+      <div class="sec-actions">
+        <span class="count" id="tutorial-count"></span>
+        <a class="tool-link" href="/tutorialbuilder/">🛠 빌더 열기</a>
+      </div>
     </div>
     <div class="cards" id="tutorial-list"></div>
   </section>
@@ -153,9 +124,9 @@
     { title: "모바일 보고서", path: "/g15report/" },
   ];
 
-  // ── 튜토리얼 빌더로 생성된 페이지 ────────────────────────────
+  // ── 튜토리얼 빌더로 생성된 페이지 ─────────────────────────────
   // 튜토리얼 빌더에서 새 페이지를 배포할 때마다 이 배열에 한 줄씩 추가하세요.
-  // path는 "tutorials/폴더이름/" 형식입니다.
+  // path는 "/tutorials/폴더이름/" 형식입니다.
   const TUTORIALS = [
     // { title: "예시: 분수의 덧셈", path: "/tutorials/fraction-add/", date: "2026-08-28" },
   ];
@@ -183,23 +154,8 @@
 
   const tutorialListEl = document.getElementById("tutorial-list");
   const tutorialCountEl = document.getElementById("tutorial-count");
-  const searchEl = document.getElementById("search");
-
-  function renderTutorials(filter) {
-    const q = (filter || "").trim().toLowerCase();
-    const filtered = q
-      ? TUTORIALS.filter(it => it.title.toLowerCase().includes(q))
-      : TUTORIALS;
-    renderCards(
-      tutorialListEl,
-      filtered,
-      q ? "검색 결과가 없습니다." : "아직 생성된 튜토리얼이 없습니다. 튜토리얼 빌더에서 첫 페이지를 만들어보세요."
-    );
-    tutorialCountEl.textContent = TUTORIALS.length + "개";
-  }
-
-  renderTutorials("");
-  searchEl.addEventListener("input", (e) => renderTutorials(e.target.value));
+  renderCards(tutorialListEl, TUTORIALS, "아직 생성된 튜토리얼이 없습니다. 위 버튼으로 튜토리얼 빌더를 열어보세요.");
+  tutorialCountEl.textContent = TUTORIALS.length + "개";
 </script>
 </body>
 </html>
