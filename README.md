@@ -6,7 +6,7 @@ MATHOLIC 팀이 만드는 여러 웹페이지를 한 저장소에서 관리하�
 
 - 프로젝트마다 폴더를 하나씩 만들고, 그 안에 `index.html`을 둡니다.
   - 예: `dapunee/index.html` → 실제 주소는 `https://<사이트주소>.netlify.app/dapunee/`
-- 루트의 `index.html`은 전체 프로젝트로 가는 링크 목록(허브 페이지)입니다. 새 프로젝트를 추가하면 이 파일에도 링크를 한 줄 추가해주세요.
+- 루트(`index.html`)는 고객이 실수로 들어와도 아무것도 안 보이는 빈 페이지입니다. 전체 프로젝트 목록은 `list/index.html`에 따로 있고, 팀만 아는 `https://<사이트주소>.netlify.app/list/` 로 확인합니다. 이 주소는 고객에게 공유하지 마세요. 새 프로젝트를 추가하면 `list/index.html`에 링크를 한 줄 추가해주세요.
 - GitHub 저장소(`successmatholic/my-site`)에 새 커밋이 올라가면 Netlify가 몇 초 안에 자동으로 재배포합니다. 사람이 Netlify를 직접 건드릴 일은 없습니다.
 
 ## 새 프로젝트 추가하는 법
