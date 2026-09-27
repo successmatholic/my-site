@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>고객성공팀 영상 아카이빙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F6F2E9;
+    --panel: #FFFFFF;
+    --panel-alt: #F5F6F8;
+    --ink: #12161B;
+    --ink-soft: #565F6B;
+    --line: #E6E8EC;
+    --line-strong: #CBD0D7;
+    --accent: #1D4ED8;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E8EDFC;
+    --amber: #9A5B00;
+    --amber-soft: #FCEFD9;
+    --ok: #157A4B;
+    --ok-soft: #E1F5EA;
+    --red-soft: #FBE7E4;
+    --red-ink: #B23B2A;
+    --card-bg: #FFFFFF;
+    --card-ink: #12161B;
+    --card-ink-soft: #565F6B;
+    --card-line: #E6E8EC;
+    --card-line-strong: #CBD0D7;
+    --card-accent: #1D4ED8;
+    --card-navy: #241A5C;
+    --shadow: 0 14px 34px rgba(30,20,60,.09);
+    --shadow-sm: 0 6px 16px rgba(30,20,60,.07);
+    --card-accent-soft: #E8EDFC;
+    --card-ok: #157A4B;
+    --card-ok-soft: #E1F5EA;
+    --card-amber: #9A5B00;
+    --card-amber-soft: #FCEFD9;
+    --card-red-ink: #B23B2A;
+    --card-tag-bg: #EEF0FA;
+    --card-tag-ink: #3B4A6B;
+    --card-red-soft: #FBE7E4;
+    --panel-tint: #494C5C;
+    --radius: 8px;
+    --font-display: "Manrope", "Pretendard", system-ui, sans-serif;
+    --font-body: "Manrope", "Pretendard", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #F6F2E9;
+      --panel: #FFFFFF;
+      --panel-alt: #F5F6F8;
+      --ink: #12161B;
+      --ink-soft: #565F6B;
+      --line: #E6E8EC;
+      --line-strong: #CBD0D7;
+      --accent: #1D4ED8;
+      --accent-ink: #FFFFFF;
+      --accent-soft: #E8EDFC;
+      --amber: #E3A64B;
+      --amber-soft: #35291A;
+      --ok: #4FD190;
+      --ok-soft: #16302380;
+      --red-soft: #3A2521;
+      --red-ink: #EC9382;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #F6F2E9;
+    --panel: #FFFFFF;
+    --panel-alt: #F5F6F8;
+    --ink: #12161B;
+    --ink-soft: #565F6B;
+    --line: #E6E8EC;
+    --line-strong: #CBD0D7;
+    --accent: #1D4ED8;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #E8EDFC;
+    --amber: #E3A64B;
+    --amber-soft: #35291A;
+    --ok: #4FD190;
+    --ok-soft: #16302380;
+    --red-soft: #3A2521;
+    --red-ink: #EC9382;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); scrollbar-gutter: stable; overflow-y: scroll; }
+  body {
+    margin: 0;
+    width: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 24px 60px;
+  }
+  .top-bar {
+    width: 100%;
+    box-sizing: border-box;
+    background: #1B1F27;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .top-bar-title { flex-shrink: 0; }
+  .top-bar h1, .top-bar .sub, .top-bar .mono {
+    color: #fff;
+  }
+  .top-bar .sub { opacity: 0.65; }
+  .app-shell {
+    display: flex;
+    align-items: flex-start;
+  }
+  .side-nav {
+    width: 260px;
+    flex-shrink: 0;
+    padding: 28px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: #FFFFFF;
+    border-right: 1px solid var(--card-line);
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+  }
+  .side-nav .tab-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+    padding: 11px 14px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--card-ink-soft);
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 0;
+  }
+  .side-nav .tab-btn .cnt {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.6;
+    margin-left: 0;
+  }
+  .side-nav .tab-btn.active {
+    background: var(--card-tag-bg);
+    color: var(--card-ink);
+    font-weight: 800;
+  }
+  .side-nav .tab-btn.active .cnt { opacity: 0.8; color: var(--card-ink); }
+  .side-nav .tab-btn:hover:not(.active) { background: var(--card-tag-bg); opacity: 0.7; }
+  .main-area {
+    flex: 1;
+    min-width: 0;
+    padding: 28px 32px 60px;
+  }
+  .sticky-head {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--bg);
+    padding-top: 28px;
+    margin-top: -28px;
+  }
+  header.top {
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(24px, 4vw, 32px);
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    color: var(--ink-soft);
+    font-size: 13.5px;
+    margin: 0;
+  }
+  .stat-panel {
+    display: inline-block;
+    max-width: 100%;
+    background: #262B36;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  .stat-panel::before {
+    content: "";
+    display: block;
+    height: 3px;
+    background: linear-gradient(90deg, #3E7BFA, #E5934F);
+  }
+  .stat-panel-head {
+    padding: 14px 18px 4px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #9199A8;
+  }
+  .stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 18px 18px;
+  }
+  .stat {
+    padding: 6px 14px;
+    min-width: 84px;
+    border-radius: var(--radius);
+  }
+  .stat.clickable {
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .stat.clickable:hover {
+    background: rgba(255,255,255,0.06);
+  }
+  .stat.active {
+    background: rgba(255,255,255,0.09);
+  }
+  .stat b {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #FFFFFF;
+  }
+  .stat span {
+    font-size: 11.5px;
+    color: #9199A8;
+  }
+  .stat[data-k="on"] b { color: #6FD79B; }
+  .stat[data-k="pending"] b { color: #E5934F; }
+  .stat[data-k="off"] b { color: #F2897C; }
+  .stat[data-k="unset"] b { color: #9199A8; }
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 4px;
+    margin-bottom: 0;
+    border-bottom: 2px solid var(--line-strong);
+    padding: 0 2px;
+  }
+  .tab-btn {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 15px 11px;
+    border-radius: 8px 8px 0 0;
+    border: 1px solid var(--line-strong);
+    border-bottom: none;
+    background: var(--panel-alt);
+    color: var(--ink-soft);
+    cursor: pointer;
+    position: relative;
+    margin-bottom: -2px;
+  }
+  .tab-btn .cnt {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    opacity: 0.75;
+    margin-left: 4px;
+  }
+  .tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .tab-btn.active .cnt { opacity: 0.9; color: var(--accent-ink); }
+  .controls {
+    background: var(--bg);
+    padding: 16px 0 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+  }
+  .add-card-btn {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1.5px dashed var(--card-line-strong);
+    background: transparent;
+    color: var(--card-ink-soft);
+    cursor: pointer;
+  }
+  .add-card-btn svg { width: 14px; height: 14px; }
+  .v-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-line-strong);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 10px rgba(0,0,0,0.04);
+  }
+  .v-card-topline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 18px;
+  }
+  .v-card-topline .del-btn { margin-left: auto; }
+  .v-card-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--card-ink-soft);
+  }
+  .v-card-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--card-ink);
+    line-height: 1.35;
+  }
+  .v-card-date {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--card-ink-soft);
+  }
+  .v-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .v-card-sub {
+    font-size: 12px;
+    color: var(--card-ink-soft);
+    line-height: 1.5;
+  }
+  .v-card-actions {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--card-line);
+    display: flex;
+    gap: 10px;
+  }
+  .v-btn {
+    flex: 1;
+    text-align: center;
+    font-size: 12.5px;
+    font-weight: 700;
+    padding: 9px 10px;
+    border-radius: 8px;
+    background: var(--card-tag-bg);
+    color: var(--card-ink-soft);
+    text-decoration: none;
+  }
+  .v-btn.primary {
+    background: var(--card-ink);
+    color: #fff;
+  }
+  .v-btn.disabled {
+    opacity: 0.4;
+  }
+  .v-card .tl-soon {
+    width: 100%;
+    text-align: center;
+  }
+  .add-card-btn:hover {
+    border-color: var(--card-accent);
+    color: var(--card-accent);
+    background: var(--card-accent-soft);
+  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,16,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-box {
+    background: var(--card-bg);
+    color: var(--card-ink);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 460px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--card-line);
+  }
+  .modal-head h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--card-ink-soft);
+    padding: 4px;
+    display: flex;
+  }
+  .modal-close svg { width: 18px; height: 18px; }
+  .modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 20px;
+  }
+  .modal-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--card-ink-soft);
+  }
+  .modal-form .req { color: var(--card-red-ink); }
+  .modal-form input, .modal-form select {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--card-ink);
+    padding: 9px 11px;
+    border-radius: 8px;
+    border: 1px solid var(--card-line-strong);
+    background: var(--card-bg);
+  }
+  .modal-form input:focus, .modal-form select:focus {
+    outline: none;
+    border-color: var(--card-accent);
+  }
+  .form-error {
+    font-size: 12.5px;
+    color: var(--card-red-ink);
+    background: var(--card-red-soft);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .modal-btn {
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--card-line-strong);
+    background: var(--card-bg);
+    color: var(--card-ink);
+    cursor: pointer;
+  }
+  .modal-btn.primary {
+    background: var(--card-ink);
+    border-color: transparent;
+    color: #fff;
+  }
+  .del-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: var(--card-red-soft);
+    color: var(--card-red-ink);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .del-btn svg { width: 12px; height: 12px; }
+  .new-badge {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--card-accent);
+    background: var(--card-accent-soft);
+    border-radius: 999px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+  }
+  .search-box {
+    flex: 1 1 220px;
+    position: relative;
+  }
+  .search-box input {
+    width: 100%;
+    padding: 9px 12px 9px 32px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 14px;
+    font-family: var(--font-body);
+  }
+  .search-box svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
+  }
+  select {
+    padding: 9px 10px;
+    border-radius: var(--radius);
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 13.5px;
+    font-family: var(--font-body);
+    max-width: 140px;
+  }
+  .count-line {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 10px 2px 16px;
+  }
+  .timeline-wrap {
+    padding: 4px 0;
+  }
+  .timeline {
+    position: relative;
+  }
+  .tl-tag {
+    display: inline-block;
+    min-width: 78px;
+    text-align: center;
+    font-size: 13.5px;
+    font-weight: 800;
+    padding: 7px 10px;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .tl-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    background: var(--panel-alt);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 130px;
+  }
+  .tl-row.tl-row-flat {
+    margin-bottom: 20px;
+  }
+  .tl-month {
+    width: 100%;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    padding: 13px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+  }
+  .tl-month svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .tl-group-badge {
+    width: 56px;
+    min-width: 56px;
+    padding: 4px;
+    font-size: 13px;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+  .tl-card {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+  .tl-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 18px 16px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.04);
+  }
+  .ti-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ti-main .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+  .tl-item .ti-title {
+    flex: 0 1 auto;
+    max-width: 100%;
+    font-size: 15.5px;
+    font-weight: 600;
+    color: var(--card-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ti-date {
+    font-size: 11px;
+    color: var(--card-ink-soft);
+    flex-shrink: 0;
+  }
+  .tl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 7px;
+    background: var(--card-tag-bg);
+    color: var(--card-ink-soft);
+    flex-shrink: 0;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  .tl-btn svg { width: 12px; height: 12px; }
+  .tl-btn:hover { background: var(--card-accent-soft); color: var(--card-accent); }
+  .tl-btn.disabled { opacity: 0.35; }
+  .tl-soon {
+    font-size: 12px;
+    color: var(--card-ink-soft);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .dual-col-wrap {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .dual-col:first-child {
+    padding-right: 24px;
+    border-right: 1px solid var(--line);
+  }
+  .dual-col:last-child {
+    padding-left: 24px;
+  }
+  .dual-col {
+    flex: 1;
+    min-width: 0;
+  }
+  .dual-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px 12px;
+  }
+  .dual-panel-head .label {
+    font-family: var(--font-display);
+    font-size: 14.5px;
+    font-weight: 800;
+  }
+  .dual-panel-head .n {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--card-ink-soft);
+    background: var(--card-bg);
+    border-radius: 999px;
+    padding: 2px 8px;
+  }
+  .dual-col-body {
+    background: var(--panel-alt);
+    border-radius: 14px;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+    align-items: start;
+    max-height: 820px;
+    overflow-y: auto;
+  }
+  .dual-col-body .tl-item {
+    padding: 18px 16px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.04);
+  }
+  @media (max-width: 640px) {
+    .dual-col-wrap { flex-direction: column; }
+    .dual-col-body { max-height: none; overflow-y: visible; }
+  }
+  .section {
+    margin-bottom: 28px;
+  }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 18px 2px 10px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 4px;
+  }
+  .section-head h2 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 800;
+    margin: 0;
+  }
+  .section-head .n {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .rows {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    align-items: start;
+  }
+  .rows-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    padding-bottom: 10px;
+    scroll-snap-type: x proximity;
+  }
+  .rows-scroll .row {
+    flex: 0 0 300px;
+    scroll-snap-align: start;
+  }
+  @media (min-width: 720px) {
+    .rows { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1020px) {
+    .rows { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1160px) {
+    .rows { grid-template-columns: repeat(4, 1fr); }
+  }
+  .brand-head {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 4px 2px;
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--bc, var(--ink-soft));
+  }
+  .brand-head .n {
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-left: 2px;
+  }
+  .brand-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .row {
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 4 / 3;
+    overflow-y: auto;
+    padding: 20px 22px;
+    background: rgba(255,255,255,0.93);
+    backdrop-filter: blur(10px) saturate(1.1);
+    -webkit-backdrop-filter: blur(10px) saturate(1.1);
+    border: 1px solid rgba(203,208,215,0.6);
+    border-radius: 9px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 14px rgba(0,0,0,0.05);
+  }
+  .row .main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .row .links { margin-top: auto; }
+  .num-inline {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .title-divider {
+    border: none;
+    border-top: 1px solid var(--card-line);
+    margin: 12px 0;
+  }
+  .row .main { min-width: 0; }
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-date {
+    font-size: 11.5px;
+    color: var(--card-ink-soft);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .row .name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--card-ink);
+    line-height: 1.4;
+    word-break: keep-all;
+    flex: 1;
+    min-width: 0;
+  }
+  .row .meta {
+    font-size: 12px;
+    color: var(--card-ink-soft);
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 9px;
+    align-items: center;
+    font-family: var(--font-body);
+  }
+  .mono { font-family: var(--font-mono); }
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--card-tag-bg);
+    color: var(--card-tag-ink);
+    font-weight: 600;
+  }
+  .attr-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .chip {
+    display: inline-block;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 7px;
+    font-weight: 700;
+  }
+  .chip.brand { }
+  .chip.cat {
+    background: var(--card-tag-bg);
+    color: var(--card-tag-ink);
+  }
+  .badge {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .badge.on { background: var(--card-ok-soft); color: var(--card-ok); }
+  .badge.pending { background: var(--card-amber-soft); color: var(--card-amber); }
+  .badge.off { background: var(--card-red-soft); color: var(--card-red-ink); }
+  .status-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .ptag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 700;
+  }
+  .note {
+    font-size: 11.5px;
+    color: var(--card-amber);
+    background: var(--card-amber-soft);
+    border: 1px solid rgba(154,91,0,0.16);
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+  .links {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--card-line);
+  }
+  .lbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex: 1;
+    font-size: 12.5px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: var(--card-tag-bg);
+    color: var(--card-ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .lbtn:hover { background: var(--card-accent-soft); color: var(--card-accent); }
+  .lbtn.primary {
+    background: var(--card-ink);
+    color: #fff;
+  }
+  .lbtn.primary:hover { background: var(--card-accent); color: #fff; }
+  .lbtn.disabled {
+    opacity: 0.35;
+  }
+  .lbtn svg { width: 12px; height: 12px; }
+  .tap-tip {
+    position: fixed;
+    background: #2A2C33;
+    color: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 7px 13px;
+    border-radius: 9px;
+    white-space: nowrap;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.28);
+    z-index: 200;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 6px);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+  .tap-tip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #2A2C33;
+  }
+  .tap-tip.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  .empty {
+    padding: 60px 10px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  @media (max-width: 640px) {
+    select { max-width: 108px; }
+  }
+</style>
+</head>
+<body>
+<header class="top-bar">
+  <div class="top-bar-title">
+    <h1>고객성공팀 영상 아카이빙</h1>
+    <p class="sub">사이트 게시 영상부터 숏폼까지, 한 곳에서 링크와 백업 위치를 확인합니다. · 마지막 업데이트 <span id="syncDate" class="mono"></span></p>
+  </div>
+  <div class="stat-panel">
+    <div class="stat-panel-head">전체 영상 현황</div>
+    <div class="stat-row" id="statRow"></div>
+  </div>
+</header>
+
+<div class="app-shell">
+  <nav class="side-nav" id="tabBar"></nav>
+
+  <main class="main-area">
+    <div class="controls">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="q" type="text" placeholder="영상명, 비고로 검색">
+      </div>
+      <select id="fSection"><option value="">전체 분류</option></select>
+      <select id="fBrand"><option value="">전체 브랜드</option></select>
+      <select id="fStatus"><option value="">전체 상태</option></select>
+    </div>
+    <div class="count-line" id="countLine"></div>
+
+    <div id="results"></div>
+  </main>
+</div>
+
+<div id="addModalOverlay" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>새 영상 추가</h3>
+      <button id="addModalClose" class="modal-close" type="button" aria-label="닫기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="addForm" class="modal-form">
+      <label>분류 <span class="req">*</span>
+        <select id="f_section" required></select>
+      </label>
+      <label>브랜드 <span class="req">*</span>
+        <select id="f_brand" required></select>
+      </label>
+      <label>영상 제목 <span class="req">*</span>
+        <input id="f_name" type="text" placeholder="예: 학원설정/등록 영상" required>
+      </label>
+      <label>플랫폼
+        <select id="f_platform"></select>
+      </label>
+      <label>게시 상태
+        <select id="f_status"></select>
+      </label>
+      <label>업로드일
+        <input id="f_date" type="date">
+      </label>
+      <label>게시(시청) 링크
+        <input id="f_link" type="url" placeholder="https://...">
+      </label>
+      <label>백업(드라이브) 링크
+        <input id="f_backup" type="url" placeholder="https://drive.google.com/...">
+      </label>
+      <label>비고
+        <input id="f_note" type="text" placeholder="선택 사항">
+      </label>
+      <div id="addFormError" class="form-error" style="display:none;"></div>
+      <div class="modal-actions">
+        <button type="button" id="addCancelBtn" class="modal-btn">취소</button>
+        <button type="submit" id="addSubmitBtn" class="modal-btn primary">추가하기</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const RAW_DATA = [{"no": 1, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "학원설정/등록 영상", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/GmPb_XFrbCU", "backup": "https://drive.google.com/drive/folders/1_-aDVmy8q8_haR634yEbKTXAE4rrfTOa", "status": "게시중", "date": "26.03.05", "note": ""}, {"no": 2, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "진단평가 영상", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/IVyD611J39k", "backup": "https://drive.google.com/drive/folders/1_-aDVmy8q8_haR634yEbKTXAE4rrfTOa", "status": "게시중", "date": "26.03.04", "note": ""}, {"no": 4, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "교재채점 영상(교체본)", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/xpBP4rVDRIw", "backup": "https://drive.google.com/drive/folders/1_-aDVmy8q8_haR634yEbKTXAE4rrfTOa", "status": "게시중", "date": "26.03.05", "note": "신규 교체영상(DH1Pb1l4Tdg)이 별도로 존재 - 실제 교체 여부 확인 필요"}, {"no": 5, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "스스로채점 영상", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/qiGt8WV9-DY", "backup": "https://drive.google.com/drive/folders/1_-aDVmy8q8_haR634yEbKTXAE4rrfTOa", "status": "게시중", "date": "26.03.11", "note": ""}, {"no": 6, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "학습지 영상", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/I25gwWno8wA", "backup": "https://drive.google.com/drive/folders/1_-aDVmy8q8_haR634yEbKTXAE4rrfTOa", "status": "게시중", "date": "26.03.09", "note": ""}, {"no": 7, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "모바일보고서 영상", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/5tcXdnutdHo", "backup": "https://drive.google.com/drive/folders/1_-aDVmy8q8_haR634yEbKTXAE4rrfTOa", "status": "게시중", "date": "26.03.09", "note": ""}, {"no": 8, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "학원설정/등록 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/-SkBsQVyLTM", "backup": "https://drive.google.com/drive/folders/1thaYxUCttoVUnL1eGeM0I6LAtxVQqMf7", "status": "게시중", "date": "26.03.20", "note": ""}, {"no": 9, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "진단평가 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/4Yu3JIdHa9s", "backup": "https://drive.google.com/drive/folders/1thaYxUCttoVUnL1eGeM0I6LAtxVQqMf7", "status": "게시중", "date": "26.04.14", "note": ""}, {"no": 10, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "교재채점 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/pDE5crz5vB8", "backup": "https://drive.google.com/drive/folders/1thaYxUCttoVUnL1eGeM0I6LAtxVQqMf7", "status": "게시중", "date": "26.04.14", "note": ""}, {"no": 11, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "스스로채점 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/jSVnn168Il4", "backup": "https://drive.google.com/drive/folders/1thaYxUCttoVUnL1eGeM0I6LAtxVQqMf7", "status": "게시중", "date": "26.04.14", "note": ""}, {"no": 12, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "학습지 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/XuMCaA-GGoU", "backup": "https://drive.google.com/drive/folders/1thaYxUCttoVUnL1eGeM0I6LAtxVQqMf7", "status": "게시중", "date": "26.04.14", "note": ""}, {"no": 13, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼", "name": "모바일보고서 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/KypqHsYuv5Q", "backup": "https://drive.google.com/drive/folders/1thaYxUCttoVUnL1eGeM0I6LAtxVQqMf7", "status": "게시중", "date": "26.04.14", "note": ""}, {"no": 14, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼(안내)", "name": "교재비 청구 서비스 안내", "brand": "프리미엄", "platform": "노션", "link": "notion.so/345531674e3780728d70faa1dc332622", "backup": "(외부제작)", "status": "게시중", "date": "", "note": "노션 페이지 직접 연결"}, {"no": 15, "section": "메인 서비스 튜토리얼 영상", "category": "튜토리얼(안내)", "name": "교재 제본·주문 서비스 안내", "brand": "프리미엄", "platform": "노션", "link": "notion.so/345531674e378089bdf1c90eb72432f3", "backup": "(외부제작)", "status": "게시중", "date": "", "note": "노션 페이지 직접 연결"}, {"no": 16, "section": "매쓰홀릭T 영상", "category": "패밀리서비스", "name": "첫 사용 가이드 영상", "brand": "매쓰홀릭T", "platform": "유튜브", "link": "https://youtu.be/RncG64YzL34", "backup": "https://drive.google.com/drive/folders/1AqnE-3m8iElwHDbMTbgBwPzm5Q8H5W-4", "status": "게시중", "date": "26.05.29", "note": ""}, {"no": 17, "section": "매쓰홀릭T 영상", "category": "패밀리서비스", "name": "홀링 활용 가이드 영상", "brand": "매쓰홀릭T", "platform": "유튜브", "link": "https://youtu.be/TVwNW-9X_Lc", "backup": "https://drive.google.com/drive/folders/1AqnE-3m8iElwHDbMTbgBwPzm5Q8H5W-4", "status": "게시중", "date": "26.06.09", "note": ""}, {"no": 18, "section": "글잼 영상", "category": "패밀리서비스", "name": "튜토리얼 영상(프리미엄 버전)", "brand": "글잼", "platform": "유튜브", "link": "https://youtu.be/tRk1lHKbwNM", "backup": "https://drive.google.com/file/d/1xD2-9bslTayC3LHBb7HWmmyBeNVbAoir/view", "status": "게시중", "date": "26.08.07", "note": ""}, {"no": 22, "section": "기능 업데이트/홍보 영상", "category": "홍보영상", "name": "내신관/수능관 오픈 홍보 영상(VOD/타이포그래피)", "brand": "프리미엄", "platform": "구글드라이브", "link": "해당사항 없음", "backup": "https://drive.google.com/drive/folders/1Td-kUpKh9ys1CawV7GQcmq5wmZsAkbTR", "status": "게시중", "date": "", "note": ""}, {"no": 23, "section": "사업설명회 관련", "category": "사업설명회", "name": "5월 사업 설명회 1부 세션 영상", "brand": "공통", "platform": "구글드라이브", "link": "해당사항 없음", "backup": "https://drive.google.com/drive/u/0/folders/1HQY-K3HvS-a-aTg6kypvCCB7A8B72hXn", "status": "게시중", "date": "", "note": ""}, {"no": 25, "section": "학에페 관련", "category": "학에페", "name": "내신관/수능관 부스 전시 메인 영상", "brand": "공통", "platform": "구글드라이브", "link": "해당사항 없음", "backup": "https://drive.google.com/drive/folders/10ejA8JDyZYHwjWBTr2i59U2z4RuBzU7N", "status": "", "date": "", "note": "사전 제작"}, {"no": 26, "section": "학에페 관련", "category": "학에페", "name": "칸도르수학 부스 전시 메인 영상", "brand": "공통", "platform": "유튜브", "link": "https://youtu.be/GD_ygm8KSQU", "backup": "https://drive.google.com/drive/folders/1RLWhVC7pql66Lie1-iOMhc-JU8xZ8nx6", "status": "게시중", "date": "26.06.04", "note": "사전 제작"}, {"no": 27, "section": "학에페 관련", "category": "학에페", "name": "전주SM학원 부스 전시 메인 영상", "brand": "공통", "platform": "유튜브", "link": "https://youtu.be/G6dhAD3W8hQ", "backup": "(외부제작)", "status": "게시중", "date": "26.06.04", "note": "사전 제작"}, {"no": 28, "section": "학에페 관련", "category": "학에페", "name": "학에페 메타 광고 영상 #1(대구 촬영본)", "brand": "공통", "platform": "구글드라이브", "link": "해당사항 없음", "backup": "https://drive.google.com/drive/folders/10eidpRiqccf1J9i1U19Qna6Ld_03grAn", "status": "", "date": "", "note": "후속 제작"}, {"no": 29, "section": "학에페 관련", "category": "학에페", "name": "학에페 메타 광고 영상 #2(대구 촬영본)", "brand": "공통", "platform": "구글드라이브", "link": "해당사항 없음", "backup": "https://drive.google.com/drive/folders/10eidpRiqccf1J9i1U19Qna6Ld_03grAn", "status": "", "date": "", "note": "후속 제작"}, {"no": 30, "section": "학에페 관련", "category": "학에페", "name": "외부업체(이즈유) 전달용 현장 스케치 영상", "brand": "공통", "platform": "유튜브", "link": "해당사항 없음", "backup": "https://drive.google.com/drive/u/0/folders/1yC-nBTs-0hcT8JTdh-0IDoR3spNmbwik", "status": "", "date": "", "note": "후속 제작"}, {"no": 31, "section": "학에페 관련", "category": "학에페", "name": "2026 학에페 현장 스케치 영상 최종본", "brand": "공통", "platform": "유튜브", "link": "https://youtu.be/xF0ydyBa_0U", "backup": "https://drive.google.com/drive/folders/1p25VND2RQsPWiJ9UGFWvfxzQYqVhDE0s", "status": "게시중", "date": "26.06.05", "note": "후속 제작"}, {"no": 32, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "교재의 모든 것", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/NFFdb4qtlJg", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.03.04", "note": ""}, {"no": 33, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "점프수학 세미나", "brand": "공통", "platform": "유튜브", "link": "https://youtu.be/KpnZt8Ux_ng", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.03.11", "note": ""}, {"no": 34, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "프리미엄 기본활용 교육", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/EJnQRq7Gfd8", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.03.20", "note": ""}, {"no": 35, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "라이트 정기 교육(26.03.19)", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/rmDjRJqayQs", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.03.20", "note": "원본 시트 내 다른 표에서는 링크가 다르게 기재됨 - 확인 필요"}, {"no": 36, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "내신관수능관 세미나", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/95jIM7YZgZM", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.03.24", "note": ""}, {"no": 37, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "무료체험 활용교육", "brand": "라이트", "platform": "유튜브", "link": "https://youtu.be/kdPPl680BN4", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.04.02", "note": ""}, {"no": 38, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "에듀빌 세미나", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/qqFh7R07Ql8", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.04.03", "note": ""}, {"no": 39, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "프리미엄 이것만은 꼭!(내신관수능관)", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/Mejy0mye_QU", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.04.07", "note": ""}, {"no": 40, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "프리미엄 이것만은 꼭!(취약유형)", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/T69BCyddAvY", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.04.07", "note": ""}, {"no": 41, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "에듀빌 세미나(내신관수능관 런칭)", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/Eb1TdlP6-cw", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.04.09", "note": ""}, {"no": 42, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "매쓰홀릭T 활용 연수 교육 다시보기", "brand": "매쓰홀릭T", "platform": "유튜브", "link": "https://youtu.be/dsDqqOmxH4o", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.05.21", "note": ""}, {"no": 43, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "글잼 사용학원 현장 인터뷰", "brand": "글잼", "platform": "유튜브", "link": "https://youtu.be/aVCc9C6dB_s", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.05.22", "note": ""}, {"no": 44, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "매쓰홀릭 프리미엄으로 성공학원 만들기", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/iU3gBCvuQwM", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.05.22", "note": ""}, {"no": 45, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "프리미엄 활용 교육 영상", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/uMb3JHgoN-g", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.05.27", "note": ""}, {"no": 46, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "프리미엄 시험 대비 세미나", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/wgQX0DrhkwM", "backup": "https://drive.google.com/drive/folders/1V3UqL5H2UrO0fijAg3QNCeozdUx0us4W", "status": "게시중", "date": "26.06.17", "note": ""}, {"no": 47, "section": "힘찬 성장 프로젝트 (숏폼)", "category": "힘찬성장프로젝트", "name": "AI코멘트기능 홍보 쇼츠(TvsF밈)", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/bfoabc5qjB0", "backup": "https://drive.google.com/drive/folders/1c5TpofUy-VeuYw5cKNUpPXAUN15ZHiRp", "status": "게시중", "date": "26.04.17", "note": "인스타: instagram.com/reel/DXVps8CEc9r"}, {"no": 48, "section": "힘찬 성장 프로젝트 (숏폼)", "category": "힘찬성장프로젝트", "name": "밤샘 채점하면 안되는 이유(P.O.V 밈)", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/w_1ySYIHEKc", "backup": "https://drive.google.com/drive/folders/1sfNejh-_0f7rXuawnCMR1chIyVQ0lRQQ", "status": "게시중", "date": "26.05.22", "note": "인스타: instagram.com/reel/DYopKvNRVoS"}, {"no": 49, "section": "힘찬 성장 프로젝트 (숏폼)", "category": "힘찬성장프로젝트", "name": "내신관수능관 홍보 릴스", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/at0AaafohGk", "backup": "https://drive.google.com/drive/folders/1_pYC-WqP84Rz6JzspDYx_EQhIgZgpIci", "status": "게시중", "date": "26.06.02", "note": "인스타: instagram.com/reel/DZFCsvPRCBX"}, {"no": 50, "section": "힘찬 성장 프로젝트 (숏폼)", "category": "힘찬성장프로젝트", "name": "한 번만 더 건드려?!(캐릭터 밈)", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/lQ-P4zBDMpw", "backup": "https://drive.google.com/drive/folders/1b8wIRjZkhhcsP2dcQX21MpFipl24mEGp", "status": "게시중", "date": "26.06.08", "note": "인스타: instagram.com/reel/DZUckM9Rv38"}, {"no": 51, "section": "아하쌤 영상 프로젝트 (숏폼)", "category": "아하쌤", "name": "내신관/수능관 기능 소구 영상", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/OnhMIlOBR8U", "backup": "(외부제작)", "status": "게시중", "date": "26.04.28", "note": "인스타: instagram.com/reel/DXq4J8_EY8c"}, {"no": 52, "section": "아하쌤 영상 프로젝트 (숏폼)", "category": "아하쌤", "name": "학에페 홍보 영상", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/7YOSpeFKBoY", "backup": "(외부제작)", "status": "게시중", "date": "26.05.06", "note": "인스타: instagram.com/reel/DX_PKv6Rfeo"}, {"no": 53, "section": "아하쌤 영상 프로젝트 (숏폼)", "category": "아하쌤", "name": "글잼 홍보 영상", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/4O8qmp43OqA", "backup": "(외부제작)", "status": "게시중", "date": "26.05.15", "note": "인스타: instagram.com/reel/DYVs5eZzzFS"}, {"no": 54, "section": "아하쌤 영상 프로젝트 (숏폼)", "category": "아하쌤", "name": "학습지 기능 소구 영상", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/Oc84MGqsBxg", "backup": "(외부제작)", "status": "게시중", "date": "26.05.27", "note": "인스타: instagram.com/reel/DY1gcGHxoP-"}, {"no": 55, "section": "아하쌤 영상 프로젝트 (숏폼)", "category": "아하쌤", "name": "내신관 기말고사 대비 소구 영상", "brand": "공통", "platform": "유튜브/인스타", "link": "유튜브: youtube.com/shorts/ODxGH1xOqzg", "backup": "(외부제작)", "status": "게시중", "date": "26.06.04", "note": "인스타: instagram.com/reel/DZJqG67xqRy"}, {"no": 56, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "[매쓰홀릭] 프리미엄 세미나", "brand": "공통", "platform": "유튜브", "link": "https://youtu.be/OyQj_qq6EE0", "backup": "", "status": "게시중", "date": "26.07.08", "note": ""}, {"no": 57, "section": "세미나 및 교육 영상", "category": "세미나/교육", "name": "[프리미엄] 세미나 다시보기", "brand": "프리미엄", "platform": "유튜브", "link": "https://youtu.be/rp3HdAGb0ck", "backup": "", "status": "게시중", "date": "26.08.12", "note": ""}];
+let DB_ITEMS = [];
+let dbReady = false;
+let ALL_DATA = RAW_DATA;
+function recomputeAllData(){
+  ALL_DATA = RAW_DATA.concat(DB_ITEMS);
+}
+const SYNC_DATE = "2026.09.23 18:12 (KST)";
+
+const TAB_GROUPS = [
+  { id: "matholic", label: "프리미엄/라이트", sections: ["메인 서비스 튜토리얼 영상"] },
+  { id: "family", label: "패밀리 서비스", sections: ["매쓰홀릭T 영상", "글잼 영상"] },
+  { id: "seminar", label: "세미나 · 교육", sections: ["세미나 및 교육 영상"] },
+  { id: "project", label: "프로젝트 영상", sections: ["학에페 관련", "사업설명회 관련", "기능 업데이트/홍보 영상"] },
+  { id: "social", label: "소셜 콘텐츠", sections: ["힘찬 성장 프로젝트 (숏폼)", "아하쌤 영상 프로젝트 (숏폼)"] }
+];
+const SECTION_TO_TAB = {};
+TAB_GROUPS.forEach(t => t.sections.forEach(s => SECTION_TO_TAB[s] = t.id));
+
+let activeTab = "matholic";
+let statAllMode = false;
+
+const CATEGORY_COLOR = {
+  "튜토리얼": "#2F9E86",
+  "튜토리얼(안내)": "#2F9E86",
+  "패밀리서비스": "#8B6FC9",
+  "홍보영상": "#6C8798",
+  "사업설명회": "#6C8798",
+  "학에페": "#5468C4",
+  "세미나/교육": "#3E9BC7",
+  "힘찬성장프로젝트": "#FF7A59",
+  "아하쌤": "#E0598F"
+};
+
+const BRAND_COLOR = {
+  "라이트": "#D6A017",
+  "프리미엄": "#3B6FE0",
+  "공통": "#6B7280",
+  "글잼": "#8B5FC9",
+  "매쓰홀릭T": "#3F9E5C",
+  "홀링": "#E0803C"
+};
+
+const PLATFORM_COLOR = {
+  "유튜브": "#D64545",
+  "인스타": "#C2368C",
+  "유튜브/인스타": "#B23B6B",
+  "구글드라이브": "#3B6FD6",
+  "노션": "#5B6470"
+};
+
+const PLATFORM_LABEL = {
+  "유튜브": "YouTube",
+  "인스타": "Instagram",
+  "유튜브/인스타": "YouTube/Instagram",
+  "구글드라이브": "Google Drive",
+  "노션": "Notion"
+};
+
+function statusBadgeClass(s){
+  if(s === "게시중") return "on";
+  if(s === "게시전" || s === "제작중") return "pending";
+  if(s === "게시중단") return "off";
+  return "pending";
+}
+
+function esc(s){
+  return (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+
+function fullDate(d){
+  const s = (d || "").trim();
+  const m = s.match(/^(\d{2})\.(\d{2})\.(\d{2})$/);
+  if(!m) return s;
+  return `20${m[1]}.${m[2]}.${m[3]}`;
+}
+
+function disabledTip(raw){
+  const r = (raw || "").trim();
+  if(r && !/^https?:\/\//.test(r)) return r;
+  return "";
+}
+
+function darkenMix(hex, blackRatio){
+  blackRatio = blackRatio === undefined ? 0.3 : blackRatio;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const mr = Math.round(r * (1 - blackRatio));
+  const mg = Math.round(g * (1 - blackRatio));
+  const mb = Math.round(b * (1 - blackRatio));
+  return `rgb(${mr},${mg},${mb})`;
+}
+
+function pastelMix(hex, whiteRatio){
+  whiteRatio = whiteRatio === undefined ? 0.85 : whiteRatio;
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  const mr = Math.round(r + (255-r)*whiteRatio);
+  const mg = Math.round(g + (255-g)*whiteRatio);
+  const mb = Math.round(b + (255-b)*whiteRatio);
+  return `rgb(${mr},${mg},${mb})`;
+}
+
+function firstUrl(s){
+  if(!s) return "";
+  let m = s.match(/https?:\/\/\S+/);
+  if(m) return m[0];
+  m = s.match(/\b(?:[\w-]+\.)+(?:com|net|so|io|app|me)\/\S+/);
+  if(m) return "https://" + m[0];
+  return "";
+}
+function secondaryUrl(s){
+  if(!s) return "";
+  const m = s.match(/https?:\/\/\S+/) || s.match(/\b(?:[\w-]+\.)+(?:com|net|so|io|app|me)\/\S+/);
+  if(!m) return "";
+  return m[0].startsWith("http") ? m[0] : "https://" + m[0];
+}
+
+function render(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const fSection = document.getElementById('fSection').value;
+  const fBrand = document.getElementById('fBrand').value;
+  const fStatus = document.getElementById('fStatus').value;
+
+  const filtered = ALL_DATA.filter(d => {
+    if(!statAllMode && SECTION_TO_TAB[d.section] !== activeTab) return false;
+    if(fSection && d.section !== fSection) return false;
+    if(fBrand && d.brand !== fBrand) return false;
+    if(fStatus){
+      const s = d.status || "__UNSET__";
+      if(s !== fStatus) return false;
+    }
+    if(q){
+      const hay = (d.name + " " + d.note + " " + d.category + " " + d.brand).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const tabTotal = statAllMode ? ALL_DATA.length : ALL_DATA.filter(d => SECTION_TO_TAB[d.section] === activeTab).length;
+  document.getElementById('countLine').textContent = statAllMode
+    ? `${filtered.length}개 표시 중 (전체 ${tabTotal}개 중)`
+    : `${filtered.length}개 표시 중 (이 탭 전체 ${tabTotal}개)`;
+
+  const resultsEl = document.getElementById('results');
+  resultsEl.innerHTML = "";
+
+  if(filtered.length === 0){
+    resultsEl.innerHTML = '<div class="empty">조건에 맞는 영상이 없습니다. 검색어나 필터를 조정해보세요.</div>';
+    return;
+  }
+
+  const sections = [];
+  const seen = new Set();
+  filtered.forEach(d => { if(!seen.has(d.section)){ seen.add(d.section); sections.push(d.section); } });
+
+  function buildRowEl(d, opts){
+    opts = opts || {};
+    const catColor = CATEGORY_COLOR[d.category] || "#5B6B63";
+    const bc = BRAND_COLOR[d.brand];
+    const dotColor = (opts.dotByBrand && bc) ? bc : catColor;
+    const link = firstUrl(d.link);
+    const backup = firstUrl(d.backup);
+    const igUrl = (d.note && d.note.includes("instagram.com")) ? secondaryUrl(d.note) : "";
+    const brandLabel = (!opts.dotByBrand && d.brand) ? `<span>${esc(d.brand)}</span>` : "";
+    const platformTags = (d.platform || "").split("/").map(p => p.trim()).filter(Boolean).map(p => {
+      const pc = PLATFORM_COLOR[p] || "#5B6470";
+      return `<span class="ptag" style="background:${pc}17;color:${pc}">${esc(PLATFORM_LABEL[p] || p)}</span>`;
+    }).join("");
+
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = `
+      <div class="main">
+        <div class="card-top">
+          <div class="num-inline" style="background:${dotColor}1c;color:${dotColor}">${opts.index || ""}</div>
+          <div class="name">${esc(d.name)}</div>
+          ${d._dbId ? `<span class="new-badge">NEW</span><button class="del-btn" data-id="${esc(d._dbId)}" type="button" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ""}
+        </div>
+        <hr class="title-divider">
+        <div class="status-row">
+          <span class="badge ${statusBadgeClass(d.status)}">${esc(d.status || "미정")}</span>
+          ${platformTags}
+          ${brandLabel}
+          ${d.date ? `<span class="mono card-date">업로드일: ${esc(d.date)}</span>` : ""}
+        </div>
+        <div class="links">
+          <a class="lbtn primary ${link ? "" : "disabled"}" ${link ? `href="${link}" target="_blank" rel="noopener"` : `data-tip="${esc(disabledTip(d.link))}"`}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+            게시 링크
+          </a>
+          ${igUrl ? `
+          <a class="lbtn" href="${igUrl}" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+            인스타
+          </a>` : ""}
+          <a class="lbtn ${backup ? "" : "disabled"}" ${backup ? `href="${backup}" target="_blank" rel="noopener"` : `data-tip="${esc(disabledTip(d.backup))}"`}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            드라이브
+          </a>
+        </div>
+        ${d.note ? `<div class="note">⚠ ${esc(d.note)}</div>` : ""}
+      </div>
+    `;
+    return row;
+  }
+
+  const BRAND_SPLIT_SECTIONS = [];
+  const DUAL_COL_SECTIONS = [];
+  const BRAND_ORDER = ["라이트", "프리미엄"];
+
+  function buildCardEl(d, opts){
+    opts = opts || {};
+    const link = firstUrl(d.link);
+    const backup = firstUrl(d.backup);
+    const igUrl = (d.note && d.note.includes("instagram.com")) ? secondaryUrl(d.note) : "";
+    const tagColor = opts.tagColor || BRAND_COLOR[d.brand] || CATEGORY_COLOR[d.category] || "#5B6B63";
+    const linkLabel = opts.linkLabel || "게시 링크";
+    const platformChips = (d.platform || "").split("/").map(p => p.trim()).filter(Boolean).map(p => {
+      const pc = PLATFORM_COLOR[p] || "#5B6470";
+      return `<span class="ptag" style="background:${pc}17;color:${pc}">${esc(PLATFORM_LABEL[p] || p)}</span>`;
+    }).join("");
+    const card = document.createElement('div');
+    card.className = 'v-card';
+    card.innerHTML = `
+      <div class="v-card-topline">
+        ${opts.showNumber ? `<span class="v-card-num">${opts.index}</span>` : ""}
+        ${d._dbId ? `<span class="new-badge">NEW</span>` : ""}
+        ${d._dbId ? `<button class="del-btn" data-id="${esc(d._dbId)}" type="button" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ""}
+      </div>
+      <div class="v-card-title">${esc(d.name)}</div>
+      <div class="v-card-date mono">${d.date ? esc(fullDate(d.date)) : "&nbsp;"}</div>
+      <div class="v-card-meta">
+        <span class="badge ${statusBadgeClass(d.status)}">${esc(d.status || "미정")}</span>
+        ${platformChips}
+      </div>
+      <div class="v-card-actions">
+        ${(link || backup || igUrl) ? `
+        <a class="v-btn primary ${link ? "" : "disabled"}" ${link ? `href="${link}" target="_blank" rel="noopener"` : `data-tip="${esc(disabledTip(d.link))}"`}>${esc(linkLabel)}</a>
+        ${igUrl ? `<a class="v-btn" href="${igUrl}" target="_blank" rel="noopener">인스타그램</a>` : ""}
+        <a class="v-btn ${backup ? "" : "disabled"}" ${backup ? `href="${backup}" target="_blank" rel="noopener"` : `data-tip="${esc(disabledTip(d.backup))}"`}>드라이브</a>
+        ` : `<span class="tl-soon">출시 예정</span>`}
+      </div>
+    `;
+    return card;
+  }
+
+  function buildDualColGeneric(groups, opts){
+    opts = opts || {};
+    const wrap = document.createElement('div');
+    wrap.className = 'dual-col-wrap';
+    groups.forEach(g => {
+      if(!g.items) g.items = [];
+      const col = document.createElement('div');
+      col.className = 'dual-col';
+      const body = document.createElement('div');
+      body.className = 'dual-col-body';
+      const head = document.createElement('div');
+      head.className = 'dual-panel-head';
+      head.innerHTML = `<span class="label" style="color:${g.color};">${esc(g.label)}</span><span class="n">${g.items.length}</span>`;
+      body.appendChild(head);
+      g.items.forEach((d, i) => {
+        body.appendChild(buildCardEl(d, { showTag: false, showNumber: true, index: i + 1, tagColor: g.color, linkLabel: g.linkLabel }));
+      });
+      if(dbReady){
+        const addCard = document.createElement('button');
+        addCard.type = 'button';
+        addCard.className = 'add-card-btn';
+        addCard.setAttribute('data-section', g.section || "");
+        addCard.setAttribute('data-brand', g.brand || "");
+        addCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 영상 추가`;
+        body.appendChild(addCard);
+      }
+      col.appendChild(body);
+      wrap.appendChild(col);
+    });
+    return wrap;
+  }
+
+  function buildDualColEl(items, section){
+    const groups = BRAND_ORDER.map(brand => ({
+      label: brand,
+      color: BRAND_COLOR[brand] || "#5B6B63",
+      items: items.filter(d => d.brand === brand),
+      section: section,
+      brand: brand
+    }));
+    const leftover = items.filter(d => !BRAND_ORDER.includes(d.brand));
+    if(leftover.length){
+      groups.push({
+        label: "기타",
+        color: "#5B6B63",
+        items: leftover,
+        section: section,
+        brand: ""
+      });
+    }
+    return buildDualColGeneric(groups);
+  }
+
+  const TIMELINE_SECTIONS = ["메인 서비스 튜토리얼 영상", "세미나 및 교육 영상", "힘찬 성장 프로젝트 (숏폼)", "아하쌤 영상 프로젝트 (숏폼)", "학에페 관련", "사업설명회 관련", "기능 업데이트/홍보 영상", "매쓰홀릭T 영상", "글잼 영상"];
+  const FLAT_TIMELINE_SECTIONS = ["메인 서비스 튜토리얼 영상", "힘찬 성장 프로젝트 (숏폼)", "아하쌤 영상 프로젝트 (숏폼)", "학에페 관련", "사업설명회 관련", "기능 업데이트/홍보 영상", "매쓰홀릭T 영상", "글잼 영상"];
+  const BRAND_GROUP_SECTIONS = ["메인 서비스 튜토리얼 영상"];
+  const PROJECT_BADGE = {
+    "힘찬 성장 프로젝트 (숏폼)": { label: "힘찬", color: "#C76B3C" },
+    "아하쌤 영상 프로젝트 (숏폼)": { label: "아하", color: "#3C7FC7" },
+    "학에페 관련": { label: "학에페", color: "#4A5A96" },
+    "사업설명회 관련": { label: "설명회", color: "#5B6B63" },
+    "기능 업데이트/홍보 영상": { label: "기능", color: "#A65069" },
+    "매쓰홀릭T 영상": { label: "매쓰홀릭T", color: "#3F9E5C" },
+    "글잼 영상": { label: "글잼", color: "#8B5FC9" }
+  };
+  const NO_TAG_SECTIONS = ["매쓰홀릭T 영상", "글잼 영상", "힘찬 성장 프로젝트 (숏폼)", "아하쌤 영상 프로젝트 (숏폼)", "학에페 관련", "사업설명회 관련", "기능 업데이트/홍보 영상"];
+  const SHOW_NUMBER_SECTIONS = ["메인 서비스 튜토리얼 영상", "힘찬 성장 프로젝트 (숏폼)", "아하쌤 영상 프로젝트 (숏폼)", "학에페 관련", "사업설명회 관련", "기능 업데이트/홍보 영상", "매쓰홀릭T 영상", "글잼 영상"];
+  const SCROLL_SECTIONS = [];
+
+  function buildTimelineEl(items, opts){
+    opts = opts || {};
+    const showMonth = opts.showMonth !== false;
+    const showTag = opts.showTag !== false;
+    const showLinkBtn = opts.showLinkBtn !== false;
+    const showNumber = !!opts.showNumber;
+    const groupBadge = opts.groupBadge || null;
+    const groupByBrand = !!opts.groupByBrand;
+    const sectionName = opts.sectionName || "";
+    const linkLabel = opts.linkLabel || "게시 링크";
+    const sorted = [...items].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    const wrap = document.createElement('div');
+    wrap.className = 'timeline';
+    const groups = [];
+    const seenMonth = new Set();
+    sorted.forEach(d => {
+      let key;
+      if(groupByBrand) key = d.brand || "기타";
+      else key = showMonth ? ((d.date || "").split(".")[1] || "?") : "__ALL__";
+      if(!seenMonth.has(key)){ seenMonth.add(key); groups.push({ month: key, items: [] }); }
+      groups.find(g => g.month === key).items.push(d);
+    });
+    groups.forEach(g => {
+      const row = document.createElement('div');
+      row.className = 'tl-row' + (showMonth ? '' : ' tl-row-flat');
+      const monthNum = parseInt(g.month, 10);
+      const rowBadge = groupByBrand
+        ? { label: g.month, color: BRAND_COLOR[g.month] || "#5B6B63" }
+        : groupBadge;
+      const card = document.createElement('div');
+      card.className = 'tl-card' + (showMonth ? ' tl-card-month' : '');
+      g.items.forEach((d, i) => {
+        const bc = BRAND_COLOR[d.brand];
+        const tagColor = bc || (CATEGORY_COLOR[d.category] || "#5B6B63");
+        card.appendChild(buildCardEl(d, { showTag, showNumber, index: i + 1, tagColor, linkLabel }));
+      });
+      if(dbReady){
+        const addCard = document.createElement('button');
+        addCard.type = 'button';
+        addCard.className = 'add-card-btn';
+        addCard.setAttribute('data-section', sectionName);
+        addCard.setAttribute('data-brand', groupByBrand ? g.month : "");
+        addCard.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> 영상 추가`;
+        card.appendChild(addCard);
+      }
+      if(showMonth){
+        row.innerHTML = `<div class="tl-month" style="background:var(--card-tag-bg);color:var(--card-ink);"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8V4z"/></svg>${isNaN(monthNum) ? "?" : monthNum}월</div>`;
+      } else if(rowBadge){
+        row.innerHTML = `<div class="tl-month" style="background:${pastelMix(rowBadge.color, 0.85)};color:${darkenMix(rowBadge.color, 0.1)};"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8V4z"/></svg>${esc(rowBadge.label)}</div>`;
+      }
+      row.appendChild(card);
+      wrap.appendChild(row);
+    });
+    return wrap;
+  }
+
+  sections.forEach(sec => {
+    const items = filtered.filter(d => d.section === sec);
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    if(sections.length > 1){
+      secEl.innerHTML = `<div class="section-head"><h2>${esc(sec)}</h2><span class="n">${items.length}개</span></div>`;
+    }
+
+    if(DUAL_COL_SECTIONS.includes(sec)){
+      secEl.appendChild(buildDualColEl(items, sec));
+      resultsEl.appendChild(secEl);
+      return;
+    }
+
+    if(TIMELINE_SECTIONS.includes(sec)){
+      const flat = FLAT_TIMELINE_SECTIONS.includes(sec);
+      const byBrand = BRAND_GROUP_SECTIONS.includes(sec);
+      const hideTag = NO_TAG_SECTIONS.includes(sec);
+      const tlWrap = document.createElement('div');
+      tlWrap.className = 'timeline-wrap';
+      const tlOpts = { showMonth: !flat, showTag: (!byBrand && !hideTag) || sec === "메인 서비스 튜토리얼 영상", showLinkBtn: true, showNumber: SHOW_NUMBER_SECTIONS.includes(sec), sectionName: sec };
+      if(byBrand){
+        tlOpts.groupByBrand = true;
+      } else if(flat){
+        tlOpts.groupBadge = PROJECT_BADGE[sec] || { label: sec.slice(0,2), color: "#5B6B63" };
+        tlOpts.linkLabel = "유튜브";
+      }
+      tlWrap.appendChild(buildTimelineEl(items, tlOpts));
+      secEl.appendChild(tlWrap);
+      resultsEl.appendChild(secEl);
+      return;
+    }
+
+    const rowsEl = document.createElement('div');
+    rowsEl.className = SCROLL_SECTIONS.includes(sec) ? 'rows rows-scroll' : 'rows';
+
+    if(BRAND_SPLIT_SECTIONS.includes(sec)){
+      const present = BRAND_ORDER.filter(b => items.some(d => d.brand === b));
+      const others = [...new Set(items.map(d => d.brand))].filter(b => !BRAND_ORDER.includes(b));
+      [...present, ...others].forEach(brand => {
+        const group = items.filter(d => d.brand === brand);
+        if(group.length === 0) return;
+        const bc = BRAND_COLOR[brand] || "#5B6B63";
+        const head = document.createElement('div');
+        head.className = 'brand-head';
+        head.style.setProperty('--bc', bc);
+        head.innerHTML = `<span class="brand-dot" style="background:${bc}"></span><span>${esc(brand)}</span><span class="n">${group.length}개</span>`;
+        rowsEl.appendChild(head);
+        group.forEach((d, i) => rowsEl.appendChild(buildRowEl(d, { dotByBrand: true, index: i + 1 })));
+      });
+    } else {
+      items.forEach((d, i) => rowsEl.appendChild(buildRowEl(d, { index: i + 1 })));
+    }
+
+    secEl.appendChild(rowsEl);
+    resultsEl.appendChild(secEl);
+  });
+}
+
+function populateFilters(){
+  const scoped = statAllMode ? ALL_DATA : ALL_DATA.filter(d => SECTION_TO_TAB[d.section] === activeTab);
+  const sections = [...new Set(scoped.map(d => d.section))];
+  const brands = [...new Set(scoped.map(d => d.brand))].filter(Boolean);
+  const statuses = [...new Set(scoped.map(d => d.status || "__UNSET__"))];
+
+  const fSection = document.getElementById('fSection');
+  fSection.innerHTML = '<option value="">전체 분류</option>';
+  sections.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; fSection.appendChild(o); });
+
+  const fBrand = document.getElementById('fBrand');
+  fBrand.innerHTML = '<option value="">전체 브랜드</option>';
+  brands.forEach(b => { const o = document.createElement('option'); o.value = b; o.textContent = b; fBrand.appendChild(o); });
+
+  const fStatus = document.getElementById('fStatus');
+  fStatus.innerHTML = '<option value="">전체 상태</option>';
+  statuses.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s === "__UNSET__" ? "미정" : s; fStatus.appendChild(o); });
+}
+
+function renderTabs(){
+  const bar = document.getElementById('tabBar');
+  bar.innerHTML = "";
+  TAB_GROUPS.forEach(t => {
+    const n = ALL_DATA.filter(d => SECTION_TO_TAB[d.section] === t.id).length;
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (!statAllMode && t.id === activeTab ? ' active' : '');
+    btn.innerHTML = `${esc(t.label)}<span class="cnt">${n}</span>`;
+    btn.addEventListener('click', () => {
+      activeTab = t.id;
+      statAllMode = false;
+      document.getElementById('q').value = "";
+      renderTabs();
+      populateFilters();
+      renderStats();
+      render();
+    });
+    bar.appendChild(btn);
+  });
+}
+
+function renderStats(){
+  const total = ALL_DATA.length;
+  const counts = {};
+  ALL_DATA.forEach(d => { const k = d.status || "미정"; counts[k] = (counts[k]||0) + 1; });
+  const order = ["게시중","게시전","제작중","게시중단","미정"];
+  const valueOf = k => (k === "미정" ? "__UNSET__" : k);
+  const currentStatus = document.getElementById('fStatus') ? document.getElementById('fStatus').value : "";
+
+  const statRow = document.getElementById('statRow');
+  statRow.innerHTML = "";
+
+  const totalActive = statAllMode && currentStatus === "";
+  const totalCard = document.createElement('div');
+  totalCard.className = 'stat clickable' + (totalActive ? ' active' : '');
+  totalCard.innerHTML = `<b>${total}</b><span>전체 영상</span>`;
+  totalCard.addEventListener('click', () => {
+    statAllMode = true;
+    populateFilters();
+    document.getElementById('fStatus').value = "";
+    document.getElementById('fSection').value = "";
+    document.getElementById('fBrand').value = "";
+    document.getElementById('q').value = "";
+    renderTabs();
+    renderStats();
+    render();
+  });
+  statRow.appendChild(totalCard);
+
+  order.filter(k => counts[k]).forEach(k => {
+    const v = valueOf(k);
+    const active = statAllMode && currentStatus === v;
+    const dataKey = k === "게시중" ? "on" : k === "게시중단" ? "off" : k === "미정" ? "unset" : "pending";
+    const card = document.createElement('div');
+    card.className = 'stat clickable' + (active ? ' active' : '');
+    card.setAttribute('data-k', dataKey);
+    card.innerHTML = `<b>${counts[k]}</b><span>${esc(k)}</span>`;
+    card.addEventListener('click', () => {
+      statAllMode = true;
+      populateFilters();
+      document.getElementById('fStatus').value = v;
+      document.getElementById('fSection').value = "";
+      document.getElementById('fBrand').value = "";
+      document.getElementById('q').value = "";
+      renderTabs();
+      renderStats();
+      render();
+    });
+    statRow.appendChild(card);
+  });
+}
+
+document.getElementById('syncDate').textContent = SYNC_DATE;
+renderTabs();
+populateFilters();
+renderStats();
+render();
+['q','fSection','fBrand','fStatus'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => { renderStats(); render(); });
+  document.getElementById(id).addEventListener('change', () => { renderStats(); render(); });
+});
+
+// ---- 영상 추가 / 실시간 공유 저장 (db capability) ----
+const SECTION_OPTIONS = [];
+TAB_GROUPS.forEach(t => t.sections.forEach(s => SECTION_OPTIONS.push(s)));
+const BRAND_OPTIONS = Object.keys(BRAND_COLOR);
+const PLATFORM_OPTIONS = Object.keys(PLATFORM_LABEL);
+const STATUS_OPTIONS = ["게시중", "게시전", "제작중", "게시중단"];
+
+function categoryForSection(sec){
+  const found = RAW_DATA.find(d => d.section === sec);
+  return found ? found.category : sec;
+}
+
+function fillSelect(id, options, placeholder){
+  const el = document.getElementById(id);
+  el.innerHTML = (placeholder ? `<option value="">${esc(placeholder)}</option>` : "") +
+    options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join("");
+}
+fillSelect('f_section', SECTION_OPTIONS, "선택");
+fillSelect('f_brand', BRAND_OPTIONS, "선택");
+fillSelect('f_platform', PLATFORM_OPTIONS, "");
+fillSelect('f_status', STATUS_OPTIONS, "");
+
+const addModalOverlay = document.getElementById('addModalOverlay');
+const addForm = document.getElementById('addForm');
+const addFormError = document.getElementById('addFormError');
+
+function openAddModal(presetSection, presetBrand){
+  addForm.reset();
+  addFormError.style.display = "none";
+  if(presetSection) document.getElementById('f_section').value = presetSection;
+  if(presetBrand) document.getElementById('f_brand').value = presetBrand;
+  addModalOverlay.style.display = "flex";
+}
+function closeAddModal(){
+  addModalOverlay.style.display = "none";
+}
+document.getElementById('addModalClose').addEventListener('click', closeAddModal);
+document.getElementById('addCancelBtn').addEventListener('click', closeAddModal);
+addModalOverlay.addEventListener('click', e => { if(e.target === addModalOverlay) closeAddModal(); });
+
+let dbHandle = null;
+
+addForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  addFormError.style.display = "none";
+  const section = document.getElementById('f_section').value;
+  const brand = document.getElementById('f_brand').value;
+  const name = document.getElementById('f_name').value.trim();
+  if(!section || !brand || !name){
+    addFormError.textContent = "분류, 브랜드, 영상 제목은 필수예요.";
+    addFormError.style.display = "block";
+    return;
+  }
+  if(!dbHandle){
+    addFormError.textContent = "저장 기능을 사용할 수 없어요. 잠시 후 다시 시도해주세요.";
+    addFormError.style.display = "block";
+    return;
+  }
+  const submitBtn = document.getElementById('addSubmitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = "추가 중...";
+  try{
+    await dbHandle.collection('videos').add({
+      section: section,
+      category: categoryForSection(section),
+      brand: brand,
+      name: name,
+      platform: document.getElementById('f_platform').value || "",
+      status: document.getElementById('f_status').value || "",
+      date: document.getElementById('f_date').value ? document.getElementById('f_date').value.slice(2).replace(/-/g, ".") : "",
+      link: document.getElementById('f_link').value.trim(),
+      backup: document.getElementById('f_backup').value.trim(),
+      note: document.getElementById('f_note').value.trim(),
+      createdAt: Date.now()
+    });
+    closeAddModal();
+  }catch(err){
+    addFormError.textContent = "저장에 실패했어요. 다시 시도해주세요.";
+    addFormError.style.display = "block";
+  }
+  submitBtn.disabled = false;
+  submitBtn.textContent = "추가하기";
+});
+
+// "+" 카드 클릭 → 해당 분류/브랜드가 미리 채워진 채로 모달 오픈 (이벤트 위임)
+// 삭제 버튼도 같은 위임 리스너에서 처리
+let tapTipEl = null;
+let tapTipTimer = null;
+function showTapTip(target, text){
+  if(!text) return;
+  if(!tapTipEl){
+    tapTipEl = document.createElement('div');
+    tapTipEl.className = 'tap-tip';
+    document.body.appendChild(tapTipEl);
+  }
+  clearTimeout(tapTipTimer);
+  tapTipEl.textContent = text;
+  tapTipEl.style.left = "0px";
+  tapTipEl.style.top = "-9999px";
+  tapTipEl.style.bottom = "auto";
+  tapTipEl.classList.remove('show');
+  const r = target.getBoundingClientRect();
+  requestAnimationFrame(() => {
+    const tw = tapTipEl.offsetWidth;
+    let left = r.left + r.width / 2;
+    const minLeft = tw / 2 + 8;
+    const maxLeft = window.innerWidth - tw / 2 - 8;
+    left = Math.max(minLeft, Math.min(maxLeft, left));
+    tapTipEl.style.left = left + 'px';
+    tapTipEl.style.top = 'auto';
+    tapTipEl.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+    tapTipEl.classList.add('show');
+  });
+  tapTipTimer = setTimeout(() => { tapTipEl.classList.remove('show'); }, 2200);
+}
+document.addEventListener('click', (e) => {
+  if(!e.target.closest('.tap-tip') && (!tapTipEl || !e.target.closest('.disabled'))){
+    if(tapTipEl) tapTipEl.classList.remove('show');
+  }
+});
+
+document.getElementById('results').addEventListener('click', async (e) => {
+  const disabledBtn = e.target.closest('a.disabled');
+  if(disabledBtn){
+    e.preventDefault();
+    showTapTip(disabledBtn, disabledBtn.getAttribute('data-tip'));
+    return;
+  }
+  const addCard = e.target.closest('.add-card-btn');
+  if(addCard){
+    openAddModal(addCard.getAttribute('data-section') || "", addCard.getAttribute('data-brand') || "");
+    return;
+  }
+  const delBtn = e.target.closest('.del-btn');
+  if(delBtn){
+    const id = delBtn.getAttribute('data-id');
+    if(!id || !dbHandle) return;
+    if(!confirm("이 영상을 삭제할까요?")) return;
+    try{
+      await dbHandle.collection('videos').doc(id).delete();
+    }catch(err){
+      alert("삭제에 실패했어요. 다시 시도해주세요.");
+    }
+  }
+});
+
+async function initDb(){
+  if(!window.claude || typeof window.claude.use !== "function") return;
+  try{
+    const db = await window.claude.use('db');
+    if(!db) return;
+    dbHandle = db;
+    dbReady = true;
+    db.collection('videos').onSnapshot(
+      snap => {
+        DB_ITEMS = snap.docs.map(docSnap => {
+          const data = docSnap.data() || {};
+          return Object.assign({}, data, { _dbId: docSnap.id });
+        });
+        recomputeAllData();
+        renderTabs();
+        populateFilters();
+        renderStats();
+        render();
+      },
+      () => { /* 구독 오류: 조용히 무시, 시트 데이터는 계속 정상 표시 */ }
+    );
+  }catch(err){ /* db 미지원 뷰: + 카드 숨김 유지 */ }
+}
+initDb();
+</script>
+</body>
+</html>
