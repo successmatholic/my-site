@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매쓰홀릭 사업본부 · 고객성공팀 온보딩</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  :root{
+    --navy: #0F1F3D;
+    --navy-soft: #1A2E52;
+    --blue: #3D64F4;
+    --blue-soft: #EAEFFF;
+    --orange: #FF8A3D;
+    --orange-soft: #FFF1E4;
+    --green: #2FAE66;
+    --green-soft: #E7F6ED;
+    --ink: #1B2130;
+    --ink-sub: #6B7280;
+    --line: #E6E8F0;
+    --bg: #F5F6FA;
+    --card: #FFFFFF;
+    --radius: 14px;
+    --radius-sm: 9px;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  button{ font-family: inherit; }
+  a{ color: var(--blue); }
+  :focus-visible{ outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  .app{
+    display:flex;
+    min-height: 100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    width: 266px;
+    flex-shrink:0;
+    background: var(--navy);
+    color: #fff;
+    padding: 28px 18px;
+    display:flex;
+    flex-direction: column;
+    position: sticky;
+    top:0;
+    height: 100vh;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding: 4px 6px 22px;
+  }
+  .brand-mark{
+    width:34px; height:34px; border-radius:9px;
+    background: linear-gradient(135deg, var(--blue), #6C8BFF);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:15px; color:#fff;
+    flex-shrink:0;
+  }
+  .brand-text .t1{ font-size:14px; font-weight:700; letter-spacing:.2px; }
+  .brand-text .t2{ font-size:11.5px; color:#9AA6C7; margin-top:1px; }
+
+  .nav{
+    display:flex; flex-direction:column; gap:2px;
+    flex:1;
+    overflow-y:auto;
+  }
+  .nav-group-label{
+    font-size:11px; color:#7C88AC; font-weight:600;
+    letter-spacing:.3px; margin: 16px 10px 6px;
+  }
+  .nav-group-label:first-child{ margin-top:4px; }
+  .nav-btn{
+    display:flex; align-items:center; gap:10px;
+    width:100%;
+    background:transparent; border:none; color:#C7CEE6;
+    padding:10px 10px; border-radius: var(--radius-sm);
+    font-size:13.5px; font-weight:500; text-align:left;
+    cursor:pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .nav-btn svg{ width:17px; height:17px; flex-shrink:0; opacity:.85; }
+  .nav-btn:hover{ background: rgba(255,255,255,.06); color:#fff; }
+  .nav-btn.active{ background: rgba(255,255,255,.12); color:#fff; }
+  .nav-btn .badge{
+    margin-left:auto; font-size:10.5px; color:#8FA0CE;
+    background: rgba(255,255,255,.08); padding:1px 6px; border-radius:20px;
+    font-variant-numeric: tabular-nums;
+  }
+  .nav-btn.done .badge{ background: rgba(47,174,102,.25); color:#8FE3B0; }
+
+  .sidebar-progress{
+    margin-top:16px; padding:14px 12px;
+    background: rgba(255,255,255,.06);
+    border-radius: var(--radius-sm);
+  }
+  .sidebar-progress .label{ font-size:11.5px; color:#9AA6C7; display:flex; justify-content:space-between; margin-bottom:8px;}
+  .sidebar-progress .bar-track{ height:6px; border-radius:6px; background: rgba(255,255,255,.12); overflow:hidden; }
+  .sidebar-progress .bar-fill{ height:100%; background: linear-gradient(90deg, var(--blue), #7FE3B4); border-radius:6px; transition: width .3s ease; width:0%; }
+
+  /* ---------- Main ---------- */
+  .content{
+    flex:1;
+    padding: 40px 48px 80px;
+    max-width: 980px;
+  }
+  .panel{ display:none; animation: fade .25s ease; }
+  .panel.active{ display:block; }
+  @keyframes fade{ from{ opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
+
+  .eyebrow{ font-size:13px; color: var(--blue); font-weight:600; margin-bottom:6px; }
+  h1.page-title{ font-size:28px; font-weight:800; margin:0 0 6px; letter-spacing:-.3px; }
+  p.page-desc{ color: var(--ink-sub); font-size:15px; margin:0 0 30px; max-width: 640px; }
+
+  .card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+  .card + .card{ margin-top:16px; }
+  .card + .grid, .card + .grid-2, .card + .grid-3{ margin-top:16px; }
+  .grid{ display:grid; gap:16px; align-items:stretch; }
+  .grid-2{ display:grid; gap:16px; grid-template-columns: 1fr 1fr; align-items:stretch; }
+  .grid-3{ display:grid; gap:16px; grid-template-columns: repeat(3, 1fr); align-items:stretch; }
+  /* Cards placed inside a grid row use the grid's own gap for spacing —
+     the generic sibling margin above would otherwise push the 2nd+ card
+     down and out of alignment with its row neighbors. */
+  .grid > .card + .card,
+  .grid-2 > .card + .card,
+  .grid-3 > .card + .card{ margin-top:0; }
+
+  /* Home */
+  .hero-card{
+    background: linear-gradient(135deg, var(--navy) 0%, #1E3768 100%);
+    color:#fff; border-radius: var(--radius); padding: 30px 30px;
+    margin-bottom: 20px;
+  }
+  .hero-card h1{ font-size:23px; margin:0 0 8px; font-weight:800; }
+  .hero-card p{ color:#C4CEEE; font-size:14px; margin:0 0 18px; max-width:520px; }
+  .hero-progress-row{ display:flex; align-items:center; gap:16px; }
+  .hero-ring{ position:relative; width:64px; height:64px; flex-shrink:0; }
+  .hero-ring svg{ transform: rotate(-90deg); }
+  .hero-ring .pct{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+  .hero-progress-text{ font-size:13px; color:#C4CEEE; }
+  .hero-progress-text b{ color:#fff; }
+
+  .quicklinks{ display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:4px; }
+  .quicklink{
+    display:flex; flex-direction:column; gap:4px;
+    padding:14px 14px; background:#fff; border:1px solid var(--line);
+    border-radius: var(--radius-sm); text-decoration:none; color: var(--ink);
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .quicklink:hover{ border-color: var(--blue); transform: translateY(-1px); }
+  .quicklink .ql-title{ font-size:13.5px; font-weight:700; }
+  .quicklink .ql-sub{ font-size:11.5px; color: var(--ink-sub); }
+
+  .role-switch{
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    background:#fff; border:1px solid var(--line); border-radius: var(--radius);
+    padding:14px 18px; margin-bottom:20px;
+  }
+  .role-switch.unset{ border-color: var(--orange); background: var(--orange-soft); }
+  .role-switch-label{ font-size:13.5px; font-weight:600; color: var(--ink); }
+  .role-switch.unset .role-switch-label{ color:#8A4B10; }
+  .role-switch-btns{ display:flex; gap:8px; margin-left:auto; flex-wrap:wrap; }
+  .role-opt{
+    padding:7px 15px; border-radius:20px; border:1px solid var(--line); background:#fff;
+    font-size:13px; font-weight:600; color: var(--ink-sub); cursor:pointer;
+  }
+  .role-opt:hover{ border-color: var(--blue); color: var(--blue); }
+  .role-opt.active{ background: var(--navy); border-color: var(--navy); color:#fff; }
+  .section-title{ font-size:16px; font-weight:700; margin: 28px 0 12px; display:flex; align-items:center; gap:8px;}
+  .section-title:first-of-type{ margin-top:0; }
+
+  .checklist-group{ margin-bottom: 6px; }
+  .checklist-group h3{ font-size:13px; color: var(--ink-sub); font-weight:700; margin: 18px 0 8px; text-transform:none; }
+  .checklist-group h3 .grp-tag{
+    display:inline-block; margin-left:7px; font-size:10.5px; font-weight:700;
+    color: var(--orange); background: var(--orange-soft);
+    padding:2px 8px; border-radius:20px; vertical-align:1px;
+  }
+  .check-item{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:10px 12px; border-radius: var(--radius-sm);
+    transition: background .15s ease;
+  }
+  .check-item:hover{ background: #F8F9FC; }
+  .check-item input[type=checkbox]{
+    width:18px; height:18px; margin-top:2px; accent-color: var(--blue); cursor:pointer; flex-shrink:0;
+  }
+  .check-item label{ font-size:14px; cursor:pointer; }
+  .check-note{ display:block; font-size:12px; color: var(--ink-sub); margin-top:3px; }
+  .check-item.checked label{ color: var(--ink-sub); text-decoration: line-through; }
+
+  /* Mission */
+  .stat-strip{ display:grid; grid-template-columns: repeat(6,1fr); gap:10px; margin: 18px 0 8px; }
+  .stat-box{ background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px 10px; text-align:center; }
+  .stat-box .num{ font-size:18px; font-weight:800; color: var(--blue); }
+  .stat-box .lab{ font-size:11px; color: var(--ink-sub); margin-top:2px; }
+
+  .quote-block{
+    border-left: 3px solid var(--blue);
+    background: var(--blue-soft);
+    padding: 16px 20px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 14.5px; color: var(--navy); margin: 18px 0;
+    font-style: normal;
+  }
+
+  .story-card{ position:relative; padding-top:30px; }
+  .story-num{
+    position:absolute; top:-14px; left:22px;
+    background: var(--navy); color:#fff; font-size:11.5px; font-weight:800;
+    padding:5px 13px; border-radius:20px; letter-spacing:.5px;
+  }
+  .story-card .section-title{ margin-top:0; }
+  .story-card p{ font-size:14.5px; margin:0; }
+  .story-card + .story-card{ margin-top:18px; }
+  .story-card.feature-dark{
+    background: linear-gradient(135deg, var(--navy) 0%, #1E3768 100%);
+    border-color: var(--navy); color:#fff;
+  }
+  .story-card.feature-dark .section-title{ color:#fff; }
+  .story-card.feature-dark p{ color:#C4CEEE; }
+  .story-card.feature-dark .story-num{ background: var(--orange); color:#3A1E00; }
+  .crisis-item{ display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .crisis-item:last-child{ border-bottom:none; }
+  .crisis-item .icon{ font-size:18px; flex-shrink:0; width:26px; text-align:center; }
+  .crisis-item b{ display:block; font-size:14px; margin-bottom:2px; }
+  .crisis-item span{ font-size:13.5px; color: var(--ink-sub); }
+
+  .history-row{ display:flex; overflow-x:auto; gap:0; margin: 16px 0 4px; padding-bottom:4px;}
+  .history-item{ min-width:120px; padding: 0 16px 0 0; position:relative; }
+  .history-item:not(:last-child)::after{
+    content:''; position:absolute; top:6px; right:0; width:16px; height:1px; background: var(--line);
+  }
+  .history-item .yr{ font-size:12px; font-weight:700; color: var(--blue); }
+  .history-item .yr::before{ content:'●'; font-size:6px; margin-right:6px; color: var(--blue); vertical-align: middle;}
+  .history-item .ev{ font-size:12.5px; color: var(--ink-sub); margin-top:4px; }
+
+  .direction-item{ display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--line); }
+  .direction-item:last-child{ border-bottom:none; }
+  .direction-item .n{ font-size:13px; font-weight:800; color: var(--orange); flex-shrink:0; width:22px; }
+  .direction-item .txt b{ display:block; font-size:14px; margin-bottom:2px; }
+  .direction-item .txt span{ font-size:13px; color: var(--ink-sub); }
+
+  /* Org chart */
+  .org-chart{ display:flex; flex-direction:column; align-items:center; gap:10px; padding: 12px 0 6px; }
+  .org-node{ padding:10px 20px; border-radius:10px; font-size:13px; font-weight:700; }
+  .org-node.company{ background: var(--navy); color:#fff; }
+  .org-connector{ width:1px; height:16px; background: var(--line); }
+  .org-row{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .org-team{
+    padding:14px 16px; border-radius: var(--radius-sm); border:1px solid var(--line);
+    background:#fff; min-width:140px; text-align:center;
+  }
+  .org-team .name{ font-size:13.5px; font-weight:700; }
+  .org-team .role{ font-size:11.5px; color: var(--ink-sub); margin-top:2px; }
+  .org-team .lead{ font-size:11px; color: var(--ink-sub); margin-top:8px; border-top:1px dashed var(--line); padding-top:6px; }
+  .org-team.highlight{ background: var(--blue-soft); border-color: var(--blue); }
+  .org-team.highlight .name{ color: var(--navy); }
+
+  .bullet-card{ display:flex; gap:12px; padding: 14px 0; border-bottom:1px solid var(--line); }
+  .bullet-card:last-child{ border-bottom:none; }
+  .bullet-card .dot{ width:6px; height:6px; border-radius:50%; background: var(--blue); margin-top:8px; flex-shrink:0; }
+  .bullet-card p{ margin:0; font-size:14.5px; }
+
+  .task-item{ display:flex; gap:12px; padding:14px 0; border-bottom:1px solid var(--line); }
+  .task-item:last-child{ border-bottom:none; }
+  .task-item .n{ font-size:13px; font-weight:800; color: var(--blue); flex-shrink:0; width:22px; }
+  .task-item .txt b{ display:block; font-size:14.5px; margin-bottom:7px; }
+  .task-tags{ display:flex; flex-wrap:wrap; gap:6px; }
+  .task-tag{ font-size:11px; padding:3px 9px; border-radius:20px; background: var(--blue-soft); color: var(--blue); font-weight:600; }
+
+  /* Members */
+  .member-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+  .member-card{ background:#fff; border:1px solid var(--line); border-radius: var(--radius); padding:20px; position:relative; }
+  .welcome-badge{
+    position:absolute; top:-11px; right:16px; background: var(--orange); color:#fff;
+    font-size:11px; font-weight:800; padding:4px 11px; border-radius:20px;
+  }
+  .member-avatar{
+    width:44px; height:44px; border-radius:50%; background: var(--blue-soft); color: var(--blue);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:15px; margin-bottom:12px;
+  }
+  .member-name{ font-size:15px; font-weight:700; }
+  .member-role{ font-size:11.5px; color: var(--blue); font-weight:600; margin: 3px 0 10px; }
+  .member-desc{ font-size:13px; color: var(--ink-sub); }
+
+  /* Timeline tabs */
+  .tabs{ display:flex; gap:6px; margin-bottom:18px; flex-wrap:wrap; }
+  .tab-btn{
+    padding:8px 16px; border-radius: 20px; border:1px solid var(--line); background:#fff;
+    font-size:13.5px; font-weight:600; color: var(--ink-sub); cursor:pointer;
+  }
+  .tab-btn.active{ background: var(--navy); border-color: var(--navy); color:#fff; }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+  .tab-panel .desc{ font-size:14.5px; color: var(--ink); margin-bottom: 16px; }
+
+  /* Culture */
+  .culture-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+  .culture-card{ background:#fff; border:1px solid var(--line); border-radius: var(--radius); padding:20px; position:relative; overflow:hidden; }
+  .culture-card.accent::before{ content:''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--orange); }
+  .culture-card .num{ font-size:12px; font-weight:800; color: var(--orange); margin-bottom:10px; }
+  .culture-card h4{ font-size:15px; margin:0 0 8px; }
+  .culture-card p{ font-size:13px; color: var(--ink-sub); margin:0; }
+
+  /* Knowledge cards */
+  .know-card h4{ font-size:15px; margin:0 0 10px; display:flex; align-items:center; gap:8px;}
+  .know-card ul{ margin:8px 0 0; padding-left:18px; font-size:13.5px; color: var(--ink); }
+  .know-card li{ margin-bottom:6px; }
+  .know-card ul::marker, .know-card li::marker{ color: var(--blue); }
+
+  /* Readable bullet lists (roles panel, mission lists) */
+  .info-list{ list-style:none; margin:0; padding:0; }
+  .info-list li{ display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:14px; line-height:1.55; }
+  .info-list li:last-child{ border-bottom:none; }
+  .info-list li .ic{
+    flex-shrink:0; width:19px; height:19px; margin-top:2px; border-radius:50%;
+    background: var(--blue-soft); color: var(--blue); font-size:10.5px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .info-list.two-col{ columns:2; column-gap:28px; }
+  .info-list.two-col li{ break-inside: avoid; }
+  @media (max-width: 700px){ .info-list.two-col{ columns:1; } }
+
+  .role-card{ position:relative; overflow:hidden; }
+  .role-card::before{ content:''; position:absolute; top:0; left:0; right:0; height:4px; background: var(--blue); }
+  .role-card.role-b::before{ background: var(--orange); }
+  .role-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .role-icon{
+    width:38px; height:38px; border-radius:10px; background: var(--blue-soft);
+    display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0;
+  }
+  .role-card.role-b .role-icon{ background: var(--orange-soft); }
+  .role-title{ font-size:15px; font-weight:800; }
+  .role-sub{ font-size:12.5px; color: var(--ink-sub); margin-top:1px; }
+
+  /* Curriculum day meta + mission callout */
+  .day-meta-title{ font-size:17px; font-weight:800; margin-bottom:9px; }
+  .day-meta-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .day-chip{ font-size:12px; font-weight:700; background: var(--blue-soft); color: var(--navy); padding:5px 12px; border-radius:20px; white-space:nowrap; }
+  .day-summary{ font-size:14px; color: var(--ink-sub); margin:0 0 18px; padding-bottom:18px; border-bottom:1px solid var(--line); }
+
+  .video-list{ list-style:none; margin:0; padding:0; }
+  .video-list li{ display:flex; align-items:center; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px; flex-wrap:wrap; }
+  .video-list li:last-child{ border-bottom:none; }
+  .video-list li a{ color: var(--ink); font-weight:600; text-decoration:none; }
+  .video-list li a:hover{ color: var(--blue); text-decoration:underline; }
+  .video-list li a::before{ content:'▶'; font-size:9px; color: var(--blue); margin-right:7px; }
+
+  .mission-box{ background: var(--orange-soft); border:1px solid #FFDAB2; border-radius: var(--radius); padding:18px 20px; margin-top:16px; }
+  .mission-box h4{ margin:0 0 10px; font-size:14.5px; color:#8A4B10; display:flex; align-items:center; gap:8px; }
+  .mission-box .info-list li{ border-bottom-color:#FFE3C2; font-size:13.5px; color:#6b3d0c; }
+  .mission-box .info-list li .ic{ background:#FFDAB2; color:#8A4B10; }
+  .note-box{
+    margin-top:12px; padding:12px 14px; background: var(--orange-soft); border-radius: var(--radius-sm);
+    font-size:12.5px; color:#8A4B10; display:flex; gap:8px; align-items:flex-start;
+  }
+
+  /* FAQ */
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-item:last-child{ border-bottom:none; }
+  .faq-q{
+    width:100%; text-align:left; background:none; border:none; padding:16px 0;
+    font-size:14.5px; font-weight:700; color: var(--ink); cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .faq-q .chev{ transition: transform .2s ease; color: var(--ink-sub); }
+  .faq-item.open .faq-q .chev{ transform: rotate(45deg); }
+  .faq-a{ display:none; padding: 0 0 16px; font-size:13.5px; color: var(--ink-sub); }
+  .faq-item.open .faq-a{ display:block; }
+
+  /* Contact */
+  .contact-table{ width:100%; border-collapse: collapse; }
+  .contact-table th{ text-align:left; font-size:11.5px; color: var(--ink-sub); font-weight:600; padding: 0 10px 10px; border-bottom:1px solid var(--line); }
+  .contact-table td{ font-size:13.5px; padding: 12px 10px; border-bottom:1px solid var(--line); }
+  .contact-table tr:last-child td{ border-bottom:none; }
+  .tag{ display:inline-block; font-size:11px; padding:2px 8px; border-radius:20px; background: var(--blue-soft); color: var(--blue); font-weight:600; }
+
+  /* Mobile */
+  .sidebar-toggle{ display:none; }
+  @media (max-width: 880px){
+    .app{ flex-direction:column; }
+    .sidebar{
+      width:100%; height:auto; position:sticky; top:0; z-index:20;
+      flex-direction:row; align-items:center; padding: 12px 14px; gap:10px;
+    }
+    .brand{ padding:0; flex-shrink:0; }
+    .sidebar-progress, .nav-group-label{ display:none; }
+    .nav{ flex-direction:row; overflow-x:auto; gap:4px; flex:1; }
+    .nav-btn{ white-space:nowrap; width:auto; }
+    .nav-btn .badge{ display:none; }
+    .content{ padding: 24px 18px 60px; }
+    .grid-2, .grid-3, .member-grid, .culture-grid, .quicklinks, .stat-strip{ grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px){
+    .grid-2, .grid-3, .member-grid, .culture-grid, .quicklinks, .stat-strip{ grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div class="brand-text">
+        <div class="t1">MATHOLIC ONBOARDING</div>
+        <div class="t2">고객성공팀 신규 입사자 가이드</div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-group-label">시작하기</div>
+      <button class="nav-btn active" data-target="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+        <span>홈</span>
+      </button>
+
+      <div class="nav-group-label">회사 알아가기</div>
+      <button class="nav-btn" data-target="mission">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z"/></svg>
+        <span>미션과 비전</span>
+      </button>
+      <button class="nav-btn" data-target="team">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="8" height="10" rx="1"/><rect x="13" y="10" width="8" height="10" rx="1"/></svg>
+        <span>고객성공팀 소개</span>
+      </button>
+      <button class="nav-btn" data-target="members">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 3-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.8 14c2.9.4 5.2 2.6 5.2 6"/></svg>
+        <span>우리 팀 소개</span>
+      </button>
+      <button class="nav-btn" data-target="roles">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        <span>업무 소개</span>
+      </button>
+
+      <div class="nav-group-label">적응하기</div>
+      <button class="nav-btn" data-target="timeline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span>한 달 타임라인</span>
+        <span class="badge" id="badge-timeline">0/10</span>
+      </button>
+      <button class="nav-btn" data-target="curriculum">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        <span>교육 커리큘럼 (5일)</span>
+      </button>
+      <button class="nav-btn" data-target="culture">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6c0 5-8.8 10.6-8.8 10.6S3.2 13.6 3.2 8.6a4.6 4.6 0 0 1 8.8-1.9A4.6 4.6 0 0 1 20.8 8.6Z"/></svg>
+        <span>사내 문화</span>
+      </button>
+
+      <div class="nav-group-label">도움받기</div>
+      <button class="nav-btn" data-target="faq">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.5 2.5 0 0 1 4.9.8c0 1.7-2.4 2-2.4 3.5"/><path d="M12 17.2h.01"/></svg>
+        <span>자주 묻는 질문</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-progress">
+      <div class="label"><span>온보딩 진행률</span><span id="sidebar-pct">0%</span></div>
+      <div class="bar-track"><div class="bar-fill" id="sidebar-bar"></div></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="content">
+
+    <!-- ===================== HOME ===================== -->
+    <section class="panel active" id="panel-home">
+      <div class="hero-card">
+        <h1>환영합니다. 매쓰홀릭 고객성공팀에 오신 것을 진심으로 환영해요</h1>
+        <p>이 페이지는 매쓰홀릭과 고객성공팀을 안내하는 온보딩 가이드예요.<br>회사와 팀을 이해하고 업무에 적응하는 데 필요한 내용을 순서대로 정리했습니다.<br>서두르지 않아도 괜찮으니 하나씩 천천히 확인해 주세요.</p>
+        <div class="hero-progress-row">
+          <div class="hero-ring">
+            <svg width="64" height="64" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="7"/>
+              <circle id="ring-fill" cx="32" cy="32" r="27" fill="none" stroke="#7FE3B4" stroke-width="7" stroke-linecap="round" stroke-dasharray="169.6" stroke-dashoffset="169.6"/>
+            </svg>
+            <div class="pct" id="ring-pct">0%</div>
+          </div>
+          <div class="hero-progress-text">전체 체크리스트 중 <b id="hero-done">0</b> / <b id="hero-total">0</b>개를 완료했어요.<br>왼쪽 사이드바에서 완료한 섹션도 확인할 수 있어요.</div>
+        </div>
+      </div>
+
+      <div class="role-switch unset" id="role-switch">
+        <div class="role-switch-label" id="role-switch-label">👤 내 직군을 선택하면, 해당되는 체크리스트만 보여드려요.</div>
+        <div class="role-switch-btns">
+          <button class="role-opt" data-role="manager">온보딩 매니저</button>
+          <button class="role-opt" data-role="creator">콘텐츠 크리에이터</button>
+        </div>
+      </div>
+
+      <div class="section-title">🔗 자주 쓰는 링크</div>
+      <div class="quicklinks">
+        <a class="quicklink" href="https://matholic.com" target="_blank" rel="noopener">
+          <span class="ql-title">회사 홈페이지</span><span class="ql-sub">matholic.com</span></a>
+        <a class="quicklink" href="https://blog.naver.com/ilovematholic" target="_blank" rel="noopener">
+          <span class="ql-title">회사 블로그</span><span class="ql-sub">naver blog</span></a>
+        <a class="quicklink" href="https://www.youtube.com/channel/UC0f2occwFdAosou2Ds29AUw" target="_blank" rel="noopener">
+          <span class="ql-title">회사 유튜브</span><span class="ql-sub">YouTube</span></a>
+        <a class="quicklink" href="https://hello-matholic.oopy.io/" target="_blank" rel="noopener">
+          <span class="ql-title">Hello 매쓰홀릭</span><span class="ql-sub">서비스 소개</span></a>
+        <a class="quicklink" href="https://drive.google.com/drive/folders/1uz4vHZYz5ss2VAJRUL9-kp0I-7bhHRxo?usp=sharing" target="_blank" rel="noopener">
+          <span class="ql-title">사업본부 드라이브</span><span class="ql-sub">Google Drive</span></a>
+        <a class="quicklink" href="https://drive.google.com/drive/u/0/folders/1hd8_mys4N2C5Isue-iGjS0DK8Y6vI06_" target="_blank" rel="noopener">
+          <span class="ql-title">고객성공팀 드라이브</span><span class="ql-sub">Google Drive</span></a>
+        <a class="quicklink" href="https://matholicpremium.netlify.app/videoarchivebuilder/" target="_blank" rel="noopener">
+          <span class="ql-title">매쓰홀릭 영상 아카이빙</span><span class="ql-sub">영상 자료 모음</span></a>
+        <a class="quicklink" href="https://quill-fruit-d43.notion.site/RAW-3e3531674e37803399c1dc9f7a34460a" target="_blank" rel="noopener">
+          <span class="ql-title">신규 입사자 교육 일정</span><span class="ql-sub">Notion</span></a>
+      </div>
+
+      <div class="section-title">✅ 온보딩 체크리스트</div>
+      <div class="card">
+        <div id="checklist-root"></div>
+      </div>
+    </section>
+
+    <!-- ===================== MISSION ===================== -->
+    <section class="panel" id="panel-mission">
+      <div class="eyebrow">01 · COMPANY</div>
+      <h1 class="page-title">우리는 왜 이 일을 하는가</h1>
+      <p class="page-desc">매쓰홀릭이 걸어온 길과, 앞으로 그리는 방향이에요. 오늘 하는 일이 회사의 큰 그림 어디쯤에 있는지 감을 잡는 데 도움이 될 거예요.</p>
+
+      <div class="card story-card">
+        <div class="story-num">01 · MISSION</div>
+        <div class="section-title">🎯 미션</div>
+        <p>몇 년 전까지 매쓰홀릭의 미션은 "누구나 수학을 쉽게 공부할 수 있게 한다"였어요. 하지만 지금은 그 미션이 조금 달라졌어요. 지금 우리에게 가장 중요한 미션은, 우리가 가진 다양한 제품(매쓰홀릭 프리미엄·라이트, 홀링, 글잼 등)을 통해 더 많은 교육 기관이 우리 서비스를 쉽게 쓰게 만들고, 그런 고객을 최대한 빠르게 많이 확보하는 것이에요. 이건 단순한 성장 목표가 아니라, 앞으로 다가올 큰 변화 속에서 우리가 살아남기 위한 <b>생존의 미션</b>이기도 해요.</p>
+      </div>
+
+      <div class="card story-card">
+        <div class="story-num">02 · VISION</div>
+        <div class="section-title">🧭 비전 — 우리가 그리는 것</div>
+        <p>압도적인 기술력으로 세상의 변화에 발맞춰, 교육 현장의 변화를 주도하는 기업이 되고 싶어요. 향후 몇 년 안에 이 시장을 확실히 장악하고, 지금보다 훨씬 강력하고 단단한 회사가 되는 것이 목표예요. 누군가에게 기대지 않고 홀로 설 수 있는 회사, 그리고 그 힘을 바탕으로 교육 이외의 영역까지도 넘볼 수 있는 유연한 회사. 그것이 우리가 그리는 매쓰홀릭의 모습이에요.</p>
+      </div>
+
+      <div class="card story-card">
+        <div class="story-num">03 · ORIGIN</div>
+        <div class="section-title">🌱 탄생 비화</div>
+        <p>매쓰홀릭은 초기 공동 창업자들의 경험에서 출발했어요. 창업 이전, 경상남도 산청군의 한 폐교를 인수해 만든 기숙형 공립학원 프로젝트에 참여했던 경험이 결정적이었어요. 그곳에서 "수업을 듣는 것"이 아니라 "스스로 공부하는 것"에 집중한 학습법을 실험했고, 이전까지 서울권 대학 진학생이 전무했던 지역에서 서울대·연세대·고려대 합격생을 배출하는 성과를 냈어요. 이 경험이 "학생 스스로 학습하게 만드는" 매쓰홀릭 서비스의 원형이 됐어요. 이후 지금의 공동 대표를 만나 제품 개발을 시작했고, 투자 없이 자체 수익으로 회사를 꾸려가며 학원가 유통망을 통해 첫 판매를 시작했어요.</p>
+        <div class="history-row">
+          <div class="history-item"><div class="yr">2011</div><div class="ev">㈜매쓰홀릭 설립</div></div>
+          <div class="history-item"><div class="yr">2012</div><div class="ev">기업부설연구소 설립</div></div>
+          <div class="history-item"><div class="yr">2021</div><div class="ev">매쓰홀릭T 런칭</div></div>
+          <div class="history-item"><div class="yr">2022</div><div class="ev">매쓰홀릭 라이트 런칭</div></div>
+          <div class="history-item"><div class="yr">2024</div><div class="ev">홀링 런칭</div></div>
+          <div class="history-item"><div class="yr">2025</div><div class="ev">글잼 런칭</div></div>
+        </div>
+      </div>
+
+      <div class="card story-card">
+        <div class="story-num">04 · CHALLENGES</div>
+        <div class="section-title">🌊 위기 극복 과정</div>
+        <div class="crisis-item"><div class="icon">🦠</div><div><b>코로나19</b><span>학원 운영이 언제 어떻게 될지 알 수 없던 시기, 자금 여유가 크지 않은 상태에서도 위기를 슬기롭게 넘겼어요.</span></div></div>
+        <div class="crisis-item"><div class="icon">🔄</div><div><b>유통 구조의 한계</b><span>온라인 마케팅의 걸림돌이 되던 기존 유통 구조를 개선하고 나서, 본격적인 온라인 영업·마케팅을 시작할 수 있었어요.</span></div></div>
+        <div class="crisis-item"><div class="icon">⚔️</div><div><b>경쟁 심화</b><span>한때 경쟁사가 시장을 사실상 장악한 상황을 뒤늦게 파악하고, '라이트' 제품을 내놓으며 직접 온라인·오프라인 영업에 뛰어들었어요. 그 결과 지금은 전체 신규 고객의 약 70%를 회사가 직접 확보하는 수준까지 올라왔어요.</span></div></div>
+      </div>
+
+      <div class="card story-card feature-dark">
+        <div class="story-num">05 · NOW</div>
+        <div class="section-title">🤖 지금 현재 상황</div>
+        <p>AI가 만드는 변화가 산업혁명급으로 빠르게 진행되고 있고, 그 속도는 예측하기 어려울 정도예요. 이 변화 속에서 매쓰홀릭은 스스로 성장할 수 있는 체력을 갖춘 단계에 거의 다다랐고, 다양한 제품 라인업(프리미엄·라이트·홀링·글잼)으로 시장을 넓혀가고 있어요. 동시에 콘텐츠 제작 비용이 AI 덕분에 크게 낮아지면서, 새로운 기회와 새로운 경쟁이 함께 열리고 있어요.</p>
+      </div>
+
+      <div class="card story-card">
+        <div class="story-num">06 · NEXT</div>
+        <div class="section-title">🚀 앞으로의 과제</div>
+        <div class="direction-item"><div class="n">01</div><div class="txt"><b>🤖 AI에게 맡길 일, 사람이 할 일 구분하기</b><span>단순하고 반복적인 업무는 AI에게 맡기고, 사람은 "AI에게 무엇을 시킬지 기획하는" 역할로 나아가요.</span></div></div>
+        <div class="direction-item"><div class="n">02</div><div class="txt"><b>더 많은 고객을 더 빠르게 확보하기</b><span>지금 이 순간에도 시장을 넓혀가는 속도가 우리의 경쟁력이에요.</span></div></div>
+        <div class="direction-item"><div class="n">03</div><div class="txt"><b>실패해도 다시 도전할 수 있는 체력 갖추기</b><span>앞으로의 여러 새로운 시도가 실패하더라도, 다시 도전할 수 있어야 해요.</span></div></div>
+        <div class="direction-item"><div class="n">04</div><div class="txt"><b>새로운 영역에 도전하기</b><span>과목 확장, 해외 진출 등 새로운 영역에도 적극적으로 도전해요.</span></div></div>
+      </div>
+
+      <div class="section-title" style="margin-top:30px;">🌟 우리가 함께하고 싶은 사람</div>
+      <div class="culture-grid">
+        <div class="culture-card"><div class="num">01</div><h4>주도적으로 확장하는 사람</h4><p>AI 시대에 스스로 업무를 기획하고, 그 범위를 능동적으로 넓혀가는 사람이에요.</p></div>
+        <div class="culture-card"><div class="num">02</div><h4>AI에게 일을 잘 시키는 사람</h4><p>AI를 도구로 능숙하게 다뤄, 더 큰 가치를 만들어내는 사람이에요.</p></div>
+        <div class="culture-card"><div class="num">03</div><h4>넓은 시야로 움직이는 사람</h4><p>넓은 시야를 가지고, 능동적으로 업무를 진행할 수 있는 사람이에요.</p></div>
+      </div>
+    </section>
+
+    <!-- ===================== TEAM (고객성공팀 소개) ===================== -->
+    <section class="panel" id="panel-team">
+      <div class="eyebrow">02 · ORGANIZATION</div>
+      <h1 class="page-title">고객성공팀은 어떤 팀인가요?</h1>
+      <p class="page-desc">매쓰홀릭은 3개의 본부로 움직이고, 그중 사업본부는 제품을 시장에 닿게 하는 역할을 해요. 고객성공팀은 그 안에서 우리 서비스가 고객의 일상에 잘 안착하도록 돕는 팀입니다.</p>
+
+      <div class="card">
+        <div class="org-chart">
+          <div class="org-node company">㈜ 매쓰홀릭</div>
+          <div class="org-connector"></div>
+          <div class="org-row">
+            <div class="org-team"><div class="name">개발 연구소</div></div>
+            <div class="org-team"><div class="name">콘텐츠 연구소</div></div>
+            <div class="org-team highlight"><div class="name">사업본부</div><div class="role">— Our Home —</div></div>
+          </div>
+          <div class="org-connector"></div>
+          <div class="org-row">
+            <div class="org-team"><div class="name">비즈니스성장팀</div><div class="role">영업</div><div class="lead">부서장 · 신승</div></div>
+            <div class="org-team"><div class="name">세일즈기획팀</div><div class="role">영업 / 행사기획 / 마케팅</div><div class="lead">부서장 · 유인진</div></div>
+            <div class="org-team highlight"><div class="name">고객성공팀</div><div class="role">고객 온보딩 / 활용성 강화 / 콘텐츠 기획 및 제작</div><div class="lead">부서장 · 김지은</div></div>
+            <div class="org-team"><div class="name">고객만족팀</div><div class="role">고객 지원</div><div class="lead">부서장 · 유우석</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">고객성공팀은 무슨 일을 하나요?</div>
+      <div class="card">
+        <p style="font-size:15px; font-weight:700; margin:0 0 14px;">고객이 매쓰홀릭을 잘 만나고, 잘 쓰고, 계속 쓰고 싶게 만드는 팀이에요.</p>
+        <p style="font-size:14.5px; margin:0 0 18px; color:var(--ink-sub);">매쓰홀릭을 사용하는 학원들이 제품을 제대로 활용하고 성과를 낼 수 있도록 돕는 팀이에요. 학원 원장님과 선생님들이 우리 제품을 처음 접하고 제대로 활용할 수 있도록 현장과 온라인에서 직접 만나 교육과 설명회를 진행하고, 콘텐츠 마케터·크리에이터와 협업하며 현장에서 얻은 인사이트를 콘텐츠로 만들어요. 고객을 직접 만나 제품의 가치를 전달하고, 현장에서 얻은 목소리를 팀에 가져오는 역할도 하고 있어요.</p>
+        <div class="task-item"><div class="n">01</div><div class="txt"><b>고객이 우리 서비스를 쓰고 싶게 만들어요</b><div class="task-tags"><span class="task-tag">#콘텐츠제작기획</span><span class="task-tag">#활용붐업</span></div></div></div>
+        <div class="task-item"><div class="n">02</div><div class="txt"><b>고객이 우리 서비스를 스스로 쓸 수 있게 해요</b><div class="task-tags"><span class="task-tag">#매뉴얼관리</span><span class="task-tag">#튜토리얼제작</span><span class="task-tag">#연수영상</span></div></div></div>
+        <div class="task-item"><div class="n">03</div><div class="txt"><b>고객에게 우리 서비스를 잘 안내해요</b><div class="task-tags"><span class="task-tag">#온보딩교육</span><span class="task-tag">#온라인세미나</span><span class="task-tag">#대면교육</span></div></div></div>
+        <div class="task-item"><div class="n">04</div><div class="txt"><b>고객의 성공 사례를 발굴하고 전파해요</b><div class="task-tags"><span class="task-tag">#인터뷰</span><span class="task-tag">#콘텐츠화</span><span class="task-tag">#성공사례발굴</span><span class="task-tag">#고객소통</span></div></div></div>
+      </div>
+
+    </section>
+
+    <!-- ===================== MEMBERS (우리 팀 소개) ===================== -->
+    <section class="panel" id="panel-members">
+      <div class="eyebrow">03 · PEOPLE</div>
+      <h1 class="page-title">우리 팀은 어떤 분들이 있을까요?</h1>
+      <p class="page-desc">앞으로 함께 일하게 될 고객성공팀 동료들이에요. 각자 맡은 역할이 조금씩 다르니, 궁금한 게 있을 때 참고해 주세요.</p>
+
+      <div class="member-grid">
+        <div class="member-card">
+          <div class="member-avatar">임</div>
+          <div class="member-name">임지영 매니저</div>
+          <div class="member-role">온보딩 교육 · 맞춤 세미나</div>
+          <div class="member-desc">프리미엄 신규 고객의 온보딩 교육을 진행해요. 고객 대상 교육과 세미나 진행 경험이 풍부해서, 고객 상황에 맞춘 맞춤형 교육으로 기능을 알리고 잘 활용하도록 돕고 있어요.</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">허</div>
+          <div class="member-name">허인경 매니저</div>
+          <div class="member-role">온보딩 교육 · 성공사례 발굴</div>
+          <div class="member-desc">프리미엄 신규 고객의 온보딩 교육을 진행하면서, 우리 서비스를 활용한 고객의 성공사례를 발굴하고 널리 알리는 역할도 함께 하고 있어요.</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">김</div>
+          <div class="member-name">김우정 매니저</div>
+          <div class="member-role">온보딩 교육 세미나 운영 지원 및 진행</div>
+          <div class="member-desc">프리미엄 신규 고객의 온보딩 교육과 매쓰홀릭T 학교 고객의 교육을 담당해요. 팀 세미나 기획과 운영에 참여하고, 설명회에 진행자로서도 참여하고 있어요.</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">김</div>
+          <div class="member-name">김민경 매니저</div>
+          <div class="member-role">온보딩 교육 · 매뉴얼/콘텐츠 제작</div>
+          <div class="member-desc">프리미엄 신규 고객의 온보딩 교육을 진행하며, 프리미엄·라이트·글잼 등 서비스를 기능별·활용별로 설명하는 매뉴얼과 AI 툴을 활용한 튜토리얼 가이드를 고객 관점에서 만들고 있어요.</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">이</div>
+          <div class="member-name">이지만 매니저</div>
+          <div class="member-role">온보딩 교육 · 라이트 고객 관리</div>
+          <div class="member-desc">프리미엄 신규 고객의 온보딩 교육과 라이트 고객 대상 기능·테마 교육을 담당해요. 라이트 고객이 잘 활용할 수 있는 방안을 고민하고, AI 툴을 활용한 콘텐츠와 튜토리얼 제작도 함께 하고 있어요.</div>
+        </div>
+        <div class="member-card">
+          <div class="member-avatar">김</div>
+          <div class="member-name">김소희 PD</div>
+          <div class="member-role">영상 콘텐츠 제작</div>
+          <div class="member-desc">우리 서비스를 이용하는 고객의 이야기를 영상으로 담아내는 역할을 맡고 있어요. 성공사례를 가장 생생하게 전달하는 콘텐츠를 만들어요.</div>
+        </div>
+        <div class="member-card">
+          <div class="welcome-badge">🎉 Welcome</div>
+          <div class="member-avatar">손</div>
+          <div class="member-name">손수정 매니저</div>
+          <div class="member-role">온보딩 교육 · 프로젝트 운영 지원 · 매뉴얼 관리</div>
+          <div class="member-desc">프리미엄 신규 고객의 온보딩 교육을 진행하며, 고객성공팀에서 운영되는 프로젝트의 서브 지원을 담당해요. 서비스 매뉴얼의 제작과 업데이트를 관리해요.</div>
+        </div>
+        <div class="member-card">
+          <div class="welcome-badge">🎉 Welcome</div>
+          <div class="member-avatar">박</div>
+          <div class="member-name">박지현 콘텐츠 크리에이터</div>
+          <div class="member-role">콘텐츠 제작 · 기획</div>
+          <div class="member-desc">우리 서비스를 써보고 싶게 만들고, 잘 쓸 수 있게 하는 다양한 콘텐츠를 기획하고 제작해요. 특히 AI 툴을 활용한 영상을 제작해 홈페이지, SNS 채널 등을 통해 고객에게 안내해요.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ROLES (업무 소개) ===================== -->
+    <section class="panel" id="panel-roles">
+      <div class="eyebrow">04 · ROLES</div>
+      <h1 class="page-title">업무 소개</h1>
+      <p class="page-desc">고객성공팀에서 필요한 공통 역량과, 역할별로 어떤 업무를 하는지 정리했어요.</p>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0;">고객성공팀은 어떤 역량이 필요한가요?</div>
+        <ul class="info-list">
+          <li><span class="ic">✓</span><span>우리 서비스를 어느 부서보다 깊이 있게 이해하고, 업데이트되는 기능을 누구보다 빠르게 파악해요.</span></li>
+          <li><span class="ic">✓</span><span>우리 서비스가 고객에게 어떤 도움을 줄 수 있는지 늘 고민해요.</span></li>
+          <li><span class="ic">✓</span><span>대면과 비대면을 가리지 않고 고객과 원활히 소통해요.</span></li>
+          <li><span class="ic">✓</span><span>고객의 목소리에 귀 기울이고, 서비스 개선으로 이어질 수 있도록 도와요.</span></li>
+          <li><span class="ic">✓</span><span>고객과 서비스에 대한 이해를 바탕으로 타 부서와 원활히 협업해요.</span></li>
+          <li><span class="ic">✓</span><span>시장과 경쟁사 동향을 빠르게 파악해요.</span></li>
+        </ul>
+      </div>
+
+      <div class="grid-2">
+        <div class="card role-card">
+          <div class="role-head">
+            <div class="role-icon">🧑‍🏫</div>
+            <div><div class="role-title">01 · 온보딩 매니저</div><div class="role-sub">고객을 직접 만나 안착시켜요</div></div>
+          </div>
+          <ul class="info-list">
+            <li><span class="ic">1</span><span>프리미엄 계약 고객 1:1 컨설팅</span></li>
+            <li><span class="ic">2</span><span>온보딩 안착 관리</span></li>
+            <li><span class="ic">3</span><span>우리 서비스를 이용하는 고객을 위한 온라인 세미나(집체 교육)</span></li>
+            <li><span class="ic">4</span><span>매뉴얼·튜토리얼 제작 관리</span></li>
+            <li><span class="ic">5</span><span>고객 소통 및 성공 사례 발굴</span></li>
+            <li><span class="ic">6</span><span>세일즈기획팀·비즈니스성장팀과 매출 관련 프로젝트 협업</span></li>
+          </ul>
+        </div>
+
+        <div class="card role-card role-b">
+          <div class="role-head">
+            <div class="role-icon">🎬</div>
+            <div><div class="role-title">02 · 콘텐츠 제작/기획자</div><div class="role-sub">쓰고 싶게, 잘 쓰게 만드는 콘텐츠를 만들어요</div></div>
+          </div>
+          <ul class="info-list">
+            <li><span class="ic">1</span><span>우리 서비스(기능)를 쓰고 싶게 하는 콘텐츠 기획·제작</span></li>
+            <li><span class="ic">2</span><span>우리 서비스를 사용하는 고객에 대한 콘텐츠 기획·제작</span></li>
+            <li><span class="ic">3</span><span>팀에서 진행하는 고객 대상 이벤트를 콘텐츠화</span></li>
+            <li><span class="ic">4</span><span>매쓰홀릭 SNS 채널 관리 (세일즈기획팀 협업)</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TIMELINE ===================== -->
+    <section class="panel" id="panel-timeline">
+      <div class="eyebrow">05 · TIMELINE</div>
+      <h1 class="page-title">한 달간의 타임라인</h1>
+      <p class="page-desc">입사 후 한 달 동안 어떤 순서로 적응해가는지 미리 살펴보세요. 각 주차에 해야 할 일을 체크하면서 진행 상황을 확인할 수 있어요.</p>
+
+      <div class="tabgroup">
+        <div class="tabs" id="timeline-tabs">
+          <button class="tab-btn active" data-tab="d1">출근 첫날</button>
+          <button class="tab-btn" data-tab="w1">첫 주</button>
+          <button class="tab-btn" data-tab="w2">둘째 ~ 셋째 주</button>
+          <button class="tab-btn" data-tab="w3">셋째 주 · 온보딩 매니저</button>
+          <button class="tab-btn" data-tab="w4">넷째 주 · 온보딩 매니저</button>
+        </div>
+
+        <div class="card">
+          <div class="tab-panel active" data-tabpanel="d1">
+            <p class="desc">사내 메신저와 매니저 계정 등, 앞으로 쓸 계정들을 세팅하고 필요한 오피스 프로그램을 설치하는 날이에요.</p>
+            <div id="tl-d1"></div>
+          </div>
+          <div class="tab-panel" data-tabpanel="w1">
+            <p class="desc">회사 홈페이지·블로그·유튜브를 통해 매쓰홀릭 서비스에 대한 이해도를 높이는 주예요. 그동안 진행된 교육·세미나 영상 시청은 꼭 완료해 주세요.</p>
+            <div id="tl-w1"></div>
+          </div>
+          <div class="tab-panel" data-tabpanel="w2">
+            <p class="desc">매쓰홀릭의 핵심 서비스인 라이트·프리미엄 기능 교육을 진행해요. 실습이 포함된 5차시 교육을 듣고 미션 보고서를 작성하며, 집체 교육 참관과 고객 VOC 검토까지 함께 진행해요.</p>
+            <div id="tl-w2"></div>
+            <button class="tab-btn" style="margin-top:6px;" onclick="document.querySelector('[data-target=curriculum]').click();">📚 5일 교육 커리큘럼 자세히 보기 →</button>
+          </div>
+          <div class="tab-panel" data-tabpanel="w3">
+            <p class="desc"><b>온보딩 매니저 직군만 해당돼요.</b> 배운 내용을 실습으로 옮기는 주예요. 선임 매니저의 세미나와 1:1 교육을 참관하며 참관 보고서를 작성해요.</p>
+            <div id="tl-w3"></div>
+          </div>
+          <div class="tab-panel" data-tabpanel="w4">
+            <p class="desc"><b>온보딩 매니저 직군만 해당돼요.</b> 직접 교육을 진행할 수 있도록 프리미엄 서비스 안내 자료를 만들고, PT와 줌 시연을 통해 고객과 만날 준비를 마쳐요.</p>
+            <div id="tl-w4"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CURRICULUM (5일 교육 커리큘럼) ===================== -->
+    <section class="panel" id="panel-curriculum">
+      <div class="eyebrow">05-1 · CURRICULUM</div>
+      <h1 class="page-title">5일 프로그램 교육 일정</h1>
+      <p class="page-desc">둘째 주에 진행되는 라이트·프리미엄 실습 교육의 상세 일정이에요. 하루 전 관련 영상을 미리 보고 참여하면 훨씬 이해가 빨라요.</p>
+
+      <div class="card">
+        <div class="section-title" style="margin-top:0;">📎 사전 확인 자료</div>
+        <div class="quicklinks" style="grid-template-columns: repeat(3,1fr);">
+          <a class="quicklink" href="https://matholic.com" target="_blank" rel="noopener"><span class="ql-title">회사 홈페이지</span><span class="ql-sub">공식 채널</span></a>
+          <a class="quicklink" href="https://blog.naver.com/ilovematholic" target="_blank" rel="noopener"><span class="ql-title">회사 블로그</span><span class="ql-sub">공식 채널</span></a>
+          <a class="quicklink" href="https://www.youtube.com/channel/UC0f2occwFdAosou2Ds29AUw" target="_blank" rel="noopener"><span class="ql-title">회사 유튜브</span><span class="ql-sub">공식 채널</span></a>
+          <a class="quicklink" href="https://hello-matholic.oopy.io/" target="_blank" rel="noopener"><span class="ql-title">Hello 매쓰홀릭 프리미엄</span><span class="ql-sub">서비스 매뉴얼</span></a>
+          <a class="quicklink" href="https://hello-matholiclite.oopy.io/" target="_blank" rel="noopener"><span class="ql-title">Hello 매쓰홀릭 LITE</span><span class="ql-sub">서비스 매뉴얼</span></a>
+          <a class="quicklink" href="https://school-matholict.oopy.io/" target="_blank" rel="noopener"><span class="ql-title">Hello 매쓰홀릭T</span><span class="ql-sub">서비스 매뉴얼</span></a>
+        </div>
+        <div class="note-box" style="background:var(--blue-soft); color:var(--navy);">💡 아래 영상들은 교육 기간 동안 모두 시청해 주세요. 특히 각 차시 주제에 해당하는 영상은 <b>교육 전에 미리</b> 확인하고 참여하면 좋아요.</div>
+      </div>
+
+      <div class="tabgroup">
+        <div class="tabs" id="curriculum-tabs">
+          <button class="tab-btn active" data-tab="c1">1일차</button>
+          <button class="tab-btn" data-tab="c2">2일차</button>
+          <button class="tab-btn" data-tab="c3">3일차</button>
+          <button class="tab-btn" data-tab="c4">4일차</button>
+          <button class="tab-btn" data-tab="c5">5일차</button>
+        </div>
+
+        <div class="card">
+          <!-- Day 1 -->
+          <div class="tab-panel active" data-tabpanel="c1">
+            <div class="day-meta-title">Hello 매쓰홀릭 LITE</div>
+            <div class="day-meta-row"><span class="day-chip">🗓 1일차 · 오후 2시</span><span class="day-chip">👤 이지만 매니저</span></div>
+            <p class="day-summary">주요 학습 내용 : LITE의 기본 활용(4종) + 연산대장, TOMA / 실습(진단평가 출제·채점·답안입력)</p>
+            <div class="grid-2">
+              <div class="know-card">
+                <h4>🧩 다루는 기능</h4>
+                <ul><li>학생등록 · 진단평가 · 교재채점 · 학습지 · 학습현황/모바일 보고서 · 연산대장 · TOMA</li></ul>
+              </div>
+              <div class="know-card">
+                <h4>🎬 이 날 볼 영상</h4>
+                <ul class="video-list"><li><a href="https://www.youtube.com/playlist?list=PLklnLDO0vnLWEf_S0l9BlaD0q7PLF0FVW" target="_blank" rel="noopener">기본 활용 교육 (라이트) — 재생목록</a> <span class="tag">1차시</span></li></ul>
+              </div>
+            </div>
+            <div class="mission-box">
+              <h4>✍️ 미션</h4>
+              <ul class="info-list">
+                <li><span class="ic">1</span><span>학습지 출제 — 유형별 개념, 회차 출제, 본인명 학생 배정, 내 폴더 저장(본인명 폴더 생성) 옵션을 지정해 실습</span></li>
+                <li><span class="ic">2</span><span>진단평가(입학테스트) 운영 흐름 설명 — 입학테스트/문제지 출제 → 학생 풀이 → 채점 → 오답 확인 → 보완 문제 재출제 → 보고서 확인 순서로, 단계별 담당자(원장/강사/학생)·사용 기능·고객이 체감할 장점을 포함해 작성</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Day 2 -->
+          <div class="tab-panel" data-tabpanel="c2">
+            <div class="day-meta-title">Hello 매쓰홀릭 프리미엄 1</div>
+            <div class="day-meta-row"><span class="day-chip">🗓 2일차 · 오후 2시</span><span class="day-chip">👤 김민경 매니저</span></div>
+            <p class="day-summary">주요 학습 내용 : LITE와 프리미엄의 차별화 / 매쓰홀릭 제작 교재 + 제본·청구(실습)</p>
+            <div class="grid-2">
+              <div class="know-card">
+                <h4>🧩 다루는 기능</h4>
+                <ul><li>LITE와 프리미엄의 차별점 · 매쓰홀릭 제작 교재 9종 · 제본 서비스 / 청구 서비스</li></ul>
+              </div>
+              <div class="know-card">
+                <h4>🎬 이 날 볼 영상</h4>
+                <ul class="video-list">
+                  <li><a href="https://youtu.be/uMb3JHgoN-g" target="_blank" rel="noopener">프리미엄의 차별점</a> <span class="tag">2차시</span></li>
+                  <li><a href="https://youtu.be/OyQj_qq6EE0" target="_blank" rel="noopener">교재 활용 루틴 (여름방학)</a> <span class="tag">2,3차시</span></li>
+                  <li><a href="https://drive.google.com/drive/folders/10ejA8JDyZYHwjWBTr2i59U2z4RuBzU7N" target="_blank" rel="noopener">내신관/수능관, 시험대비교재 자료</a> <span class="tag">2,5차시</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="mission-box">
+              <h4>✍️ 미션</h4>
+              <ul class="info-list">
+                <li><span class="ic">1</span><span>매쓰홀릭 프리미엄과 라이트의 차이 설명</span></li>
+                <li><span class="ic">2</span><span>다푸네 교재 시리즈 각각의 특장점과 활용법 설명 — 다푸네 / 다푸네 유형서 / 다푸네 문장제 / 월간다푸네</span></li>
+                <li><span class="ic">3</span><span>매쓰홀릭 교재 제본 서비스를 왜 활용해야 하는지, 특장점과 함께 설명</span></li>
+                <li><span class="ic">4</span><span>교재비 청구 서비스란 무엇이며, 활용 시 프리미엄 운영에 어떤 이점이 있는지 작성</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Day 3 -->
+          <div class="tab-panel" data-tabpanel="c3">
+            <div class="day-meta-title">Hello 매쓰홀릭 프리미엄 2</div>
+            <div class="day-meta-row"><span class="day-chip">🗓 3일차 · 오후 2시</span><span class="day-chip">👤 임지영 매니저</span></div>
+            <p class="day-summary">주요 학습 내용 : 옵션 교재 11종 + 실습</p>
+            <div class="grid-2">
+              <div class="know-card">
+                <h4>🧩 다루는 기능</h4>
+                <ul><li>매쓰홀릭 옵션 교재 11종</li></ul>
+              </div>
+              <div class="know-card">
+                <h4>🎬 이 날 볼 영상</h4>
+                <ul class="video-list">
+                  <li><a href="https://youtu.be/OyQj_qq6EE0" target="_blank" rel="noopener">교재 활용 루틴 (여름방학)</a> <span class="tag">2,3차시</span></li>
+                  <li><a href="https://youtu.be/8jkvn9fakmA?si=yKMZ3DIhEUF1F7hw" target="_blank" rel="noopener">학원 활용 사례 · 생각나무수학교습소</a> <span class="tag">3,4,5차시</span></li>
+                </ul>
+              </div>
+            </div>
+            <div class="mission-box">
+              <h4>✍️ 미션</h4>
+              <ul class="info-list">
+                <li><span class="ic">1</span><span>매쓰홀릭 시그니처 교재와 제작 교재(교재만들기)의 차이 설명</span></li>
+                <li><span class="ic">2</span><span>'새 교재 만들기'의 아래 교재를 직접 생성해 보고, 각각의 특장점과 활용안 제시 — 소단원 / 문제지 모음 / 쌍둥이 / 전범위 모의고사 / 중단원 레벨업 / 계통수학<br><span class="check-note">※ 교육 시 활용한 교사 계정으로 진행</span></span></li>
+                <li><span class="ic">3</span><span>진도 교재로 매쓰홀릭 교재를 추천한다면, 어떤 교재를 어떤 커리큘럼으로 제안할지 이유와 함께 작성</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Day 4 -->
+          <div class="tab-panel" data-tabpanel="c4">
+            <div class="day-meta-title">Hello 매쓰홀릭 프리미엄 3</div>
+            <div class="day-meta-row"><span class="day-chip">🗓 4일차 · 오후 2시</span><span class="day-chip">👤 허인경 매니저</span></div>
+            <p class="day-summary">주요 학습 내용 : AI유형분석 활용 사례 / 통합보고서 — 실습</p>
+            <div class="know-card" style="margin-bottom:16px;">
+              <h4>🧩 다루는 기능</h4>
+              <ul><li>AI유형분석 · 통합보고서</li></ul>
+            </div>
+            <div class="know-card">
+              <h4>🎬 이 날 볼 영상</h4>
+              <ul class="video-list">
+                <li><a href="https://youtu.be/wgQX0DrhkwM" target="_blank" rel="noopener">시험대비 루틴</a> <span class="tag">4,5차시</span></li>
+                <li><a href="https://youtu.be/8jkvn9fakmA?si=yKMZ3DIhEUF1F7hw" target="_blank" rel="noopener">학원 활용 사례 · 생각나무수학교습소</a> <span class="tag">3,4,5차시</span></li>
+                <li><a href="https://youtu.be/r64_bWeXorc?si=TY0EfScPcQpI80jf&t=3" target="_blank" rel="noopener">학원 활용 사례 · 전주SM수학학원</a> <span class="tag">4,5차시</span></li>
+                <li><a href="https://drive.google.com/drive/folders/1MRewpUffZ86-Sx3owgEm0vr41C7xg0Bu" target="_blank" rel="noopener">학원 활용 사례 · 대구점프수학</a> <span class="tag">4차시</span></li>
+              </ul>
+            </div>
+            <div class="mission-box">
+              <h4>✍️ 미션</h4>
+              <ul class="info-list">
+                <li><span class="ic">1</span><span>AI 유형분석은 어떤 의미·취지를 가지는지, 그리고 강사·원장이 각각 어떻게 활용할 수 있을지 제안</span></li>
+                <li><span class="ic">2</span><span>통합보고서를 직접 만들어 보고, 2가지 시기 혹은 상황을 가정해 활용법 제안 — AI 코멘트, 시기·상황에 맞는 상세 내용 편집/구성 포함<br><span class="check-note">※ 교육 시 활용한 교사 계정으로 진행</span></span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Day 5 -->
+          <div class="tab-panel" data-tabpanel="c5">
+            <div class="day-meta-title">시험대장, 시험대비 종합 Q&amp;A</div>
+            <div class="day-meta-row"><span class="day-chip">🗓 5일차 · 오후 2시</span><span class="day-chip">👤 김지은 팀장</span></div>
+            <p class="day-summary">주요 학습 내용 : 시험대장 + 시험대비 루틴(진단평가, 내신/수능, 유형분석 종합) 및 종합 Q&amp;A</p>
+            <div class="know-card" style="margin-bottom:16px;">
+              <h4>🧩 다루는 기능</h4>
+              <ul><li>시험대장 · 시험대비 루틴 (시험대장 / 진단평가 / 내신관·수능관 / AI유형분석 종합)</li></ul>
+            </div>
+            <div class="know-card">
+              <h4>🎬 이 날 볼 영상</h4>
+              <ul class="video-list">
+                <li><a href="https://youtu.be/wgQX0DrhkwM" target="_blank" rel="noopener">시험대비 루틴</a> <span class="tag">4,5차시</span></li>
+                <li><a href="https://drive.google.com/drive/folders/10ejA8JDyZYHwjWBTr2i59U2z4RuBzU7N" target="_blank" rel="noopener">내신관/수능관, 시험대비교재 자료</a> <span class="tag">2,5차시</span></li>
+                <li><a href="https://youtu.be/8jkvn9fakmA?si=yKMZ3DIhEUF1F7hw" target="_blank" rel="noopener">학원 활용 사례 · 생각나무수학교습소</a> <span class="tag">3,4,5차시</span></li>
+                <li><a href="https://youtu.be/r64_bWeXorc?si=TY0EfScPcQpI80jf&t=3" target="_blank" rel="noopener">학원 활용 사례 · 전주SM수학학원</a> <span class="tag">4,5차시</span></li>
+              </ul>
+            </div>
+            <div class="mission-box">
+              <h4>✍️ 미션</h4>
+              <ul class="info-list">
+                <li><span class="ic">1</span><span>시험 4주 동안의 내신대비 100점 플랜을 원장님께 정리해 제안하는 문서 작성<br><span class="check-note">※ 문서에 필요한 기능은 사이트에서 직접 실습·생성되어 있어야 해요 (교육 시 활용한 교사 계정으로 진행) — 진단평가 / 시험대장 / 학습지(내신관·수능관) / 유형분석</span></span></li>
+                <li><span class="ic">2</span><span>포함 내용 — 주간 단위 활용 기능, 각 기능 활용법</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card know-card" style="margin-top:16px;">
+        <h4>🎥 시청 시점이 정해지지 않은 학원 활용 사례</h4>
+        <ul><li><a href="https://youtu.be/P1eiYfI42Xg?si=N9U2Wm5egup7YL1d" target="_blank" rel="noopener">학원 활용 사례 · 힘찬수학교습소</a></li></ul>
+      </div>
+
+      <div class="card know-card" style="margin-top:16px;">
+        <h4>📮 미션 · 최종 보고서 제출 안내</h4>
+        <ul>
+          <li><b>차시별 미션</b> : 각 차시별 교육 이수자가 <b>교육 종료 후 익일까지</b> 제출. 구글 드라이브의 워드 파일에 누적 작성한 뒤 <b>[고객성공팀] 슬랙 채널</b>에 'O차시 미션 제출 완료' 메시지를 남겨주세요.</li>
+          <li><b>최종 보고서</b> : 교육 수강자 전원, 교육 종료 후 <b>2영업일 이내</b> 제출. 구글 드라이브의 워드 파일에 누적 작성한 뒤 <b>[고객성공팀] 슬랙 채널</b>에 '최종 보고서 제출 완료' 메시지를 남겨주세요. 형식·글자 수 제한은 없고, 실제 원장님·선생님께 설명하는 어투로 작성해요.
+            <ul style="margin-top:8px;">
+              <li>주요 서비스와 가치를 본인의 언어로 설명 — ① 라이트 ② 프리미엄</li>
+              <li>아래 고객 상황별로 어떤 활용을 제안할지, 왜 그런 제안을 하는지 <b>표로 정리</b> — ⓐ 시험 직전 학교별 유사문제가 필요한 학원 ⓑ 시중교재 오답관리를 체계화하고 싶은 강사 ⓒ 월간 학습 결과를 정리해 상담하고 싶은 원장</li>
+              <li>프리미엄 고객의 최종 고객(학부모·학생)에게, 원장님이 프리미엄 도입(교재비 청구 서비스 활용 예정)을 어떻게 설명하면 좋을지 제안</li>
+            </ul>
+          </li>
+          <li><b>실습 계정</b> : 라이트(30141) · 프리미엄(30139) — 계정 상세 정보는 슬랙 공지 채널에서 확인해 주세요. 해당 계정에 <b>본인의 선생님·학생 계정을 직접 생성해</b> 실습을 진행합니다.</li>
+          <li><b>문의</b> : 슬랙 단체DM 또는 임지영 매니저에게 언제든 편하게 문의해 주세요.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===================== CULTURE (+ 팀 문화 + 알아두어야 할 것) ===================== -->
+    <section class="panel" id="panel-culture">
+      <div class="eyebrow">06 · CULTURE</div>
+      <h1 class="page-title">우리가 함께 일하는 방식</h1>
+      <p class="page-desc">회사 전체의 문화부터 고객성공팀만의 소소한 규칙, 그리고 업무 중 자연스럽게 마주치게 될 사내 시스템까지 한 번에 모았어요.</p>
+
+      <div class="section-title" style="margin-top:0;">🏢 회사 문화</div>
+      <div class="culture-grid">
+        <div class="culture-card"><div class="num">01</div><h4>'○○님' 호칭 문화</h4><p>직급이나 연차 대신 'OO님'으로 서로를 불러요. 의견의 무게를 평평하게 만드는 가장 빠른 방법이라고 생각해요.</p></div>
+        <div class="culture-card"><div class="num">02</div><h4>직원 전담 고충 처리</h4><p>개발팀 이현승 님이 익명 상담을 전담하고 있어요. 신규 입사자에게는 별도 티타임도 마련돼 있으니 편하게 이용해 주세요.</p></div>
+        <div class="culture-card"><div class="num">03</div><h4>분기별 노사협의회</h4><p>분기마다 노사가 같은 테이블에 앉아 회사의 주요 결정을 함께 점검해요.</p></div>
+        <div class="culture-card"><div class="num">04</div><h4>사내 동아리 9개 운영</h4><p>현재 9개의 동아리가 활동 중이에요. 사내 시스템 '하이웍스'에서 자유롭게 가입할 수 있어요.</p></div>
+        <div class="culture-card"><div class="num">05</div><h4>'너의 업무는' 식사 지원</h4><p>팀이 다른 동료와 점심·저녁을 함께하면 회사가 식사비를 지원해요. 자연스럽게 다른 팀과 친해질 수 있는 좋은 기회예요.</p></div>
+        <div class="culture-card accent"><div class="num">06</div><h4>시차 출근제 운영</h4><p>기본 근무시간은 10:00 – 19:00이고, 점심시간은 12:00 – 13:00이며 비플페이 식권이 제공돼요. 분기별로 시차 출퇴근 신청이 가능해요 (기본 근무시간 전후 1시간까지 조정 가능).</p></div>
+      </div>
+
+      <div class="section-title">🤝 팀 문화</div>
+      <div class="culture-grid">
+        <div class="culture-card"><div class="num">01</div><h4>매월 2회는 함께 점심을 먹어요</h4><p>평소에는 외출, 도시락 등 편하게 식사하실 수 있어요. 월 2회 정도는 함께 점심을 먹으며 서로의 근황을 나누고 팀워크를 다지는 시간을 가져요.</p></div>
+        <div class="culture-card"><div class="num">02</div><h4>매주 수요일 오후 3시 회의를 진행해요</h4><p>대표님과의 주간 회의에서 나온 전달 사항을 공유하고, 팀의 주요 프로젝트 진행 사항을 점검해요.</p></div>
+        <div class="culture-card"><div class="num">03</div><h4>기본 소통은 슬랙으로 진행해요</h4><p>팀 공유 사항은 #고객성공팀 채널, 그 외엔 프로젝트별·부서별 채널을 이용해요. 궁금한 점은 편하게 DM 주세요.</p><div class="task-tags" style="margin-top:10px;"><span class="task-tag">#고객성공팀</span><span class="task-tag">#프로젝트별채널</span><span class="task-tag">#issue</span><span class="task-tag">#voc</span><span class="task-tag">#배포-전-테스트</span></div></div>
+      </div>
+
+      <div class="section-title">📌 알아두면 좋은 것들</div>
+      <div class="card know-card">
+        <h4>📁 하이웍스 — 전자결재 및 휴가</h4>
+        <ul>
+          <li><b>지출결의 상신 기간</b> : 1~15일 지출은 16~20일까지, 전월 지출은 익월 1~5일 이내에 상신해 주세요.</li>
+          <li><b>연차 사용</b> : 자유롭게 사용할 수 있지만, 가능하면 3일 전에는 휴가를 올려주세요. 급한 사정이 있다면 먼저 구두로 보고한 뒤 상신해도 괜찮아요. (팀 내 캘린더에 먼저 기입 → 하이웍스 휴가 상신 순서예요.)</li>
+        </ul>
+      </div>
+
+      <div class="card know-card">
+        <h4>🤖 AI 툴 활용</h4>
+        <ul>
+          <li>팀 내에서 클로드(Claude) 유료 플랜을 제공하고 있어요.</li>
+          <li>팀 업무 효율성을 높이기 위한 워크샵과 스터디가 앞으로 진행될 예정이에요.</li>
+        </ul>
+      </div>
+
+      <div class="card know-card">
+        <h4>📅 구글 캘린더 사용</h4>
+        <ul>
+          <li>메일 주소를 알려주시면 팀 캘린더에 초대해드려요.</li>
+          <li>다른 동료가 보고 누구인지 바로 알 수 있도록, 이름 이니셜을 포함해 일정을 기재해 주세요.</li>
+          <li>교육 일정, 고객과의 소통·면담, 회의 등 자리를 비우거나 팀에 공유가 필요한 업무는 기록해 주세요. <br><span style="color:var(--ink-sub);">예시) JE. OO학원 신규 컨설팅</span></li>
+        </ul>
+      </div>
+
+      <div class="card know-card">
+        <h4>🔐 계정 정보 관련 안내</h4>
+        <p style="font-size:13.5px; color:var(--ink-sub); margin:0;">Office 365 등 사내 공용 계정의 아이디·비밀번호는 이 페이지 대신 슬랙 DM으로 별도 안내해드려요.</p>
+        <div class="note-box">⚠️ 이 페이지는 외부에도 접근 가능한 링크로 배포될 수 있어요. 그래서 계정 비밀번호처럼 민감한 정보는 페이지에 직접 담지 않는 것을 권장해요.</div>
+      </div>
+    </section>
+
+    <!-- ===================== FAQ ===================== -->
+    <section class="panel" id="panel-faq">
+      <div class="eyebrow">07 · FAQ</div>
+      <h1 class="page-title">자주 묻는 질문</h1>
+      <p class="page-desc">신규 입사자 분들이 초반에 자주 궁금해하는 내용을 모아봤어요. 여기 없는 내용은 언제든 팀장님이나 선임 매니저에게 슬랙으로 물어봐 주세요.</p>
+
+      <div class="card">
+        <div class="faq-item open">
+          <button class="faq-q">근무 시간과 점심시간은 어떻게 되나요? <span class="chev">＋</span></button>
+          <div class="faq-a">기본 근무 시간은 10:00 – 19:00이고, 점심시간은 12:00 – 13:00이에요. 점심은 비플페이 식권으로 제공되고, 7월 이후부터는 앞뒤 1시간 내외의 시차출근도 이용할 수 있어요.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">회사 비품은 어떻게 구입할 수 있나요? <span class="chev">＋</span></button>
+          <div class="faq-a">기본으로 제공받은 노트북·마우스 등의 물품 외에, 비품 상태에 따라 하이웍스의 물품구매 신청서로 요청할 수 있어요. 부서장님께 먼저 말씀드린 뒤 상신해 주세요.<br>구입 가능 물품 예시 : 서랍장, 키보드, 마우스, 마우스 패드, 모니터, 모니터 받침대 등</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">부서장과 선임 매니저가 모두 자리를 비웠다면? <span class="chev">＋</span></button>
+          <div class="faq-a">고객성공팀은 고객과의 교육·소통 일정으로 자리를 비우는 일이 자주 있어요. 캘린더를 통해 대략적인 일정을 확인할 수 있고, 급한 일이라면 슬랙 DM으로 연락 주시면 빠르게 확인할게요.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">궁금한 게 생기면 누구에게 물어봐야 하나요? <span class="chev">＋</span></button>
+          <div class="faq-a">온보딩 기간에는 팀장님이나 선임 매니저에게 슬랙으로 언제든 편하게 질문해 주세요. 사소한 질문이라도 괜찮아요 :)</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q">동아리는 어떻게 가입하나요? <span class="chev">＋</span></button>
+          <div class="faq-a">하이웍스 게시판에 올라온 동호회 목록을 확인하고, 동호회장에게 개별로 문의해 주세요.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  // ---------- Panel navigation ----------
+  var navBtns = document.querySelectorAll('.nav-btn');
+  var panels = document.querySelectorAll('.panel');
+  navBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      navBtns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var target = btn.getAttribute('data-target');
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      document.getElementById('panel-' + target).classList.add('active');
+      window.scrollTo({top:0, behavior:'instant'});
+    });
+  });
+
+  // ---------- Tab groups (timeline, curriculum, ...) ----------
+  document.querySelectorAll('.tabgroup').forEach(function(group){
+    var btns = group.querySelectorAll('.tab-btn[data-tab]');
+    var tPanels = group.querySelectorAll('.tab-panel');
+    btns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        btns.forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        var key = btn.getAttribute('data-tab');
+        tPanels.forEach(function(p){ p.classList.remove('active'); });
+        group.querySelector('[data-tabpanel="'+key+'"]').classList.add('active');
+      });
+    });
+  });
+
+  // ---------- FAQ accordion ----------
+  document.querySelectorAll('.faq-q').forEach(function(q){
+    q.addEventListener('click', function(){
+      q.parentElement.classList.toggle('open');
+    });
+  });
+
+  // ---------- Checklist data ----------
+  var CHECKLIST = [
+    { group: '출근 첫날', target: 'd1', items: [
+      { id:'d1-0', label:'기본 비품 확인 (노트북, 마우스, 받침대 등)<br><span class="check-note">→ 키보드, 패드 등 필요한 물품은 기안 상신하여 별도 주문할 수 있어요.</span>' },
+      { id:'d1-1', label:'크롬 브라우저 설치' },
+      { id:'d1-2', label:'구글 계정 생성 (이니셜+matholic 형식, 예: jematholic@gmail.com)' },
+      { id:'d1-3', label:'라인웍스(사내메일) 계정 확인' },
+      { id:'d1-4', label:'하이웍스(전결) 계정 확인<br><span class="check-note">※ 라인웍스·하이웍스 정보는 경영지원 확인이 필요해 시간이 조금 걸릴 수 있어요.</span>' },
+      { id:'d1-5', label:'슬랙 초대 메일 확인' },
+      { id:'d1-6', label:'매쓰홀릭 매니저 관리 계정 신청' },
+      { id:'d1-7', label:'Office 365 설치<br><span class="check-note">(경영지원에서 안내 예정)</span>' },
+      { id:'d1-8', label:'프린터 드라이버 설치 — <a href="https://drive.google.com/file/d/1KL3xnn2i74JUn4rK1PX3lfNsR8tG--Q6/view?usp=sharing" target="_blank" rel="noopener" onclick="event.stopPropagation()">드라이버 다운로드 링크</a>' },
+    ]},
+    { group: '첫 주', target: 'w1', items: [
+      { id:'w1-1', label:'회사 홈페이지 · 블로그 · 유튜브로 서비스 이해도 높이기' },
+      { id:'w1-2', label:'그동안 진행된 교육 · 세미나 영상 전체 시청 (필수)' },
+    ]},
+    { group: '둘째 주 ~ 셋째 주', target: 'w2', items: [
+      { id:'w2-1', label:'매쓰홀릭 라이트 · 프리미엄 서비스 기능 교육 수강' },
+      { id:'w2-2', label:'미션 보고서 작성 및 제출' },
+      { id:'w2-3', label:'집체 교육 참관 및 참관 보고서 제출' },
+      { id:'w2-4', label:'고객 VOC 검토, 자주 묻는 질문 목록 정리' },
+    ]},
+    { group: '셋째 주 <span class="grp-tag">온보딩 매니저만 해당</span>', target: 'w3', managerOnly: true, items: [
+      { id:'w3-1', label:'선임 매니저 세미나 및 1:1 교육 참관 및 참관 보고서 작성' },
+    ]},
+    { group: '넷째 주 <span class="grp-tag">온보딩 매니저만 해당</span>', target: 'w4', managerOnly: true, items: [
+      { id:'w4-1', label:'프리미엄 서비스에 대한 안내 PPT 제작' },
+      { id:'w4-2', label:'프리미엄 서비스 안내 PT 시연' },
+      { id:'w4-3', label:'줌 실습 및 시연' },
+    ]},
+  ];
+
+  var STORAGE_KEY = 'matholicOnboardingChecklist';
+  var ROLE_KEY = 'matholicOnboardingRole';
+  var role = null;
+  try{ role = localStorage.getItem(ROLE_KEY); }catch(e){}
+
+  // 콘텐츠 크리에이터에게는 '온보딩 매니저만 해당' 그룹을 숨겨요.
+  function visibleGroups(){
+    return CHECKLIST.filter(function(g){ return !(g.managerOnly && role === 'creator'); });
+  }
+
+  function loadState(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function saveState(state){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+  }
+  var state = loadState();
+
+  function allItems(){
+    var arr = [];
+    visibleGroups().forEach(function(g){ g.items.forEach(function(it){ arr.push(it); }); });
+    return arr;
+  }
+
+  function renderHomeChecklist(){
+    var root = document.getElementById('checklist-root');
+    root.innerHTML = '';
+    visibleGroups().forEach(function(g){
+      var wrap = document.createElement('div');
+      wrap.className = 'checklist-group';
+      var h3 = document.createElement('h3');
+      h3.innerHTML = g.group;
+      wrap.appendChild(h3);
+      g.items.forEach(function(it){
+        wrap.appendChild(buildCheckRow(it.id, it.label));
+      });
+      root.appendChild(wrap);
+    });
+  }
+
+  function buildCheckRow(id, label){
+    var row = document.createElement('div');
+    row.className = 'check-item';
+    row.setAttribute('data-id', id);
+    var checked = !!state[id];
+    if(checked) row.classList.add('checked');
+    row.innerHTML = '<input type="checkbox" id="chk-'+id+'"' + (checked?' checked':'') + '>' +
+                    '<label for="chk-'+id+'">'+label+'</label>';
+    row.querySelector('input').addEventListener('change', function(e){
+      toggle(id, e.target.checked);
+    });
+    return row;
+  }
+
+  function toggle(id, checked){
+    state[id] = checked;
+    saveState(state);
+    // sync every checkbox with the same data-id (home + timeline copies)
+    document.querySelectorAll('[data-id="'+id+'"]').forEach(function(row){
+      var input = row.querySelector('input');
+      if(input) input.checked = checked;
+      row.classList.toggle('checked', checked);
+    });
+    updateProgress();
+  }
+
+  function renderTimelineChecklists(){
+    var hidden = false;
+    CHECKLIST.forEach(function(g){
+      var host = document.getElementById('tl-' + g.target);
+      if(!host) return;
+      var show = !(g.managerOnly && role === 'creator');
+      var tabBtn = document.querySelector('#timeline-tabs [data-tab="' + g.target + '"]');
+      var tabPanel = document.querySelector('[data-tabpanel="' + g.target + '"]');
+      if(tabBtn) tabBtn.style.display = show ? '' : 'none';
+      if(!show){
+        if(tabPanel && tabPanel.classList.contains('active')) hidden = true;
+        if(tabPanel) tabPanel.classList.remove('active');
+        host.innerHTML = '';
+        return;
+      }
+      host.innerHTML = '';
+      g.items.forEach(function(it){
+        host.appendChild(buildCheckRow(it.id, it.label));
+      });
+    });
+    // 숨긴 탭이 열려 있었다면 첫 탭으로 되돌려요.
+    if(hidden){
+      var first = document.querySelector('#timeline-tabs .tab-btn');
+      if(first) first.click();
+    }
+  }
+
+  function applyRole(newRole){
+    role = newRole;
+    try{ localStorage.setItem(ROLE_KEY, role); }catch(e){}
+    var box = document.getElementById('role-switch');
+    box.classList.remove('unset');
+    document.getElementById('role-switch-label').textContent =
+      (role === 'creator')
+        ? '👤 콘텐츠 크리에이터 기준으로 체크리스트를 보여주고 있어요.'
+        : '👤 온보딩 매니저 기준으로 체크리스트를 보여주고 있어요.';
+    document.querySelectorAll('.role-opt').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-role') === role);
+    });
+    renderHomeChecklist();
+    renderTimelineChecklists();
+    updateProgress();
+  }
+
+  document.querySelectorAll('.role-opt').forEach(function(b){
+    b.addEventListener('click', function(){ applyRole(b.getAttribute('data-role')); });
+  });
+
+  function updateProgress(){
+    var items = allItems();
+    var total = items.length;
+    var done = items.filter(function(it){ return !!state[it.id]; }).length;
+    var pct = total ? Math.round((done/total)*100) : 0;
+
+    document.getElementById('hero-done').textContent = done;
+    document.getElementById('hero-total').textContent = total;
+    document.getElementById('ring-pct').textContent = pct + '%';
+    document.getElementById('sidebar-pct').textContent = pct + '%';
+    document.getElementById('sidebar-bar').style.width = pct + '%';
+
+    var circumference = 169.6;
+    var offset = circumference - (circumference * pct / 100);
+    document.getElementById('ring-fill').style.strokeDashoffset = offset;
+
+    // timeline badge (all 9 timeline-related items, i.e. everything except d1)
+    var tlItems = items.filter(function(it){ return it.id.indexOf('d1') !== 0; });
+    var tlDone = tlItems.filter(function(it){ return !!state[it.id]; }).length;
+    document.getElementById('badge-timeline').textContent = tlDone + '/' + tlItems.length;
+    document.querySelector('[data-target="timeline"]').classList.toggle('done', tlDone === tlItems.length);
+  }
+
+  if(role === 'manager' || role === 'creator'){
+    applyRole(role);
+  } else {
+    role = null;
+    renderHomeChecklist();
+    renderTimelineChecklists();
+    updateProgress();
+  }
+})();
+</script>
+</body>
+</html>
