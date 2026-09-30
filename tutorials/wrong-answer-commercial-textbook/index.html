@@ -158,11 +158,16 @@ var PT=(function(){
    if(!v){ v=Date.now().toString(36)+Math.random().toString(36).slice(2,10); sessionStorage.setItem(k,v); } return v;
   }catch(e){ return Date.now().toString(36)+Math.random().toString(36).slice(2,10); } })();
  var t0=Date.now(), best=-1, sent=-1, done=false, opened=false;
+ /* 유입 정보: UTM(utm_source/utm_content), 임베드 여부, 이전 페이지 도메인, 테스트(?test=1) */
+ var Q=(function(){ var p={get:function(){return null;}}; try{ p=new URLSearchParams(location.search); }catch(e){}
+  var fr=false; try{ fr=window.self!==window.top; }catch(e){ fr=true; }
+  var rf=''; try{ rf=document.referrer?new URL(document.referrer).hostname:''; }catch(e){}
+  var ts=p.get('test'); return {src:p.get('utm_source')||'', content:p.get('utm_content')||'', embed:fr?1:0, ref:rf, test:(ts==='1'||ts==='true')?1:0}; })();
  var live=!!SHEET_URL && /^https?:$/.test(location.protocol);
  function body(k,fin){
   var s=D.scenes[k]||{};
   return JSON.stringify({tutorial:(D.title||document.title||''), sid:SID, reach:k+1, total:D.scenes.length,
-   done:fin?1:0, sceneName:(s.headline||s.name||''), secs:Math.round((Date.now()-t0)/1000)});
+   done:fin?1:0, sceneName:(s.headline||s.name||''), secs:Math.round((Date.now()-t0)/1000), src:Q.src, content:Q.content, embed:Q.embed, ref:Q.ref, test:Q.test});
  }
  function send(b,leaving){
   if(!live) return;
