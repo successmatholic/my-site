@@ -107,7 +107,6 @@
       </div>
       <div class="sec-actions">
         <span class="count" id="tutorial-count"></span>
-        <a class="tool-link" href="/tutorialbuilder/">🛠 빌더 열기</a>
       </div>
     </div>
     <div class="cards" id="tutorial-list"></div>
@@ -183,7 +182,7 @@
 
   const tutorialListEl = document.getElementById("tutorial-list");
   const tutorialCountEl = document.getElementById("tutorial-count");
-  renderCards(tutorialListEl, TUTORIALS, "아직 생성된 튜토리얼이 없습니다. 위 버튼으로 튜토리얼 빌더를 열어보세요.");
+  renderCards(tutorialListEl, TUTORIALS, "아직 배포된 튜토리얼이 없습니다.");
   tutorialCountEl.textContent = TUTORIALS.length + "개";
 </script>
 </body>
