@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>매쓰홀릭 학생 가이드</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root{
+  /* 색 — 03_design.md 토큰 */
+  --bg:#f4f8fd;
+  --surface:#ffffff;
+  --surface-sunk:#edf2fa;
+  --ink:#16233a;
+  --ink-muted:#4a5873;
+  --ink-subtle:#66738c;
+  --line:#dbe3f0;
+  --line-strong:#c3cfe2;
+  --brand:#358E9E;
+  --brand-strong:#176674;
+  --brand-strong-hover:#12515C;
+  --brand-deep:#0D3B43;
+  --brand-tint:#EEF6F7;
+  --brand-100:#D5EBEE;
+  --accent:#BBCF36;
+  --accent-hover:#A9BC2C;
+  --accent-ink:#1F2729;
+  --on-brand:#ffffff;
+  --ink-12:rgba(22,35,58,.12);
+  --rail-btn-bg:rgba(255,255,255,.10);
+  --rail-btn-bg-hover:rgba(255,255,255,.18);
+  --rail-btn-line:rgba(255,255,255,.28);
+  --rail-text:rgba(255,255,255,.72);
+  --shadow-rail:0 -10px 28px -12px rgba(13,59,67,.35);
+  /* 창 일러스트 상태 점(유형분석 의미, 창 안에서만) */
+  --dot-green:#3E9B5F;
+  --dot-yellow:#E2AC2A;
+  --dot-red:#D74E70;
+
+  /* 모션 */
+  --dur-fast:150ms;
+  --dur:200ms;
+  --dur-move:260ms;
+  --ease:cubic-bezier(.2,.8,.2,1);
+
+  /* 글자 크기 (1440 기준, 아래 미디어쿼리에서 바뀜) */
+  --fs-h2:28px;
+  --fs-lede:16px;
+  --fs-card-title:22px;
+  --fs-list:14px;
+  --fs-meta:14px;
+  --fs-act:15px;
+  --fs-state-title:22px;
+  --fs-state-body:16px;
+  --fs-btn:16px;
+  --fs-done:17px;
+
+  --topbar-h:72px;
+  --pad-x:32px;
+  --gap-cards:24px;
+  --main-top:48px;
+  --lede-gap:12px;
+  --cards-top:40px;
+  --card-text:24px;    /* 카드 본문 좌우 여백 (창은 카드 위쪽 끝에 붙음) */
+  --win-ratio:16 / 9;
+  --rail-h:56px;
+  --rail-done-h:80px;
+  --rail-pad:24px;
+  --font:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+  word-break:keep-all;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased;
+  letter-spacing:-.01em;line-height:1.6;
+}
+html.is-playing,html.is-playing body{overflow:hidden}
+button{font:inherit;color:inherit;letter-spacing:inherit}
+h1,h2,p{margin:0}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--brand-strong);outline-offset:3px}
+
+/* ───────── 목차 층 ───────── */
+.wrap{width:100%;max-width:calc(1120px + var(--pad-x) * 2);margin:0 auto;padding-left:var(--pad-x);padding-right:var(--pad-x)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar .wrap{height:var(--topbar-h);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.wordmark{font-size:20px;font-weight:600;letter-spacing:-.03em;color:var(--brand-strong);line-height:1}
+.btn-close{
+  display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 16px;
+  background:transparent;border:1px solid transparent;border-radius:10px;
+  color:var(--ink);font-size:var(--fs-btn);font-weight:600;line-height:1;cursor:pointer;
+  transition:background-color var(--dur-fast) var(--ease);
+}
+.btn-close svg{width:18px;height:18px;flex:none}
+.btn-close:hover{background:var(--bg)}
+
+.toc-main{padding-top:var(--main-top);padding-bottom:48px}
+.toc-title{font-size:var(--fs-h2);font-weight:600;letter-spacing:-.03em;line-height:1.3;text-wrap:balance}
+.toc-lede{margin-top:var(--lede-gap);font-size:var(--fs-lede);color:var(--ink-muted);letter-spacing:-.01em;line-height:1.6;text-wrap:balance}
+
+.cards{list-style:none;margin:var(--cards-top) 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap-cards)}
+.cards > li{display:flex;min-width:0}
+
+.guide-card{
+  flex:1;min-width:0;position:relative;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:0 0 20px;
+  display:grid;grid-template-columns:minmax(0,1fr);
+  grid-template-rows:auto auto 1fr auto auto;
+  grid-template-areas:"win" "title" "list" "rule" "foot";
+  transition:transform var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease);
+}
+.guide-card:focus-visible{outline-offset:3px}
+@media (hover:hover){
+  .guide-card:hover{border-color:var(--brand)}
+  .guide-card:hover .card-act svg{transform:translateX(2px)}
+}
+.guide-card:active{transform:scale(.985);transition-duration:100ms}
+
+.card-win{
+  grid-area:win;display:block;position:relative;overflow:hidden;
+  aspect-ratio:var(--win-ratio);background:var(--surface-sunk);
+  border-radius:15px 15px 0 0;border-bottom:1px solid var(--line);
+}
+.card-win svg,.load-win svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.card-title,.card-list,.card-rule,.card-foot{margin-left:var(--card-text);margin-right:var(--card-text)}
+.card-title{grid-area:title;display:block;margin-top:20px;font-size:var(--fs-card-title);font-weight:600;letter-spacing:-.025em;line-height:1.3;text-wrap:balance}
+.card-list{grid-area:list;align-self:start;display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;font-size:var(--fs-list);font-weight:500;color:#3f5d86;letter-spacing:-.01em;line-height:1.4}
+.card-list .it{white-space:nowrap;padding:4px 9px;border-radius:6px;background:#eef3fa}
+.card-rule{grid-area:rule;display:block;height:1px;background:var(--line);margin-top:20px}
+.card-foot{grid-area:foot;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;min-height:24px}
+.card-meta{font-size:var(--fs-meta);font-weight:500;color:var(--ink-subtle);line-height:1.4;letter-spacing:0}
+.card-meta b{font-weight:inherit;color:inherit}
+.card-act{display:inline-flex;align-items:center;gap:4px;flex:none;font-size:var(--fs-act);font-weight:600;color:var(--brand-strong);letter-spacing:-.01em;line-height:1}
+.card-act svg{width:16px;height:16px;transition:transform var(--dur-fast) var(--ease)}
+
+.card-chip{
+  grid-area:win;align-self:start;justify-self:start;z-index:1;
+  margin:12px;height:32px;padding:0 12px 0 8px;border-radius:8px;
+  display:none;align-items:center;gap:6px;
+  background:var(--accent);color:var(--accent-ink);font-size:14px;font-weight:600;line-height:1;letter-spacing:-.01em;
+}
+.card-chip svg{width:16px;height:16px;flex:none}
+.guide-card.is-done .card-chip{display:inline-flex}
+.card-chip.pop{animation:chipPop var(--dur) var(--ease) both}
+@keyframes chipPop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+
+/* 창 일러스트 (SVG 320×180 좌표계, 회색 창 바탕 위에 바로 그림) */
+.w-panel{fill:var(--surface)}
+.w-seg{fill:var(--brand-tint)}
+.w-cell{fill:var(--surface)}
+.w-hair{fill:var(--line)}
+.w-tab{fill:var(--brand-strong);font-size:13px;font-weight:600;font-family:var(--font)}
+.w-tabline{fill:var(--brand-strong)}
+.w-label{fill:var(--ink);font-size:13px;font-weight:500;font-family:var(--font);letter-spacing:-.02em}
+.w-muted{fill:var(--ink-muted);font-size:13px;font-weight:500;font-family:var(--font)}
+.d-g{fill:var(--dot-green)}.d-y{fill:var(--dot-yellow)}.d-r{fill:var(--dot-red)}
+.w-q{fill:var(--ink-12)}
+.w-hole{fill:var(--surface)}
+.w-bracket{fill:none;stroke:var(--brand);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.w-opt{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.5}
+.w-opt.on{fill:var(--brand);stroke:var(--brand)}
+.w-pill{fill:var(--brand-strong)}
+.w-pilltext{fill:var(--on-brand);font-size:12px;font-weight:600;font-family:var(--font)}
+.w-bub{fill:var(--surface);stroke:var(--line);stroke-width:1}
+.w-bub.me{fill:var(--brand-100);stroke:none}
+.w-bar{fill:var(--ink-12)}
+
+/* ───────── 플레이어 층 ───────── */
+.player{position:fixed;inset:0;z-index:10;display:grid;grid-template-rows:minmax(0,1fr) auto;background:var(--bg)}
+.player[hidden]{display:none}
+.stage{position:relative;min-height:0;overflow:hidden}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;background:var(--bg);opacity:0;transition:opacity 120ms linear}
+.player[data-state="playing"] .stage iframe{opacity:1}
+.state{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:24px;overflow:auto}
+.player[data-state="loading"] .state-loading{display:flex}
+.player[data-state="fail"] .state-fail{display:flex}
+.player[data-state="fail"] .stage iframe{display:none}
+.load-block{width:min(480px,100%)}
+.load-win{position:relative;display:block;width:100%;aspect-ratio:16 / 9;border-radius:12px;overflow:hidden;background:var(--surface-sunk)}
+.state-title{font-size:var(--fs-state-title);font-weight:600;letter-spacing:-.02em;line-height:1.35;text-wrap:balance}
+.load-block .state-title{margin-top:24px}
+.state-body{margin-top:8px;font-size:var(--fs-state-body);color:var(--ink-muted);line-height:1.6;text-wrap:pretty}
+.state-slow{margin-top:4px;font-size:15px;color:var(--ink-muted);line-height:1.6;visibility:hidden}
+.state-slow.on{visibility:visible}
+.bar{position:relative;margin-top:20px;width:160px;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.bar i{position:absolute;top:0;left:0;height:100%;width:40%;border-radius:2px;background:var(--brand);animation:barMove 1.2s linear infinite}
+@keyframes barMove{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+
+.fail-block{width:min(440px,100%)}
+.fail-icon{width:40px;height:40px;color:var(--brand-strong);display:block}
+.fail-block .state-title{margin-top:16px}
+.fail-block .state-body{margin-top:8px}
+.fail-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.btn-primary,.btn-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 24px;border-radius:10px;
+  font-size:var(--fs-btn);font-weight:600;line-height:1;cursor:pointer;
+  transition:background-color var(--dur-fast) var(--ease),border-color var(--dur-fast) var(--ease);
+}
+.btn-primary{background:var(--brand-strong);color:var(--on-brand);border:1px solid var(--brand-strong)}
+.btn-primary:hover{background:var(--brand-strong-hover);border-color:var(--brand-strong-hover)}
+.btn-secondary{background:var(--surface);color:var(--ink);border:1px solid var(--line-strong)}
+.btn-secondary:hover{background:var(--bg);border-color:var(--ink-muted)}
+.btn-secondary svg{width:20px;height:20px}
+
+/* 재생 레일 */
+.rail{
+  position:relative;background:var(--brand-deep);color:var(--on-brand);
+  height:calc(var(--rail-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+  transition:height var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
+}
+.player[data-state="fail"] .rail{display:none}
+.rail[data-mode="done"]{height:calc(var(--rail-done-h) + env(safe-area-inset-bottom));box-shadow:var(--shadow-rail)}
+.rail :focus-visible{outline-color:var(--on-brand)}
+.rail-in{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 var(--rail-pad)}
+.rail-done{display:none}
+.rail[data-mode="done"] .rail-play{display:none}
+.rail[data-mode="done"] .rail-done{display:flex;justify-content:flex-end}
+.btn-toc{
+  display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border-radius:10px;cursor:pointer;
+  background:var(--rail-btn-bg);border:1px solid var(--rail-btn-line);color:var(--on-brand);
+  font-size:var(--fs-btn);font-weight:600;line-height:1;flex:none;
+  transition:background-color var(--dur-fast) var(--ease);
+}
+.btn-toc::before{content:"";position:absolute;left:0;right:0;top:-6px;bottom:-6px}
+.btn-toc{position:relative}
+.btn-toc svg{width:20px;height:20px;flex:none}
+.btn-toc:hover{background:var(--rail-btn-bg-hover)}
+.rail-title{min-width:0;font-size:14px;font-weight:500;color:var(--rail-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-done{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;height:56px;min-width:220px;padding:0 24px;border-radius:12px;cursor:pointer;flex:none;
+  background:var(--accent);color:var(--accent-ink);border:0;font-size:var(--fs-done);font-weight:600;letter-spacing:-.015em;line-height:1;
+  transition:background-color var(--dur-fast) var(--ease);
+}
+.btn-done svg{width:18px;height:18px;flex:none}
+.btn-done:hover{background:var(--accent-hover)}
+.rail[data-mode="done"] .rail-done > *{animation:railRise var(--dur) var(--ease) both}
+@keyframes railRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* View Transition (Visual Moment) */
+::view-transition-group(guide-window){animation-duration:var(--dur-move);animation-timing-function:var(--ease)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:120ms}
+html.vt-back::view-transition-old(root),html.vt-back::view-transition-new(root){animation-duration:150ms}
+
+/* ───────── 반응형 ───────── */
+@media (min-width:1200px){
+  .wrap{padding-left:max(var(--pad-x),calc((100% - 1120px) / 2));padding-right:max(var(--pad-x),calc((100% - 1120px) / 2));max-width:none}
+}
+@media (max-width:1199px){
+  :root{
+    --fs-h2:25px;--fs-lede:16px;--fs-card-title:20px;
+    --topbar-h:64px;--gap-cards:16px;--main-top:32px;--lede-gap:8px;--cards-top:28px;--card-text:20px;
+  }
+  .wordmark{font-size:19px}
+}
+@media (max-height:800px) and (min-width:960px){
+  :root{--win-ratio:2 / 1;--topbar-h:64px;--main-top:32px;--lede-gap:8px;--cards-top:28px}
+}
+@media (max-width:959px){
+  .guide-card{
+    grid-template-columns:40% minmax(0,1fr);
+    grid-template-rows:auto auto 1fr auto;
+    grid-template-areas:"win title" "win list" "win rule" "win foot";
+    padding:16px;column-gap:16px;
+  }
+  /* 가로 카드: 창은 카드 안쪽에 한 겹으로 두고 데스크톱과 같은 16:9 */
+  .card-win{aspect-ratio:16 / 9;align-self:start;border-radius:10px;border-bottom:0}
+  .card-chip{margin:8px}
+  .card-title,.card-list,.card-rule,.card-foot{margin-left:0;margin-right:0}
+  .card-title{margin-top:0}
+  .card-list{margin-top:12px}
+  .card-rule{margin-top:16px;align-self:end}   /* 남는 높이는 선 위로: 선과 바닥 줄이 붙어서 창 아래 끝에 맞춰짐 */
+  .card-foot{align-self:end}
+  .cards{grid-template-columns:minmax(0,1fr);gap:16px}
+}
+@media (max-width:767px){
+  .rail-title{display:none}
+  .rail-play{justify-content:flex-start}
+}
+@media (max-width:599px){
+  :root{
+    --fs-h2:22px;--fs-lede:15px;--fs-card-title:19px;--fs-list:13px;--fs-meta:13px;
+    --fs-state-title:20px;--fs-state-body:15px;--fs-btn:15px;--fs-done:16px;
+    --topbar-h:56px;--pad-x:16px;--main-top:24px;--lede-gap:8px;--cards-top:20px;
+    --rail-pad:12px;--rail-done-h:72px;
+  }
+  .wordmark{font-size:18px}
+  .btn-close{height:44px;padding:0 12px}
+  .cards{gap:12px}
+  /* 600 미만: 그림 없이 제목·목록·선·바닥 줄만 있는 1열 목록 */
+  .guide-card{
+    padding:16px;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto auto auto auto;
+    grid-template-areas:"chip" "title" "list" "rule" "foot";
+  }
+  .card-win{display:none}
+  .card-chip{grid-area:chip;margin:0 0 8px;height:28px;font-size:13px}
+  .card-list{margin-top:8px}
+  .card-rule{margin-top:12px;align-self:auto}
+  .card-foot{margin-top:12px;align-self:auto}
+  .fail-actions{flex-direction:column}
+  .fail-actions > button{width:100%}
+  .rail[data-mode="done"] .rail-in{padding:0 12px}
+  .btn-done{width:100%;height:52px;min-width:0}
+}
+@media (max-height:499px){
+  :root{--topbar-h:48px;--main-top:16px;--cards-top:16px;--rail-h:44px;--rail-done-h:56px}
+  .btn-close{height:44px}   /* 상단 바 48px 안에서 터치 영역 44px 유지 */
+  .btn-toc{height:36px}
+  .btn-toc::before{top:-4px;bottom:-4px}
+  .btn-done{height:44px}
+  .load-block{width:min(320px,100%)}
+}
+@media (max-height:499px) and (min-width:600px){
+  .cards{grid-template-columns:minmax(0,1fr);gap:12px}
+  .guide-card{
+    grid-template-columns:40% minmax(0,1fr);
+    grid-template-rows:auto auto 1fr auto;
+    grid-template-areas:"win title" "win list" "win rule" "win foot";
+    padding:16px;column-gap:16px;
+  }
+  /* 가로 카드: 창은 카드 안쪽에 한 겹으로 두고 데스크톱과 같은 16:9 */
+  .card-win{aspect-ratio:16 / 9;align-self:start;border-radius:10px;border-bottom:0}
+  .card-chip{margin:8px}
+  .card-title,.card-list,.card-rule,.card-foot{margin-left:0;margin-right:0}
+  .card-title{margin-top:0}
+  .card-rule{margin-top:16px;align-self:end}   /* 남는 높이는 선 위로: 선과 바닥 줄이 붙어서 창 아래 끝에 맞춰짐 */
+  .card-foot{align-self:end}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:0s!important;animation-duration:0s!important;animation-iteration-count:1!important}
+  .bar i{animation:none;transform:none;width:100%}
+  .guide-card:hover,.guide-card:active{transform:none}
+}
+</style>
+</head>
+<body>
+
+<div id="toc">
+  <header class="topbar">
+    <div class="wrap">
+      <span class="wordmark" role="img" aria-label="매쓰홀릭">매쓰홀릭</span>
+      <button class="btn-close" type="button" id="btnClose" aria-label="닫기, 앱으로 돌아가기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        닫기
+      </button>
+    </div>
+  </header>
+
+  <main class="toc-main wrap">
+    <h1 class="sr-only">매쓰홀릭 학생 가이드 목차</h1>
+    <h2 class="toc-title" id="tocTitle">학생 가이드</h2>
+    <p class="toc-lede" id="tocLede">우리 학원에서 쓰는 것만 골라 보세요. 순서는 상관없어요.</p>
+
+    <ul class="cards">
+      <!-- 1. 교재 채점하기 -->
+      <li>
+        <button class="guide-card" type="button" data-guide="book" aria-describedby="list-book">
+          <span class="card-win" aria-hidden="true">
+            <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" focusable="false">
+              <!-- QR 모양 패턴 (실제 QR 아님) -->
+              <rect class="w-q" x="46" y="46" width="20" height="20" rx="2"/><rect class="w-hole" x="50" y="50" width="12" height="12"/><rect class="w-q" x="53" y="53" width="6" height="6"/>
+              <rect class="w-q" x="94" y="46" width="20" height="20" rx="2"/><rect class="w-hole" x="98" y="50" width="12" height="12"/><rect class="w-q" x="101" y="53" width="6" height="6"/>
+              <rect class="w-q" x="46" y="94" width="20" height="20" rx="2"/><rect class="w-hole" x="50" y="98" width="12" height="12"/><rect class="w-q" x="53" y="101" width="6" height="6"/>
+              <rect class="w-q" x="72" y="46" width="6" height="6"/><rect class="w-q" x="80" y="54" width="6" height="6"/><rect class="w-q" x="72" y="62" width="6" height="6"/>
+              <rect class="w-q" x="46" y="72" width="6" height="6"/><rect class="w-q" x="54" y="80" width="6" height="6"/><rect class="w-q" x="62" y="72" width="6" height="6"/>
+              <rect class="w-q" x="72" y="72" width="14" height="6"/><rect class="w-q" x="80" y="80" width="6" height="14"/><rect class="w-q" x="94" y="72" width="6" height="6"/>
+              <rect class="w-q" x="102" y="80" width="12" height="6"/><rect class="w-q" x="108" y="72" width="6" height="6"/><rect class="w-q" x="94" y="94" width="6" height="6"/>
+              <rect class="w-q" x="102" y="102" width="6" height="12"/><rect class="w-q" x="72" y="96" width="6" height="6"/><rect class="w-q" x="72" y="108" width="14" height="6"/>
+              <rect class="w-q" x="88" y="100" width="6" height="6"/><rect class="w-q" x="110" y="94" width="4" height="4"/>
+              <path class="w-bracket" d="M36 50V36h14M110 36h14v14M124 110v14h-14M50 124H36v-14"/>
+              <!-- 답 입력 -->
+              <rect class="w-cell" x="152" y="34" width="20" height="20" rx="4"/>
+              <circle class="w-opt" cx="190" cy="44" r="7"/><circle class="w-opt" cx="212" cy="44" r="7"/><circle class="w-opt on" cx="234" cy="44" r="7"/><circle class="w-opt" cx="256" cy="44" r="7"/><circle class="w-opt" cx="278" cy="44" r="7"/>
+              <rect class="w-cell" x="152" y="66" width="20" height="20" rx="4"/>
+              <circle class="w-opt on" cx="190" cy="76" r="7"/><circle class="w-opt" cx="212" cy="76" r="7"/><circle class="w-opt" cx="234" cy="76" r="7"/><circle class="w-opt" cx="256" cy="76" r="7"/><circle class="w-opt" cx="278" cy="76" r="7"/>
+              <rect class="w-cell" x="152" y="98" width="20" height="20" rx="4"/>
+              <circle class="w-opt" cx="190" cy="108" r="7"/><circle class="w-opt" cx="212" cy="108" r="7"/><circle class="w-opt" cx="234" cy="108" r="7"/><circle class="w-opt on" cx="256" cy="108" r="7"/><circle class="w-opt" cx="278" cy="108" r="7"/>
+              <rect class="w-pill" x="152" y="130" width="136" height="24" rx="12"/>
+              <text class="w-pilltext" x="220" y="146.2" text-anchor="middle">채점하기</text>
+            </svg>
+          </span>
+          <span class="card-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>끝까지 봤어요</span>
+          <span class="card-title">교재 채점하기</span>
+          <span class="card-list" id="list-book"><span class="it"><span aria-hidden="true">#</span>QR채점<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>정답 입력<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>힌트<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>개념/유형 동영상<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>다시풀기<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>오답유사<span class="sr-only">,</span></span></span>
+          <span class="card-rule" aria-hidden="true"></span>
+          <span class="card-foot">
+            <span class="card-meta"><b>11</b>단계 · 약 <b>2~3</b>분</span>
+            <span class="card-act"><span class="act-label">가이드 보기</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+          </span>
+        </button>
+      </li>
+
+      <!-- 2. 매쓰홀릭 앱에서 직접 학습하기 -->
+      <li>
+        <button class="guide-card" type="button" data-guide="app" aria-describedby="list-app">
+          <span class="card-win" aria-hidden="true">
+            <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" focusable="false">
+              <text class="w-tab" x="32" y="38">학습 단원</text>
+              <rect class="w-hair" x="16" y="47" width="288" height="1"/>
+              <rect class="w-tabline" x="32" y="46" width="52" height="2"/>
+              <rect class="w-cell" x="32" y="58" width="120" height="28" rx="6"/><circle class="d-g" cx="46" cy="72" r="4"/><text class="w-label" x="58" y="76.5">식의 계산</text>
+              <rect class="w-cell" x="168" y="58" width="120" height="28" rx="6"/><circle class="d-y" cx="182" cy="72" r="4"/><text class="w-label" x="194" y="76.5">일차부등식</text>
+              <rect class="w-cell" x="32" y="92" width="120" height="28" rx="6"/><circle class="d-g" cx="46" cy="106" r="4"/><text class="w-label" x="58" y="110.5">연립방정식</text>
+              <rect class="w-cell" x="168" y="92" width="120" height="28" rx="6"/><circle class="d-r" cx="182" cy="106" r="4"/><text class="w-label" x="194" y="110.5">일차함수</text>
+              <rect class="w-cell" x="32" y="126" width="120" height="28" rx="6"/><circle class="d-g" cx="46" cy="140" r="4"/><text class="w-label" x="58" y="144.5">삼각형의 성질</text>
+              <rect class="w-cell" x="168" y="126" width="120" height="28" rx="6"/><circle class="d-y" cx="182" cy="140" r="4"/><text class="w-label" x="194" y="144.5">도형의 닮음</text>
+            </svg>
+          </span>
+          <span class="card-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>끝까지 봤어요</span>
+          <span class="card-title">매쓰홀릭 앱에서 직접 학습하기</span>
+          <span class="card-list" id="list-app"><span class="it"><span aria-hidden="true">#</span>그린챌린지<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>레벨업<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>개념/유형 동영상<span class="sr-only">,</span></span> <span class="it"><span aria-hidden="true">#</span>오답노트<span class="sr-only">,</span></span></span>
+          <span class="card-rule" aria-hidden="true"></span>
+          <span class="card-foot">
+            <span class="card-meta"><b>9</b>단계 · 약 <b>2~3</b>분</span>
+            <span class="card-act"><span class="act-label">가이드 보기</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+          </span>
+        </button>
+      </li>
+
+      <!-- 3. 선생님께 1:1로 질문하기 -->
+      <li>
+        <button class="guide-card" type="button" data-guide="talk" aria-describedby="list-talk">
+          <span class="card-win" aria-hidden="true">
+            <svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" focusable="false">
+              <rect class="w-panel" x="32" y="28" width="256" height="30" rx="8"/>
+              <rect class="w-seg" x="35" y="31" width="125" height="24" rx="6"/>
+              <text class="w-tab" x="97.5" y="47.5" text-anchor="middle">대화</text>
+              <text class="w-muted" x="222.5" y="47.5" text-anchor="middle">학습</text>
+              <rect class="w-bub" x="32.5" y="70.5" width="150" height="26" rx="10"/><rect class="w-bar" x="44" y="79.5" width="112" height="8" rx="4"/>
+              <rect class="w-bub me" x="150" y="104" width="138" height="26" rx="10"/><rect class="w-bar" x="162" y="113" width="96" height="8" rx="4"/>
+              <rect class="w-bub" x="32.5" y="137.5" width="120" height="22" rx="10"/><rect class="w-bar" x="44" y="144.5" width="80" height="8" rx="4"/>
+            </svg>
+          </span>
+          <span class="card-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>끝까지 봤어요</span>
+          <span class="card-title">선생님께 1:1로 질문하기</span>
+          <span class="card-list" id="list-talk"><span class="it"><span aria-hidden="true">#</span>매쓰톡<span class="sr-only">,</span></span> </span>
+          <span class="card-rule" aria-hidden="true"></span>
+          <span class="card-foot">
+            <span class="card-meta"><b>3</b>단계 · 약 <b>1~2</b>분</span>
+            <span class="card-act"><span class="act-label">가이드 보기</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+          </span>
+        </button>
+      </li>
+    </ul>
+  </main>
+</div>
+
+<section class="player" id="player" hidden aria-label="가이드 화면" data-state="loading">
+  <div class="stage" id="stage">
+    <div class="state state-loading" role="status">
+      <div class="load-block">
+        <span class="load-win" id="loadWin" aria-hidden="true"></span>
+        <h2 class="state-title">가이드를 여는 중이에요</h2>
+        <p class="state-body">잠시만 기다려 주세요.</p>
+        <p class="state-slow" id="slowMsg">조금 오래 걸리고 있어요.</p>
+        <div class="bar" aria-hidden="true"><i></i></div>
+      </div>
+    </div>
+    <div class="state state-fail" id="failState">
+      <div class="fail-block" role="alert">
+        <svg class="fail-icon" id="iconOffline" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 15.5a22 22 0 0 1 30 0"/><path d="M10.5 21a14 14 0 0 1 19 0"/><path d="M15.5 26.5a6.5 6.5 0 0 1 9 0"/><circle cx="20" cy="31.5" r="1.2"/><path d="M8 6l24 28"/>
+        </svg>
+        <svg class="fail-icon" id="iconError" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 5h16l6 6v19l-3.5 3-3.5-3-3.5 3-3.5-3-3.5 3-3.5-3-1 0.9V5z"/><path d="M25 5v6h6"/><path d="M14 15h10M14 20h12"/>
+        </svg>
+        <h2 class="state-title" id="failTitle"></h2>
+        <p class="state-body" id="failBody"></p>
+        <div class="fail-actions">
+          <button class="btn-primary" type="button" id="btnRetry">다시 불러오기</button>
+          <button class="btn-secondary" type="button" id="btnFailToc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h.01M8.5 6.5H20M4 12h.01M8.5 12H20M4 17.5h.01M8.5 17.5H20"/></svg>
+            목차로
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="rail" id="rail" data-mode="play">
+    <div class="rail-in rail-play">
+      <button class="btn-toc" type="button" id="btnToc" aria-label="가이드를 멈추고 목차로 돌아가기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6.5h.01M8.5 6.5H20M4 12h.01M8.5 12H20M4 17.5h.01M8.5 17.5H20"/></svg>
+        목차로
+      </button>
+      <span class="rail-title" id="railTitle"></span>
+    </div>
+    <div class="rail-in rail-done">
+      <button class="btn-done" type="button" id="btnDone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+        목차로 돌아가기
+      </button>
+    </div>
+  </div>
+</section>
+
+<div class="sr-only" aria-live="polite" id="live"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── 설정: 배포 경로·UTM은 여기 한 곳에서만 바꾼다 ── */
+  var HUB_CONFIG = {
+    guides: {                                 /* 카드 data-guide → 튜토리얼 주소 */
+      app:  'https://matholicpremium.netlify.app/tutorials/st-app-direct-learning/',
+      book: 'https://matholicpremium.netlify.app/tutorials/st-app-textbook-grading/',
+      talk: 'https://matholicpremium.netlify.app/tutorials/st-app-teacher-question/'
+    },
+    utmSource: 'student-hub',
+    storageKey: 'matholic.studentGuideHub.done.v1',
+    slowMs: 8000,                             /* 이 시간이 지나면 "조금 오래 걸리고 있어요." */
+    failMs: 25000,                            /* 이 시간까지 load가 없으면 실패 화면 */
+    closeFallbackMs: 700                      /* 닫기 신호 후 history.back() 폴백까지 대기 */
+  };
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  var $ = function (id) { return document.getElementById(id); };
+  var toc = $('toc'), player = $('player'), stage = $('stage'), rail = $('rail');
+  var loadWin = $('loadWin'), slowMsg = $('slowMsg'), live = $('live');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.guide-card'));
+  var cardTitle = function (id) { var c = document.querySelector('.guide-card[data-guide="' + id + '"] .card-title'); return c ? c.textContent : ''; };
+
+  /* ── 완료 기록: localStorage 실패해도 세션 메모리로 동작 ── */
+  var doneSet = {};
+  try {
+    var raw = window.localStorage.getItem(HUB_CONFIG.storageKey);
+    if (raw) { JSON.parse(raw).forEach(function (id) { if (HUB_CONFIG.guides[id]) doneSet[id] = true; }); }
+  } catch (e) { /* 저장소 없음 → 메모리만 */ }
+  function saveDone() {
+    try { window.localStorage.setItem(HUB_CONFIG.storageKey, JSON.stringify(Object.keys(doneSet))); } catch (e) {}
+  }
+
+  function guideUrl(id) {
+    return HUB_CONFIG.guides[id] + '?utm_source=' + encodeURIComponent(HUB_CONFIG.utmSource);
+  }
+
+  function renderCards() {
+    var all = true;
+    cards.forEach(function (card) {
+      var id = card.getAttribute('data-guide');
+      var done = !!doneSet[id];
+      if (!done) all = false;
+      card.classList.toggle('is-done', done);
+      card.querySelector('.act-label').textContent = done ? '다시 보기' : '가이드 보기';
+      var title = card.querySelector('.card-title').textContent;
+      var meta = card.querySelector('.card-meta').textContent.replace(/\s+/g, ' ').trim(); /* "9단계 · 약 2~3분" */
+      var parts = meta.split(' · ');
+      card.setAttribute('aria-label', title + (done ? ' 다시 보기, ' : ' 가이드 보기, ') + parts.join(', ') + (done ? ', 끝까지 봤어요' : ''));
+    });
+    $('tocLede').textContent = all ? '가이드 3개를 모두 봤어요. 카드를 누르면 다시 볼 수 있어요.' : '학원 원장님이 지도해주신 방법만 골라서 보세요.';
+  }
+
+  /* ── 재생 상태 ── */
+  var cur = null;   /* {id, card, iframe, loads, timers:[], doneShown, wasDone, closing} */
+
+  function canTransition() { return typeof document.startViewTransition === 'function' && !reduceMotion.matches; }
+
+  function setState(s) { player.setAttribute('data-state', s); }
+  function setRail(mode) {
+    var focusWasToc = document.activeElement === $('btnToc');
+    var focusWasDone = document.activeElement === $('btnDone');
+    rail.setAttribute('data-mode', mode);
+    if (mode === 'done' && focusWasToc) $('btnDone').focus();
+    if (mode === 'play' && focusWasDone) $('btnToc').focus();
+  }
+  function clearTimers() {
+    if (!cur) return;
+    cur.timers.forEach(clearTimeout);
+    cur.timers = [];
+  }
+  function removeFrame() {
+    if (cur && cur.iframe) {
+      cur.iframe.remove();
+      cur.iframe = null;
+    }
+  }
+
+  function openGuide(card) {
+    if (cur) return;
+    var id = card.getAttribute('data-guide');
+    cur = { id: id, card: card, iframe: null, loads: 0, timers: [], doneShown: false, wasDone: !!doneSet[id], closing: false };
+
+    if (!history.state || history.state.mhHub !== 'player') {
+      try { history.pushState({ mhHub: 'player', id: id }, ''); } catch (e) {}
+    }
+
+    var cardWin = card.querySelector('.card-win');
+    function show() {
+      loadWin.innerHTML = '';
+      loadWin.appendChild(cardWin.querySelector('svg').cloneNode(true));
+      $('railTitle').textContent = card.querySelector('.card-title').textContent;
+      setRail('play');
+      toc.inert = true;
+      toc.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.add('is-playing');
+      player.hidden = false;
+      if (player.getAttribute("data-state") === "fail") $("btnRetry").focus({ preventScroll: true });
+      else $("btnToc").focus({ preventScroll: true });
+    }
+
+    if (canTransition()) {
+      cardWin.style.viewTransitionName = 'guide-window';
+      var vt = document.startViewTransition(function () {
+        cardWin.style.viewTransitionName = '';
+        loadWin.style.viewTransitionName = 'guide-window';
+        show();
+      });
+      vt.finished.then(function () { loadWin.style.viewTransitionName = ''; }, function () { loadWin.style.viewTransitionName = ''; });
+    } else {
+      show();
+    }
+    startLoad();
+  }
+
+  function startLoad() {
+    if (!cur) return;
+    clearTimers();
+    removeFrame();
+    cur.loads = 0;
+    cur.doneShown = false;
+    slowMsg.classList.remove('on');
+    setRail('play');
+
+    if (navigator.onLine === false) { showFail('offline'); return; }
+    setState('loading');
+
+    var frame = document.createElement('iframe');
+    frame.title = cardTitle(cur.id) + ' 가이드';
+    frame.setAttribute('allow', 'autoplay; fullscreen');
+    frame.setAttribute('allowfullscreen', '');
+    frame.addEventListener('load', function () { onFrameLoad(frame); });
+    frame.src = guideUrl(cur.id);
+    cur.iframe = frame;
+    stage.insertBefore(frame, stage.firstChild);
+
+    cur.timers.push(setTimeout(function () { slowMsg.classList.add('on'); }, HUB_CONFIG.slowMs));
+    cur.timers.push(setTimeout(function () {
+      if (cur && cur.loads === 0) showFail(navigator.onLine === false ? 'offline' : 'error');
+    }, HUB_CONFIG.failMs));
+  }
+
+  /* 같은 출처(http/https)인데 문서에 접근할 수 없으면 브라우저 오류 페이지로 본다 */
+  function looksBroken(frame) {
+    if (!/^https?:$/.test(location.protocol)) return false;   /* file:// 은 판정 불가 → 정상으로 간주 */
+    var u;
+    try { u = new URL(frame.src, location.href); } catch (e) { return false; }
+    if (u.origin !== location.origin) return false;
+    try {
+      var d = frame.contentDocument;
+      return !d || d.URL === 'about:blank';
+    } catch (e) { return true; }
+  }
+
+  function onFrameLoad(frame) {
+    if (!cur || cur.iframe !== frame || cur.closing) return;
+    cur.loads += 1;
+    if (cur.loads === 1) {
+      clearTimers();
+      if (looksBroken(frame)) { console.warn('[student-hub] guide load failed:', frame.src); showFail(navigator.onLine === false ? 'offline' : 'error'); return; }
+      setState('playing');
+    } else {
+      /* 두 번째 load = 가이드 밖으로 이동(S6). 레일은 '목차로'로 되돌리고 이후 done은 무시 */
+      setRail('play');
+    }
+  }
+
+  function showFail(kind) {
+    if (!cur) return;
+    clearTimers();
+    removeFrame();
+    var off = kind === 'offline';
+    $('iconOffline').style.display = off ? '' : 'none';
+    $('iconError').style.display = off ? 'none' : '';
+    setState('fail');
+    /* role=alert 영역이 보인 뒤에 글자를 넣어야 읽어 준다 */
+    $('failTitle').textContent = '';
+    $('failBody').textContent = '';
+    requestAnimationFrame(function () {
+      $('failTitle').textContent = off ? '인터넷에 연결되어 있지 않아요' : '가이드를 열지 못했어요';
+      $('failBody').textContent = off ? '연결한 뒤 다시 불러와 주세요.' : '잠시 뒤 다시 불러와 주세요.';
+    });
+    $('btnRetry').focus({ preventScroll: true });
+  }
+
+  window.addEventListener('message', function (e) {
+    if (!cur || !cur.iframe || cur.closing) return;
+    if (e.source !== cur.iframe.contentWindow) return;
+    var data = e.data;
+    if (!data || data.matholic !== 'done') return;
+    if (cur.loads !== 1) return;          /* 첫 load 전이거나, 이미 다른 페이지로 넘어간 뒤 */
+    if (cur.doneShown) return;
+    cur.doneShown = true;
+    doneSet[cur.id] = true;
+    saveDone();
+    setRail('done');
+    live.textContent = '';
+    setTimeout(function () { live.textContent = '끝까지 봤어요. 화면 아래에 목차로 돌아가기 버튼이 있어요.'; }, 50);
+  });
+
+  window.addEventListener('offline', function () {
+    if (cur && player.getAttribute('data-state') === 'loading') showFail('offline');
+  });
+
+  /* 목차로 — 재생 중 push한 히스토리 1단계를 되돌리고 popstate에서 정리 */
+  var popFallback = null;
+  function goToc() {
+    if (!cur || cur.closing) return;
+    cur.closing = true;
+    clearTimers();
+    if (history.state && history.state.mhHub === 'player') {
+      /* iframe이 다른 페이지로 넘어갔다면 그만큼 더 되돌린다(iframe이 아직 있을 때 이동) */
+      var steps = 1 + Math.max(0, cur.loads - 1);
+      try { history.go(-steps); } catch (e) {}
+      popFallback = setTimeout(teardown, 450);
+    } else {
+      teardown();
+    }
+  }
+
+  function teardown() {
+    if (popFallback) { clearTimeout(popFallback); popFallback = null; }
+    if (!cur) return;
+    var card = cur.card;
+    var newlyDone = !cur.wasDone && !!doneSet[cur.id];
+    var frame = cur.iframe;
+    clearTimers();
+    cur.iframe = null;
+    if (frame) frame.remove();   /* 전환 전에 바로 제거 — 히스토리·소리 정리 */
+    function hide() {
+      player.hidden = true;
+      setState('loading');
+      setRail('play');
+      loadWin.innerHTML = '';
+      toc.inert = false;
+      toc.removeAttribute('aria-hidden');
+      document.documentElement.classList.remove('is-playing');
+      renderCards();
+    }
+    cur = null;
+    if (canTransition()) {
+      document.documentElement.classList.add('vt-back');
+      var vt = document.startViewTransition(hide);
+      vt.finished.then(done, done);
+    } else {
+      hide(); done();
+    }
+    function done() {
+      document.documentElement.classList.remove('vt-back');
+      card.focus({ preventScroll: false });
+      if (newlyDone) {
+        var chip = card.querySelector('.card-chip');
+        chip.classList.remove('pop'); void chip.offsetWidth; chip.classList.add('pop');
+      }
+    }
+  }
+
+  window.addEventListener('popstate', function () {
+    /* 재생 중 뒤로 가기 → 목차. 목차에서의 뒤로 가기는 브라우저/앱 기본 동작(페이지를 떠남) */
+    if (cur && !(history.state && history.state.mhHub === 'player')) { cur.closing = true; teardown(); }
+  });
+
+  /* ── 닫기: 앱에 신호 → 안 되면 history.back() ── */
+  var closeTimer = null;
+  function requestClose() {
+    var msg = { matholic: 'close' };
+    var embedded = false;
+    try { if (window.parent && window.parent !== window) { window.parent.postMessage(msg, '*'); embedded = true; } } catch (e) {}
+    try { if (window.ReactNativeWebView && typeof window.ReactNativeWebView.postMessage === 'function') window.ReactNativeWebView.postMessage(JSON.stringify(msg)); } catch (e) {}
+    try { if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.matholic) window.webkit.messageHandlers.matholic.postMessage(msg); } catch (e) {}
+    /* iframe 안이면 부모가 닫는다. history.back()은 부모 페이지 히스토리를 건드리므로 최상위일 때만 */
+    if (!embedded) {
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function () { if (document.visibilityState !== 'hidden') history.back(); }, HUB_CONFIG.closeFallbackMs);
+    }
+  }
+  window.addEventListener('pagehide', function () { clearTimeout(closeTimer); });
+
+  /* ── 이벤트 연결 ── */
+  cards.forEach(function (card) { card.addEventListener('click', function () { openGuide(card); }); });
+  $('btnToc').addEventListener('click', goToc);
+  $('btnDone').addEventListener('click', goToc);
+  $('btnFailToc').addEventListener('click', goToc);
+  $('btnRetry').addEventListener('click', function () { startLoad(); $('btnToc').focus({ preventScroll: true }); });
+  $('btnClose').addEventListener('click', requestClose);
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (cur) { e.preventDefault(); goToc(); }
+    else if (window.parent !== window) { e.preventDefault(); requestClose(); }   /* 모달(iframe) 안의 목차에서 Esc = 닫기 */
+  });
+
+  /* 새로고침 등으로 재생 상태 히스토리 위에서 열렸다면 목차 상태로 정리 */
+  if (history.state && history.state.mhHub === 'player') {
+    try { history.replaceState({ mhHub: 'toc' }, ''); } catch (e) {}
+  }
+  renderCards();
+
+  /* 자동 확인용 훅(화면 동작에는 영향 없음) */
+  window.__studentHub = { config: HUB_CONFIG, state: function () { return cur ? { id: cur.id, loads: cur.loads, state: player.getAttribute('data-state'), rail: rail.getAttribute('data-mode') } : null; }, done: function () { return Object.keys(doneSet); } };
+})();
+</script>
+</body>
+</html>
