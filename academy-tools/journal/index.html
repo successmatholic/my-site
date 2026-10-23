@@ -1421,7 +1421,7 @@ function renderWelcome() {
         <h1>매쓰홀릭 결과 위에<br>선생님 한 줄을 더하는 일지</h1>
         <p class="wel-lede">학습 결과를 <strong>엑셀로 한 번에 </strong>붙이세요! <br>선생님은 지난 과제 확인·오늘 메모·다음 계획만 적습니다. <br>쌓인 기록은 다음 수업과 학부모 상담에 그대로 씁니다.</p>
         <div class="wel-cta">${upload}<a class="btn" href="#today">${sample ? '예시 데이터로 둘러보기' : '오늘 수업으로'}</a></div>
-        <p class="wel-note">매쓰홀릭 엑셀로 시작하면 학생과 반 등록까지 한 번에 끝납니다. <button type="button" class="card-link" data-act="help-import">엑셀 받는 곳 보기</button></p>
+        <p class="wel-note">매쓰홀릭 엑셀로 시작하면 학생과 반 등록까지 한 번에 끝납니다. 엑셀 파일을 이 화면에 끌어다 놓아도 됩니다. <button type="button" class="card-link" data-act="help-import">엑셀 받는 곳 보기</button></p>
       </div>
       <figure class="wel-shot" aria-label="학습일지 한 장의 예시">
         <div class="ws-lights" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -1752,22 +1752,34 @@ document.addEventListener('change', (ev) => {
   else if ((k === 'rep-from' || k === 'rep-to') && ev.target.value) { rep[k === 'rep-from' ? 'from' : 'to'] = ev.target.value; drawReportsBody(); }
   else if (k === 'academy-name') { db.academy.name = ev.target.value.trim() || '우리 학원'; persist(); renderNav('settings'); toast('저장했습니다'); }
   else if (k === 'logo') { const f = ev.target.files[0]; if (!f) return; if (f.size > 400000) return toast('로고는 400KB 이하 이미지로 올려 주세요'); const r = new FileReader(); r.onload = () => { db.academy.logo = r.result; persist(); renderSettings(); }; r.readAsDataURL(f); }
-  else if (k === 'mh-import') {
-    const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
-    if (!window.XLSX) return toast('엑셀 도구를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
-    f.arrayBuffer().then((buf) => {
-      // 엑셀 파일은 PK(.xlsx) 또는 D0 CF(.xls)로 시작한다. 아니면 보안 프로그램(DRM)이 잠근 파일이거나 다른 형식이다
-      const b = new Uint8Array(buf.slice(0, 2));
-      if (!((b[0] === 0x50 && b[1] === 0x4b) || (b[0] === 0xd0 && b[1] === 0xcf))) return alert(`'${f.name}'은(는) 엑셀 파일로 읽을 수 없습니다.\n\n회사·학원 보안 프로그램(DRM)이 파일을 잠갔거나, 엑셀이 아닌 파일일 수 있어요.\n매쓰홀릭에서 엑셀을 다시 받아 열지 않은 채로 바로 올려 보세요.`);
-      const wb = XLSX.read(buf, { type: 'array' }), wbNames = wb.SheetNames;
-      const parsed = readMatholic(wb);
-      // 학습일지에서 내려받은 엑셀(첫 시트 '학생별 요약')을 잘못 올린 경우
-      if (!parsed.rows.length && !parsed.roster.length && wbNames.includes('학생별 요약')) return alert(`'${f.name}'은(는) 학습일지에서 내려받은 엑셀이에요.\n\n여기에는 매쓰홀릭에서 받은 엑셀을 올려 주세요.\n매쓰홀릭 [학습현황]에서 날짜와 학생을 고르고 [학습 이력 n명]을 누르면 '매쓰홀릭_학습_이력' 파일이 받아집니다.`);
-      if (!parsed.rows.length && !parsed.roster.length) return alert(`매쓰홀릭 학습 이력 엑셀에서 학생을 찾지 못했습니다.\n\n매쓰홀릭 학습현황에서 받은 '학습 이력' 엑셀인지 확인해 주세요. (? 버튼: 엑셀 받는 곳 보기)\n\n읽은 시트와 첫 줄:\n${parsed.sheets.join('\n')}`);
-      openImport(parsed, f.name);
-    }).catch((e) => alert(`엑셀 파일을 읽지 못했습니다.\n암호가 걸려 있거나 보안 프로그램으로 잠긴 파일일 수 있어요.\n\n(${e && e.message ? e.message : e})`));
-  }
+  else if (k === 'mh-import') { const f = ev.target.files[0]; ev.target.value = ''; if (f) importExcel(f); }
   else if (k === 'restore') { const f = ev.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d.students || !d.logs) throw 0; if (confirm(`백업의 학생 ${d.students.length}명, 일지 ${Object.keys(d.logs).length}건으로 지금 기록을 바꿀까요?`)) { for (const key of Object.keys(d.logs)) d.logs[key] = migrate(d.logs[key]); d.v = 3; db = d; persist(); route(); toast('복원했습니다'); } } catch (e) { toast('학습일지 백업 파일이 아닙니다'); } }; r.readAsText(f); }
+});
+
+/* ---------- 매쓰홀릭 엑셀 가져오기: 버튼으로 고르거나 화면에 끌어다 놓기 ---------- */
+// 안내 창마다 실제로 읽은 파일을 적어, 다른 파일이 골라졌는지 바로 알 수 있게 한다
+const fileInfo = (f) => `읽은 파일: ${f.name} (${Math.max(1, Math.round(f.size / 1024))}KB · ${new Date(f.lastModified).toLocaleString('ko-KR')})`;
+function importExcel(f) {
+  if (!window.XLSX) return toast('엑셀 도구를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
+  f.arrayBuffer().then((buf) => {
+    // 엑셀 파일은 PK(.xlsx) 또는 D0 CF(.xls)로 시작한다. 아니면 보안 프로그램(DRM)이 잠근 파일이거나 다른 형식이다
+    const b = new Uint8Array(buf.slice(0, 2));
+    if (!((b[0] === 0x50 && b[1] === 0x4b) || (b[0] === 0xd0 && b[1] === 0xcf))) return alert(`엑셀 파일로 읽을 수 없습니다.\n\n회사·학원 보안 프로그램(DRM)이 파일을 잠갔거나, 엑셀이 아닌 파일일 수 있어요.\n매쓰홀릭에서 엑셀을 다시 받아 열지 않은 채로 바로 올려 보세요.\n\n${fileInfo(f)}`);
+    const wb = XLSX.read(buf, { type: 'array' });
+    const parsed = readMatholic(wb);
+    // 학습일지에서 내려받은 엑셀(첫 시트 '학생별 요약')을 잘못 올린 경우
+    if (!parsed.rows.length && !parsed.roster.length && wb.SheetNames.includes('학생별 요약')) return alert(`학습일지에서 내려받은 엑셀이 골라졌어요.\n\n여기에는 매쓰홀릭에서 받은 '매쓰홀릭_학습_이력' 엑셀을 올려 주세요.\n매쓰홀릭 [학습현황]에서 날짜와 학생을 고르고 [학습 이력 n명]을 누르면 받아집니다.\n\n${fileInfo(f)}`);
+    if (!parsed.rows.length && !parsed.roster.length) return alert(`매쓰홀릭 학습 이력 엑셀에서 학생을 찾지 못했습니다.\n\n매쓰홀릭 학습현황에서 받은 '학습 이력' 엑셀인지 확인해 주세요. (? 버튼: 엑셀 받는 곳 보기)\n\n${fileInfo(f)}\n읽은 시트와 첫 줄:\n${parsed.sheets.join('\n')}`);
+    openImport(parsed, f.name);
+  }).catch((e) => alert(`엑셀 파일을 읽지 못했습니다.\n암호가 걸려 있거나 보안 프로그램으로 잠긴 파일일 수 있어요.\n\n${fileInfo(f)}\n(${e && e.message ? e.message : e})`));
+}
+const isFileDrag = (e) => [...(e.dataTransfer?.types || [])].includes('Files');
+window.addEventListener('dragover', (e) => { if (isFileDrag(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+window.addEventListener('drop', (e) => {
+  if (!isFileDrag(e)) return;
+  e.preventDefault();
+  const f = [...e.dataTransfer.files].find((x) => /\.xlsx?$/i.test(x.name));
+  if (f) importExcel(f); else toast('매쓰홀릭 엑셀(.xlsx) 파일을 끌어다 놓아 주세요');
 });
 
 route();
