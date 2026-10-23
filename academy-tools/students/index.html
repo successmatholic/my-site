@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>학생 관리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root{
+  --navy:#1f2a44; --navy2:#2d3b5e; --gold:#c9a24a; --gold2:#e9d7a6;
+  --paper:#f7f2e8; --card:#fffdf8; --line:#e4dccb; --ink:#232733; --muted:#7a7568;
+  --red:#c0504d; --green:#3f8f5f; --blue:#3b6aa8; --orange:#d08a2e; --purple:#7a5aa6; --gray:#8a8a8a;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;color:var(--ink);
+  background:var(--paper);
+  background-image:radial-gradient(rgba(120,100,60,.05) 1px,transparent 1px),radial-gradient(rgba(120,100,60,.04) 1px,transparent 1px);
+  background-size:7px 7px,13px 13px;background-position:0 0,3px 5px;font-size:14px}
+header{background:var(--navy);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:3px solid var(--gold)}
+header h1{margin:0;font-size:19px;letter-spacing:-.3px}
+header h1 small{color:var(--gold2);font-weight:400;font-size:13px;margin-left:8px}
+header .sp{flex:1}
+.hbtn{background:transparent;border:1px solid rgba(255,255,255,.35);color:#fff;padding:7px 12px;border-radius:6px;cursor:pointer;font-size:13px}
+.hbtn:hover{border-color:var(--gold);color:var(--gold2)}
+.hbtn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+#dirty{font-size:12px;color:var(--gold2)}
+nav{background:var(--navy2);display:flex;overflow-x:auto;padding:0 16px}
+nav button{background:none;border:none;color:#cfd6e6;padding:12px 16px;cursor:pointer;font-size:14px;white-space:nowrap;border-bottom:3px solid transparent}
+nav button.on{color:#fff;border-bottom-color:var(--gold);font-weight:700}
+main{max-width:1400px;margin:0 auto;padding:20px 16px 60px}
+h2{font-size:20px;margin:0 0 4px;color:var(--navy)}
+.desc{color:var(--muted);margin:0 0 16px;font-size:13px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.btn{background:var(--navy);color:#fff;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:13px}
+.btn:hover{background:var(--navy2)}
+.btn.line{background:#fff;color:var(--navy);border:1px solid var(--line)}
+.btn.gold{background:var(--gold);color:var(--navy);font-weight:700}
+.btn.red{background:#fff;color:var(--red);border:1px solid #e6c3c2}
+.btn.sm{padding:4px 9px;font-size:12px}
+input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:6px;padding:7px 9px;background:#fff;color:var(--ink)}
+textarea{width:100%;min-height:70px;resize:vertical}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+.kpi .n{font-size:28px;font-weight:800;color:var(--navy)}
+.kpi .l{color:var(--muted);font-size:12px}
+.kpi{border-top:3px solid var(--gold)}
+.card h3{margin:0 0 10px;font-size:15px;color:var(--navy)}
+.list{list-style:none;margin:0;padding:0}
+.list li{padding:8px 0;border-bottom:1px dashed var(--line);display:flex;gap:8px;align-items:center;justify-content:space-between}
+.list li:last-child{border-bottom:none}
+.empty{color:var(--muted);font-size:13px;padding:8px 0}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
+.t-학사일정,.t-재원{background:#e3efe6;color:var(--green)}
+.t-시험기간{background:#fbe9d3;color:#a8661b}
+.t-공휴일,.t-퇴원,.t-미등록{background:#f6dedd;color:var(--red)}
+.t-행정{background:#efe5f6;color:var(--purple)}
+.t-선생님업무,.t-대기{background:#fff1c9;color:#8a6a10}
+.t-상담OT,.t-휴원{background:#dde8f6;color:var(--blue)}
+.t-특강{background:#e6e6e6;color:#555}
+table{width:100%;border-collapse:collapse;background:var(--card)}
+th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:middle}
+th{background:#f1ead9;color:var(--navy);font-weight:700;position:sticky;top:0;white-space:nowrap}
+tr:hover td{background:#fbf7ee}
+.tw{overflow:auto;border:1px solid var(--line);border-radius:10px;max-height:70vh}
+td input{width:100%;min-width:56px;padding:5px 6px}
+td input.num{width:64px;text-align:right}
+.pos{color:var(--green);font-weight:700}.neg{color:var(--red);font-weight:700}
+.warn{background:#fdecea !important}
+.note{background:#fff8e6;border:1px solid var(--gold2);border-left:4px solid var(--gold);padding:10px 14px;border-radius:6px;font-size:13px;margin-bottom:14px;line-height:1.6}
+/* kanban */
+.kan{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;overflow-x:auto}
+.col{background:#efe8d8;border-radius:10px;padding:10px;min-height:300px}
+.col h4{margin:0 0 8px;font-size:13px;color:var(--navy);display:flex;justify-content:space-between}
+.col.over{outline:2px dashed var(--gold)}
+.lead{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;cursor:pointer;border-left:4px solid var(--gold)}
+.lead:hover{box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.lead b{font-size:14px}.lead .m{color:var(--muted);font-size:12px;margin-top:3px}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.cal .dh{background:#f1ead9;padding:6px;text-align:center;font-weight:700;font-size:12px;color:var(--navy)}
+.cal .d{min-height:104px;border-top:1px solid var(--line);border-left:1px solid var(--line);padding:4px;cursor:pointer;font-size:12px}
+.cal .d:nth-child(7n+1){border-left:none}
+.cal .d.out{background:#f8f5ee;color:#bbb}
+.cal .d.today .dn{background:var(--red);color:#fff;border-radius:50%;padding:1px 6px}
+.cal .ev{display:block;margin:2px 0;padding:2px 5px;border-radius:4px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* modal */
+.mbg{position:fixed;inset:0;background:rgba(20,25,40,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 12px;overflow:auto;z-index:50}
+.modal{background:var(--card);border-radius:12px;width:min(820px,100%);padding:20px 22px;border-top:5px solid var(--gold)}
+.modal h3{margin:0 0 14px;color:var(--navy)}
+.fg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px}
+.fg label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);font-weight:600}
+.fg label.full{grid-column:1/-1}
+.fg input,.fg select,.fg textarea{color:var(--ink);font-weight:400}
+.sec{grid-column:1/-1;margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line);color:var(--navy);font-weight:800;font-size:14px}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.mfoot .l{margin-right:auto}
+.score{display:flex;gap:4px}
+.score button{width:30px;height:30px;border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer}
+.score button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.daybox{border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:10px;background:#fff}
+.daybox h4{margin:0 0 8px;color:var(--navy);font-size:14px}
+.obsrow{display:grid;grid-template-columns:150px 1fr;gap:8px;align-items:center;margin:5px 0;font-size:13px}
+.chk{display:flex;gap:8px;align-items:center;padding:4px 0}
+.chk.done span{text-decoration:line-through;color:var(--muted)}
+.sub{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.sub button{border:1px solid var(--line);background:#fff;padding:6px 12px;border-radius:16px;cursor:pointer;font-size:13px}
+.sub button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.avg{font-weight:800;color:var(--navy)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:8px;z-index:99;font-size:13px;border-left:4px solid var(--gold)}
+.cs{display:block;border-left:3px solid var(--blue);background:#f2f6fc;border-radius:4px;padding:5px 6px;margin-bottom:5px;font-size:12px;cursor:pointer}
+.cs.visit{border-left-color:var(--gold);background:#fbf5e6}
+.cs.ret{border-left-color:var(--red);background:#fdecea}
+.cs.done{border-left-color:#aaa;background:#f1f1f1;color:#777}
+.cal .cs{font-size:11px;padding:2px 5px;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs b{font-size:12px}.cs .m{color:var(--muted);font-size:11px}
+header h1{display:flex;align-items:center;gap:10px}
+header img.logo{height:38px;max-width:120px;object-fit:contain;background:#fff;border-radius:6px;padding:3px}
+.hbtn.bell{background:var(--red);border-color:var(--red);font-weight:700;animation:pulse 1.6s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,80,77,.6)}50%{box-shadow:0 0 0 6px rgba(192,80,77,0)}}
+.lgfield{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);font-weight:600}
+.lgprev{width:84px;height:84px;border:1px dashed var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--muted);font-weight:400;overflow:hidden}
+.lgprev img{max-width:100%;max-height:100%;object-fit:contain}
+.alertbox{background:#fdf0ef;border:1px solid #efc9c7;border-left:5px solid var(--red);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+.alertbox h3{margin:0 0 4px;color:var(--red);font-size:15px}
+.hint{font-weight:400;color:var(--blue)}
+.kpi.go{cursor:pointer;transition:transform .12s,box-shadow .12s;position:relative}
+.kpi.go:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(31,42,68,.12)}
+.kpi.go::after{content:'바로가기 →';position:absolute;right:14px;bottom:12px;font-size:11px;color:var(--gold);font-weight:700;opacity:.8}
+.kpi.go:hover::after{opacity:1}
+@media(max-width:700px){.cal .d{min-height:70px;padding:2px}.cal .cs b{font-weight:600}.fg{grid-template-columns:1fr}.kan{grid-template-columns:repeat(5,240px)}.obsrow{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+@media print{header,nav,.bar,.btn{display:none !important}body{background:#fff}}
+/* ================= 학습일지 톤: 회색 창 바탕 + 흰 시트 + 파란 포인트 ================= */
+:root{
+  --navy:#1d1d1f; --navy2:#3a3a3c; --gold:#007aff; --gold2:#d6e6ff;
+  --paper:#ebebee; --card:#fff; --line:#e5e5ea; --ink:#1d1d1f; --muted:#6e6e73;
+  --red:#b8262b; --green:#3a6b17; --blue:#007aff; --purple:#6b4a9e;
+  --raised:#f5f5f7; --rule:#efeff2; --faint:#77777c; --control:#d1d1d6; --blue-hover:#0068dc;
+  --ring:0 0 0 3.5px rgba(0,122,255,.3);
+  --shadow-ctl:0 0 0 .5px rgba(0,0,0,.1),0 .5px 1.5px rgba(0,0,0,.1);
+  --shadow-card:0 0 0 .5px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.04);
+  --ease-out:cubic-bezier(.22,1,.36,1);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Pretendard Variable",Pretendard,"Apple SD Gothic Neo",system-ui,"Segoe UI","Malgun Gothic",sans-serif;
+  background:var(--paper);background-image:none;letter-spacing:-.006em;word-break:keep-all;-webkit-font-smoothing:antialiased;font-feature-settings:"tnum"}
+:focus-visible{outline:none;box-shadow:var(--ring)}
+
+/* 상단: 창 바탕 위의 제목줄 + 사이드바식 메뉴 */
+header{background:transparent;color:var(--ink);border-bottom:0;padding:16px 24px 8px;gap:12px}
+header h1{font-size:16px;font-weight:700;letter-spacing:-.02em}
+header h1 small{color:var(--faint);font-weight:500;font-size:13px;margin-left:8px}
+header h1:not(:has(img.logo))::before{content:"";width:28px;height:28px;flex:none;border-radius:7px;
+  background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M8 7h9a3 3 0 0 1 3 3v11H11a3 3 0 0 1-3-3z' fill='%23fff'/%3E%3Cpath d='M11 12h6M11 15.5h6M11 19h3.5' stroke='%23007aff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/28px no-repeat}
+header img.logo{height:32px;background:#fff;border-radius:7px;box-shadow:var(--shadow-ctl)}
+#dirty{color:#9a5b00;font-weight:500}
+.hbtn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 13px;border:0;border-radius:7px;background:#fff;color:var(--ink);box-shadow:var(--shadow-ctl);font-size:13.5px;font-weight:500;
+  transition:background-color .15s ease,transform .12s var(--ease-out)}
+.hbtn:hover{background:#fafafb;color:var(--ink);border-color:transparent}
+.hbtn:active{transform:scale(.97)}
+.hbtn.gold{background:var(--blue);color:#fff;box-shadow:0 .5px 1.5px rgba(0,70,180,.35);font-weight:600}
+.hbtn.gold:hover{background:var(--blue-hover);color:#fff}
+.hbtn.bell{background:var(--red);color:#fff;box-shadow:none}
+.hbtn.bell:hover{background:#9f1f24;color:#fff}
+nav{background:transparent;padding:0 20px 8px;gap:2px}
+nav button{color:var(--ink);padding:0 12px;height:30px;border-radius:7px;border-bottom:0;font-size:14px;transition:background-color .15s ease}
+nav button:hover{background:rgba(0,0,0,.045)}
+nav button.on{background:rgba(0,0,0,.085);color:var(--ink);font-weight:600}
+
+/* 본문: 떠 있는 흰 시트 */
+main{background:#fff;border-radius:12px;width:calc(100% - 20px);margin:0 auto 10px;padding:30px 32px 48px;min-height:calc(100vh - 130px);
+  box-shadow:0 0 0 .5px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05)}
+main>*{animation:rise .32s var(--ease-out) both}
+h2{font-size:26px;line-height:32px;font-weight:700;letter-spacing:-.028em;color:var(--ink);margin:0 0 6px}
+.desc{color:var(--muted);font-size:14px;line-height:21px;margin:0 0 20px}
+.bar{margin-bottom:16px}
+
+/* 컨트롤 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 13px;border:0;border-radius:7px;background:var(--blue);color:#fff;
+  box-shadow:0 .5px 1.5px rgba(0,70,180,.35);font-size:13.5px;font-weight:500;white-space:nowrap;transition:background-color .15s ease,transform .12s var(--ease-out)}
+.btn:hover{background:var(--blue-hover)}
+.btn:active{transform:scale(.97)}
+.btn.gold{background:var(--blue);color:#fff;font-weight:600}
+.btn.line{background:#fff;color:var(--ink);border:0;box-shadow:var(--shadow-ctl)}
+.btn.line:hover{background:#fafafb}
+.btn.red{background:#fff;color:var(--red);border:0;box-shadow:var(--shadow-ctl)}
+.btn.red:hover{background:#fff6f5}
+.btn.sm{height:26px;padding:0 10px;font-size:13px}
+input,select,textarea{border:0;border-radius:7px;background:#fff;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2),0 .5px 1px rgba(0,0,0,.04);transition:box-shadow .15s ease}
+input:focus,select:focus,textarea:focus{outline:none;box-shadow:inset 0 0 0 1px var(--blue),var(--ring)}
+input[type=checkbox]{box-shadow:none;accent-color:var(--blue)}
+.sub{display:inline-flex;gap:2px;padding:2px;background:rgba(0,0,0,.06);border-radius:8px}
+.sub button{height:26px;padding:0 12px;border:0;border-radius:6px;background:transparent;color:var(--ink);font-size:13px}
+.sub button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 0 0 .5px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.14)}
+.score button{border:0;border-radius:7px;box-shadow:var(--shadow-ctl)}
+.score button.on{background:var(--blue);color:#fff}
+
+/* 카드·KPI */
+.card{background:#fff;border:0;border-radius:12px;padding:20px;box-shadow:var(--shadow-card)}
+.card h3{font-size:16px;font-weight:600;color:var(--ink);margin:0 0 12px}
+.kpi{border-top:0;background:var(--raised);box-shadow:none}
+.kpi .l{font-size:13px;color:var(--muted)}
+.kpi .n{font-size:26px;line-height:32px;font-weight:600;letter-spacing:-.02em;color:var(--ink);margin-top:4px}
+.kpi.go:hover{transform:none;background:#ececf0;box-shadow:none}
+.kpi.go::after{color:var(--blue);font-weight:600}
+.list li{border-bottom:1px solid var(--rule);min-height:44px}
+.empty{color:var(--muted)}
+.note{background:#fbf8ec;border:0;border-radius:10px;color:#6f4f0c}
+.alertbox{background:#fff4f3;border:0;border-radius:12px;box-shadow:inset 0 0 0 .5px rgba(184,38,43,.25)}
+.alertbox h3{color:var(--red);font-weight:600}
+.hint{color:var(--blue)}
+.avg{color:var(--ink)}
+
+/* 태그: 학습일지의 알약 색 */
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:12px;font-weight:500}
+.t-학사일정,.t-재원{background:#e2f1d6;color:#1f3d0b}
+.t-시험기간,.t-선생님업무,.t-대기{background:#f6efd9;color:#5c4708}
+.t-공휴일,.t-퇴원,.t-미등록{background:#ffecea;color:#831c1e}
+.t-행정{background:#f1eafa;color:#4f3577}
+.t-상담OT,.t-휴원{background:#e5f0ff;color:#0a4fa8}
+.t-특강{background:#f0f0f3;color:#3a3a3c}
+.pos{color:var(--green)}.neg{color:var(--red)}
+
+/* 표 */
+.tw{border:0;border-radius:12px;box-shadow:var(--shadow-card)}
+table{background:#fff}
+th{background:#fff;color:var(--faint);font-weight:500;font-size:12px;border-bottom:1px solid var(--line)}
+td{border-bottom:1px solid var(--rule)}
+tr:hover td{background:var(--raised)}
+.warn{background:#fff6f5 !important}
+
+/* 칸반 */
+.col{background:var(--raised);border-radius:12px}
+.col h4{color:var(--ink);font-weight:600}
+.col h4 span{color:var(--faint);font-weight:500}
+.col.over{outline:2px dashed var(--blue);outline-offset:-2px}
+.lead{border:0;border-left:3px solid var(--gold);border-radius:9px;box-shadow:var(--shadow-card)}
+.lead:hover{box-shadow:0 0 0 .5px rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.08)}
+
+/* 달력 */
+.cal{border:0;border-radius:12px;background:#fff;box-shadow:var(--shadow-card)}
+.cal .dh{background:var(--raised);color:var(--muted);font-weight:600}
+.cal .d{border-top:1px solid var(--rule);border-left:1px solid var(--rule);transition:background-color .15s ease}
+.cal .d:hover{background:#fafafb}
+.cal .d.out{background:#fafafb;color:#c7c7cc}
+.cal .d.today .dn{background:var(--blue)}
+.cs{background:#e5f0ff;border-left-color:var(--blue)}
+.cs.visit{border-left-color:#c98a00;background:#f6efd9}
+.cs.ret{border-left-color:var(--red);background:#ffecea}
+.cs.done{border-left-color:#aeaeb2;background:#f0f0f3;color:var(--muted)}
+
+/* 대화상자 */
+.mbg{background:rgba(0,0,0,.2)}
+.modal{border-top:0;border-radius:14px;padding:24px;box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 24px 70px rgba(0,0,0,.25);animation:pop .22s var(--ease-out)}
+.modal h3{color:var(--ink);font-size:18px;font-weight:700}
+.fg label{color:var(--muted);font-weight:500;font-size:13px}
+.sec{color:var(--ink);font-weight:600;font-size:15px;border-top:1px solid var(--rule)}
+.daybox{border:0;background:var(--raised);border-radius:10px}
+.daybox h4{color:var(--ink);font-weight:600}
+.lgprev{border:1px dashed var(--control)}
+.toast{background:rgba(30,30,32,.88);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);border-left:0;border-radius:12px;font-weight:500}
+@keyframes pop{from{opacity:0;transform:scale(.96)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){main>*,.modal{animation:none}}
+@media(max-width:700px){
+  header{padding:12px 16px 6px}
+  nav{padding:0 12px 8px}
+  main{width:100%;border-radius:0;padding:20px 16px 40px;box-shadow:none}
+  h2{font-size:21px;line-height:28px}
+}
+@media print{main{box-shadow:none;padding:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="acName">우리 학원<small>학생 관리</small></h1>
+  <span id="dirty"></span>
+  <span id="bell"></span>
+  <span class="sp"></span>
+  <button class="hbtn" onclick="openSettings()">⚙ 설정</button>
+  <button class="hbtn" onclick="document.getElementById('fileIn').click()">📂 불러오기</button>
+  <button class="hbtn gold" onclick="saveFile()">💾 저장(파일)</button>
+  <input type="file" id="fileIn" accept=".json" hidden onchange="loadFile(this)">
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+
+<script>
+/* ================= 데이터 ================= */
+const TABS=[['dash','대시보드'],['leads','상담 관리'],['active','재원생 관리'],['leave','휴원생 관리']];
+const STAGES=['신규문의','전화상담예약','방문상담예약','등록완료','미등록'];
+const uid=()=>Math.random().toString(36).slice(2,10);
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const addDays=(d,n)=>{const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function sample(){
+  const t=today();
+  return {
+   settings:{name:'우리 학원',teachers:['원장','A선생님','B선생님','C선생님','행정실']},
+   leads:[
+    {id:uid(),stage:'신규문의',created:t,name:'학생1',phone:'010-0000-0001',subject:'수학',school:'가온초',grade:'초5',consultDate:'',memo:'수업 방식(개별/그룹) 문의',teacher:''},
+    {id:uid(),stage:'전화상담예약',created:addDays(t,-1),name:'학생2',phone:'010-0000-0002',subject:'수학',school:'나래중',grade:'중2',consultDate:addDays(t,1),consultTime:'16:00',memo:'오후 4시 통화 희망',teacher:'원장'},
+    {id:uid(),stage:'방문상담예약',created:addDays(t,-3),name:'학생3',phone:'010-0000-0003',subject:'수학',school:'다솜초',grade:'초6',consultDate:addDays(t,2),consultTime:'15:00',memo:'3시 방문 / 레벨테스트 예정',teacher:'원장'},
+    {id:uid(),stage:'등록완료',created:addDays(t,-10),name:'학생4',phone:'010-0000-0004',subject:'수학',school:'나래중',grade:'중1',consultDate:addDays(t,-8),memo:'',teacher:'A선생님',motive:'지인 소개',prevMethod:'개인과외 6개월',leaveReason:'체계적인 관리 희망',homework:'80점',test:'중1-1 테스트 72점',classTime:'월·수·금 2부',firstBook:'1-2 개념',parentReq:'꼼꼼한 관리 부탁',summary:'이해력은 좋으나 연산 연습 부족. 반복 훈련 필요.'},
+    {id:uid(),stage:'미등록',created:addDays(t,-12),name:'학생5',phone:'010-0000-0005',subject:'수학',school:'라온고',grade:'고1',consultDate:'',memo:'시간대 맞지 않음',teacher:''}
+   ],
+   students:[
+    {id:uid(),name:'학생4',status:'재원',phone:'010-0000-0004',school:'나래중',grade:'중1',subject:'수학',teacher:'A선생님',classTime:'월·수·금 2부',start:addDays(t,-8),progress:'1-2 개념',memo:'',logs:[{id:uid(),date:addDays(t,-8),type:'대면',content:'[초기상담] 이해력은 좋으나 연산 연습 부족. 반복 훈련 필요.'}]},
+    {id:uid(),name:'학생6',status:'재원',phone:'010-0000-0006',school:'나래중',grade:'중2',subject:'수학',teacher:'A선생님',classTime:'화·목 1부',start:addDays(t,-150),progress:'2-2 복습',memo:'',logs:[{id:uid(),date:addDays(t,-45),type:'전화',content:'중간고사 결과 공유, 서술형 보완 필요'}]},
+    {id:uid(),name:'학생13',status:'재원',phone:'010-0000-0013',school:'가온중',grade:'중3',subject:'수학',teacher:'B선생님',classTime:'월·수 3부',start:addDays(t,-200),progress:'3-2 개념',memo:'',logs:[{id:uid(),date:addDays(t,-12),type:'대면',content:'고등 선행 진도 상의'}]},
+    {id:uid(),name:'학생9',status:'휴원',phone:'010-0000-0009',school:'가온중',grade:'중3',teacher:'B선생님',end:addDays(t,-25),ret:addDays(t,5),memo:'가족 일정으로 휴원'},
+    {id:uid(),name:'학생12',status:'휴원',phone:'010-0000-0012',school:'다솜초',grade:'초6',teacher:'A선생님',end:addDays(t,-10),ret:addDays(t,40),memo:'방학 중 해외 체류'}
+   ]
+  };
+}
+let S=sample(); let tab='dash'; let dirty=false; let dashMonth=new Date();
+
+function mark(){dirty=true;document.getElementById('dirty').textContent='● 저장되지 않은 변경사항'}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+
+/* ================= 로고 ================= */
+function headerHTML(sub){return `${S.settings.logo?`<img class="logo" src="${S.settings.logo}" alt="">`:''}<span>${esc(S.settings.name||'우리 학원')}<small>${sub}</small></span>`}
+function readLogo(file,cb){
+  if(!file.type.startsWith('image/')){alertBox('이미지 파일만 올릴 수 있어요.');return}
+  const r=new FileReader();r.onload=()=>{const img=new Image();
+    img.onload=()=>{const k=Math.min(1,240/Math.max(img.width,img.height));const c=document.createElement('canvas');
+      c.width=Math.max(1,Math.round(img.width*k));c.height=Math.max(1,Math.round(img.height*k));c.getContext('2d').drawImage(img,0,0,c.width,c.height);cb(c.toDataURL('image/png'))};
+    img.onerror=()=>alertBox('이미지 파일을 읽을 수 없습니다.');img.src=r.result};
+  r.readAsDataURL(file);
+}
+function logoField(){return `<div class="full lgfield">학원 로고
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="lgPrev" class="lgprev">${S.settings.logo?`<img src="${S.settings.logo}" alt="">`:'없음'}</div>
+  <button type="button" class="btn line sm" id="lgUp">이미지 선택</button><button type="button" class="btn red sm" id="lgDel">로고 삭제</button><input type="file" id="lgIn" accept="image/*" hidden></div>
+  <span style="font-weight:400">PNG·JPG 권장 · 상단 학원명 옆에 표시되고, 💾 저장(파일) 시 데이터와 함께 저장돼요.</span></div>`}
+function bindLogo(bg,st){
+  bg.querySelector('#lgUp').onclick=()=>bg.querySelector('#lgIn').click();
+  bg.querySelector('#lgIn').onchange=e=>{const f=e.target.files[0];if(f)readLogo(f,u=>{st.logo=u;bg.querySelector('#lgPrev').innerHTML=`<img src="${u}" alt="">`})};
+  bg.querySelector('#lgDel').onclick=()=>{st.logo='';bg.querySelector('#lgPrev').textContent='없음'};
+}
+
+/* ================= 휴원생 복귀 알림 (복귀 예정일 7일 전부터) ================= */
+function dueReturns(){const t=today();return (S.students||[]).filter(s=>s.status==='휴원'&&s.ret&&addDays(s.ret,-7)<=t&&s.retChecked!==s.ret).sort((a,b)=>a.ret.localeCompare(b.ret))}
+function dLabel(ret){const n=Math.round((new Date(ret+'T00:00:00')-new Date(today()+'T00:00:00'))/864e5);return n>0?`D-${n}`:n===0?'오늘':`${-n}일 지남`}
+function returnRows(arr){return arr.map(s=>`<li><span><b>${esc(s.name)}</b> ${esc(s.school||'')} ${esc(s.grade||'')}${s.teacher?' · '+esc(s.teacher):''}${s.phone?' · '+esc(s.phone):''}</span>
+  <span style="display:flex;gap:6px;align-items:center"><span class="tag t-공휴일">복귀 ${s.ret.slice(5)} · ${dLabel(s.ret)}</span><button class="btn sm" onclick="checkReturn('${s.id}')">확인 완료</button></span></li>`).join('')}
+function returnBanner(){const d=dueReturns();return d.length?`<div class="alertbox"><h3>🔔 휴원생 복귀 확인 (${d.length}명)</h3>
+  <p class="desc" style="margin:0 0 4px">복귀 예정일 1주일 전입니다. 학부모님께 복귀 여부를 확인한 뒤 '확인 완료'를 눌러 주세요.</p><ul class="list">${returnRows(d)}</ul></div>`:''}
+function showReturnPopup(){const d=dueReturns();if(!d.length)return;
+  const bg=modal(`<h3>🔔 휴원생 복귀 확인 알림</h3><p>복귀 예정일이 1주일 이내로 다가온 휴원생이 <b>${d.length}명</b> 있어요.</p><ul class="list">${returnRows(d)}</ul>
+  <div class="mfoot"><button class="btn line" onclick="this.closest('.mbg').remove()">닫기</button></div>`);bg.dataset.alert='1'}
+function checkReturn(id){const s=S.students.find(x=>x.id===id);if(!s)return;s.retChecked=s.ret;mark();toast(`${s.name} 복귀 확인 완료`);
+  const had=document.querySelector('.mbg[data-alert]');document.querySelectorAll('.mbg[data-alert]').forEach(b=>b.remove());render();if(had)showReturnPopup()}
+function bellHTML(){const n=dueReturns().length;return n?`<button class="hbtn bell" onclick="showReturnPopup()">🔔 복귀 확인 ${n}</button>`:''}
+
+/* ================= 재원생 상담 기록 (마지막 상담 후 30일 지나면 '상담 필요') ================= */
+const LOG_DAYS=30, LOG_TYPES=['대면','전화','문자'];
+function lastLog(s){const l=(s.logs||[]).map(x=>x.date).filter(Boolean).sort();return l.length?l[l.length-1]:''}
+function daysSince(d){return Math.round((new Date(today()+'T00:00:00')-new Date(d+'T00:00:00'))/864e5)}
+function needCounsel(s){if(s.status!=='재원')return false;const b=lastLog(s)||s.start;return !b||daysSince(b)>=LOG_DAYS}
+function counselCell(s){const l=lastLog(s);
+  return `${l?`${l.slice(5)} <span style="color:var(--muted);font-size:12px">(${daysSince(l)}일 전)</span>`:'<span style="color:var(--muted)">기록 없음</span>'}${needCounsel(s)?' <span class="tag t-공휴일">상담 필요</span>':''}`}
+function openLogs(id){
+  const s=S.students.find(x=>x.id===id);if(!s)return;if(!s.logs)s.logs=[];
+  const bg=modal(`<h3>💬 ${esc(s.name)} 상담 기록</h3>
+   <p class="desc" style="margin:-6px 0 12px">${esc(s.school||'')} ${esc(s.grade||'')}${s.teacher?' · 담당 '+esc(s.teacher):''}${s.phone?' · '+esc(s.phone):''} · 마지막 상담 후 ${LOG_DAYS}일이 지나면 '상담 필요'로 표시돼요.</p>
+   <div class="daybox" style="margin-top:0"><div class="fg">
+    <label>상담일<input type="date" id="lgD" value="${today()}"></label>
+    <label>방식<select id="lgT">${LOG_TYPES.map(x=>`<option>${x}</option>`).join('')}</select></label>
+    <label class="full">상담 내용<textarea id="lgC" placeholder="학부모님과 나눈 내용, 다음에 챙길 점 등"></textarea></label></div>
+    <div style="text-align:right;margin-top:8px"><button class="btn gold" id="lgAdd">+ 기록 추가</button></div></div>
+   <div id="lgList" style="margin-top:12px"></div>
+   <div class="mfoot"><button class="btn" data-x>닫기</button></div>`,bg=>{});
+  const draw=()=>{const L=[...s.logs].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+    bg.querySelector('#lgList').innerHTML=L.length?`<ul class="list">${L.map(x=>`<li style="align-items:flex-start"><span><b>${x.date||'-'}</b> <span class="tag t-상담OT">${esc(x.type)}</span><div style="white-space:pre-line;margin-top:4px">${esc(x.content)}</div></span><button class="btn red sm" data-del="${x.id}">✕</button></li>`).join('')}</ul>`:'<div class="empty">아직 상담 기록이 없어요</div>';
+    bg.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{s.logs=s.logs.filter(x=>x.id!==b.dataset.del);mark();draw()})};
+  draw();
+  bg.querySelector('#lgAdd').onclick=()=>{const c=bg.querySelector('#lgC').value.trim();if(!c){bg.querySelector('#lgC').focus();return}
+    s.logs.push({id:uid(),date:bg.querySelector('#lgD').value||today(),type:bg.querySelector('#lgT').value,content:c});bg.querySelector('#lgC').value='';mark();draw();toast('상담 기록을 추가했어요')};
+  bg.querySelector('[data-x]').onclick=()=>{bg.remove();render()};
+  bg.addEventListener('mousedown',e=>{if(e.target===bg)render()});
+}
+function needCounselCard(){const L=(S.students||[]).filter(needCounsel).sort((a,b)=>(lastLog(a)||a.start||'').localeCompare(lastLog(b)||b.start||''));
+  return `<div class="card"><h3>💬 정기 상담 필요 재원생 (${LOG_DAYS}일 이상)</h3>${L.length?`<ul class="list">${L.map(s=>`<li style="cursor:pointer" onclick="openLogs('${s.id}')"><span><b>${esc(s.name)}</b> ${esc(s.grade||'')}${s.teacher?' · '+esc(s.teacher):''}</span><span style="font-size:12px">${lastLog(s)?'마지막 상담 '+daysSince(lastLog(s))+'일 전':'상담 기록 없음'}</span></li>`).join('')}</ul>`:'<div class="empty">없음</div>'}</div>`}
+function enrollFromLead(l){
+  if(!S.students)S.students=[];
+  if(S.students.some(s=>s.name===l.name&&(s.phone||'')===(l.phone||'')&&s.status==='재원'))return false;
+  S.students.push({id:uid(),name:l.name,phone:l.phone||'',school:l.school||'',grade:l.grade||'',subject:l.subject||'',teacher:l.teacher||'',status:'재원',start:today(),
+    classTime:l.classTime||'',progress:l.firstBook||'',memo:'',end:'',ret:'',second:'',
+    logs:l.summary?[{id:uid(),date:l.consultDate||today(),type:'대면',content:'[초기상담] '+l.summary}]:[]});
+  return true;
+}
+
+/* ================= 파일 저장/불러오기 ================= */
+function saveFile(){
+  const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`학생관리_${today()}.json`;a.click();dirty=false;document.getElementById('dirty').textContent='';toast('내 PC에 저장했습니다');
+}
+function loadFile(inp){
+  const f=inp.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.settings||!Array.isArray(d.leads))throw 0;S={settings:d.settings,leads:d.leads,students:Array.isArray(d.students)?d.students:[]};dirty=false;document.getElementById('dirty').textContent='';render();toast('데이터를 불러왔습니다');setTimeout(showReturnPopup,300)}catch(e){alertBox('올바른 데이터 파일이 아닙니다.')}};
+  r.readAsText(f);inp.value='';
+}
+
+/* ================= 공통 모달 ================= */
+function modal(html,onMount){
+  const bg=document.createElement('div');bg.className='mbg';bg.innerHTML=`<div class="modal">${html}</div>`;
+  bg.addEventListener('mousedown',e=>{if(e.target===bg)bg.remove()});
+  document.body.appendChild(bg);onMount&&onMount(bg);return bg;
+}
+function alertBox(msg){modal(`<h3>안내</h3><p>${esc(msg)}</p><div class="mfoot"><button class="btn" onclick="this.closest('.mbg').remove()">확인</button></div>`)}
+function confirmBox(msg,ok){modal(`<h3>확인</h3><p>${esc(msg)}</p><div class="mfoot"><button class="btn line" data-x>취소</button><button class="btn red" data-ok>삭제</button></div>`,bg=>{
+  bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.querySelector('[data-ok]').onclick=()=>{bg.remove();ok()}})}
+function fieldHTML(f,v){
+  const [k,l,t,o]=f;
+  if(t==='sec')return `<div class="sec">${l}</div>`;
+  const full=(t==='area'||(o&&o.full))?' full':'';
+  let inp;
+  if(t==='sel')inp=`<select name="${k}">${(typeof o==='function'?o():o).map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
+  else if(t==='area')inp=`<textarea name="${k}">${esc(v)}</textarea>`;
+  else inp=`<input name="${k}" type="${t==='date'?'date':'text'}" value="${esc(v)}">`;
+  return `<label class="${full}">${l}${inp}</label>`;
+}
+function formModal(title,fields,obj,onSave,onDel){
+  const html=`<h3>${title}</h3><div class="fg">${fields.map(f=>fieldHTML(f,obj[f[0]])).join('')}</div>
+  <div class="mfoot">${onDel?'<button class="btn red l" data-del>삭제</button>':''}<button class="btn line" data-x>취소</button><button class="btn" data-s>저장</button></div>`;
+  modal(html,bg=>{
+    bg.querySelector('[data-x]').onclick=()=>bg.remove();
+    bg.querySelector('[data-s]').onclick=()=>{fields.forEach(([k,,t])=>{if(t!=='sec')obj[k]=bg.querySelector(`[name="${k}"]`).value});onSave(obj);bg.remove();mark();render()};
+    if(onDel)bg.querySelector('[data-del]').onclick=()=>confirmBox('삭제할까요?',()=>{onDel();bg.remove();mark();render()});
+  });
+}
+const teacherOpts=()=>['',...S.settings.teachers];
+
+/* ================= 렌더 ================= */
+function render(){
+  document.getElementById('acName').innerHTML=headerHTML('학생 관리');document.getElementById('bell').innerHTML=bellHTML();
+  document.getElementById('nav').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" onclick="tab='${k}';render()">${l}</button>`).join('');
+  ({dash:rDash,leads:rLeads,active:rActive,leave:rLeave})[tab](document.getElementById('main'));
+}
+
+/* ---------- 상담 관리 ---------- */
+const LEAD_F=[
+ ['stage','단계','sel',STAGES],['created','문의일','date'],['name','학생 이름','text'],['phone','연락처','text'],
+ ['subject','과목','sel',['수학','국어','영어','기타']],['school','학교','text'],['grade','학년','text'],['consultDate','상담 예약일','date'],['consultTime','상담 시간 (예: 16:00)','text'],
+ ['teacher','담당','sel',teacherOpts],['memo','문의·상담 내용','area'],
+ ['','초기상담 기록','sec'],
+ ['motive','알게 된 경로','text'],['prevMethod','이전 공부 방식 · 진도','text'],['leaveReason','학원을 옮기는 이유','text'],
+ ['homework','성실성','text'],['test','<span>레벨테스트 결과 <span class="hint">(매쓰홀릭 진단평가 링크를 넣으세요)</span></span>','text',{full:1}],['classTime','희망 수업 요일 · 시간','text'],['firstBook','시작 교재','text'],
+ ['parentReq','학부모님이 바라는 점','area'],['summary','상담 후 종합 의견','area']
+];
+function rDash(m){
+  const t=today(),y=dashMonth.getFullYear(),mo=dashMonth.getMonth(),ym=`${y}-${String(mo+1).padStart(2,'0')}`;
+  const isCur=ym===t.slice(0,7);
+  const withDate=S.leads.filter(l=>l.consultDate&&l.consultDate.startsWith(ym));
+  const monthLeads=S.leads.filter(l=>(l.created||'').startsWith(ym));
+  const reg=monthLeads.filter(l=>l.stage==='등록완료').length, closed=reg+monthLeads.filter(l=>l.stage==='미등록').length;
+  const waiting=S.leads.filter(l=>['전화상담예약','방문상담예약'].includes(l.stage));
+  const todayN=waiting.filter(l=>l.consultDate===t).length;
+  const undated=waiting.filter(l=>!l.consultDate);
+  const overdue=waiting.filter(l=>l.consultDate&&l.consultDate<t).sort((a,b)=>a.consultDate.localeCompare(b.consultDate));
+  const fresh=S.leads.filter(l=>l.stage==='신규문의').sort((a,b)=>(b.created||'').localeCompare(a.created||''));
+  const nN=(S.students||[]).filter(needCounsel).length;
+  const kind=l=>l.stage==='방문상담예약'?'visit':l.stage==='전화상담예약'?'':'done';
+  const first=new Date(y,mo,1),startD=new Date(y,mo,1-first.getDay());
+  let cells='';
+  const nCells=Math.ceil((first.getDay()+new Date(y,mo+1,0).getDate())/7)*7;
+  for(let i=0;i<nCells;i++){const d=new Date(startD);d.setDate(startD.getDate()+i);
+    const ds=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const rets=(S.students||[]).filter(s=>s.status==='휴원'&&s.ret===ds);
+    const items=S.leads.filter(l=>l.consultDate===ds).sort((a,b)=>(a.consultTime||'').localeCompare(b.consultTime||''));
+    cells+=`<div class="d ${d.getMonth()!==mo?'out':''} ${ds===t?'today':''}" data-ds="${ds}"><span class="dn">${d.getDate()}</span>${items.map(l=>`<span class="cs ${kind(l)}" data-id="${l.id}" title="${esc(l.stage)}">${l.consultTime?esc(l.consultTime)+' ':''}<b>${esc(l.name||'(이름 미입력)')}</b></span>`).join('')}${rets.map(s=>`<span class="cs ret" data-sid="${s.id}">복귀 <b>${esc(s.name)}</b></span>`).join('')}</div>`;}
+  const li=(arr,f,emp)=>arr.length?`<ul class="list">${arr.map(f).join('')}</ul>`:`<div class="empty">${emp}</div>`;
+  m.innerHTML=`<h2>대시보드</h2><p class="desc">오늘 ${t}${todayN?` · <b style="color:var(--red)">오늘 상담 ${todayN}건</b>`:''} · 상담 관리에서 상담 예약일을 넣으면 달력에 자동으로 표시돼요. 날짜를 누르면 그날 상담을 바로 추가할 수 있어요.</p>
+  ${returnBanner()}
+  <div class="bar"><button class="btn line" onclick="dashMonth=new Date(${y},${mo-1},1);render()">◀</button><b style="font-size:17px;min-width:120px;text-align:center">${y}년 ${mo+1}월</b>
+   <button class="btn line" onclick="dashMonth=new Date(${y},${mo+1},1);render()">▶</button>${isCur?'':'<button class="btn line sm" onclick="dashMonth=new Date();render()">이번 달</button>'}
+   <span style="flex:1"></span><span style="font-size:12px;display:flex;gap:6px"><span class="cs" style="margin:0">전화상담 예약</span><span class="cs visit" style="margin:0">방문상담 예약</span><span class="cs done" style="margin:0">상담 종료(등록/미등록)</span><span class="cs ret" style="margin:0">휴원 복귀 예정</span></span></div>
+  <div class="grid g4" style="margin-bottom:14px">
+   <div class="card kpi go" onclick="tab='leads';render()"><div class="l">${mo+1}월 상담 건수</div><div class="n">${withDate.length}</div></div>
+   <div class="card kpi go" onclick="tab='active';actNeed=false;render()"><div class="l">${mo+1}월 문의 중 등록</div><div class="n">${reg}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">등록 전환율 <b style="color:var(--navy)">${closed?Math.round(reg/closed*100):0}%</b></div></div>
+   <div class="card kpi go" onclick="tab='active';actNeed=true;render()" style="${nN?'border-top-color:var(--red)':''}"><div class="l">정기 상담 필요 재원생 (${LOG_DAYS}일 이상)</div><div class="n" style="${nN?'color:var(--red)':''}">${nN}</div></div>
+  </div>
+  <div class="cal" style="margin-bottom:14px">${'일월화수목금토'.split('').map((x,i)=>`<div class="dh" style="${i===0?'color:var(--red)':i===6?'color:var(--blue)':''}">${x}</div>`).join('')}${cells}</div>
+  <div class="grid g2">
+   ${needCounselCard()}
+   <div class="card"><h3>⚠ 지난 상담 (단계 미변경)</h3>${li(overdue,l=>`<li style="cursor:pointer" onclick="editLead('${l.id}')"><span><b>${esc(l.name||'(이름 미입력)')}</b> ${esc(l.school)} ${esc(l.grade)}</span><span><span class="tag t-공휴일">${l.consultDate.slice(5)}</span></span></li>`,'없음 — 상담이 끝나면 등록완료/미등록으로 옮겨 주세요')}</div>
+   <div class="card"><h3>🗓 상담 날짜 미정</h3>${li(undated,l=>`<li style="cursor:pointer" onclick="editLead('${l.id}')"><span><b>${esc(l.name||'(이름 미입력)')}</b> ${esc(l.school)} ${esc(l.grade)}</span><span class="tag t-대기">${l.stage.replace('상담예약','')}</span></li>`,'없음')}</div>
+   <div class="card"><h3>📞 연락 전 신규 문의</h3>${li(fresh,l=>`<li style="cursor:pointer" onclick="editLead('${l.id}')"><span><b>${esc(l.name||'(이름 미입력)')}</b> ${esc(l.phone)} · ${esc((l.memo||'').slice(0,24))}</span><span>${(l.created||'').slice(5)}</span></li>`,'없음')}</div>
+  </div>`;
+  m.querySelectorAll('.cal .d').forEach(c=>c.onclick=e=>{const rs=e.target.closest('[data-sid]');if(rs)return editLeave(rs.dataset.sid);const it=e.target.closest('[data-id]');if(it)editLead(it.dataset.id);else editLead(null,c.dataset.ds)});
+}
+function rLeads(m){
+  m.innerHTML=`<h2>상담 관리</h2><p class="desc">문의부터 등록까지 단계별로 관리합니다. 카드를 끌어서 단계를 옮기고, 카드를 누르면 연락처와 초기상담 기록지를 작성할 수 있어요.</p>
+  <div class="bar"><button class="btn gold" onclick="editLead()">+ 신규 문의</button><input id="lq" placeholder="이름·학교·연락처 검색" oninput="drawKan()" style="min-width:220px"></div>
+  <div class="kan" id="kan"></div>`;
+  drawKan();
+}
+function drawKan(){
+  const q=(document.getElementById('lq')||{}).value||'';
+  const k=document.getElementById('kan');
+  k.innerHTML=STAGES.map(st=>{
+    const items=S.leads.filter(l=>l.stage===st&&(!q||[l.name,l.school,l.phone].join(' ').includes(q))).sort((a,b)=>(b.created||'').localeCompare(a.created||''));
+    return `<div class="col" data-st="${st}"><h4>${st}<span>${items.length}</span></h4>${items.map(l=>`<div class="lead" draggable="true" data-id="${l.id}" style="border-left-color:${st==='등록완료'?'var(--green)':st==='미등록'?'var(--red)':'var(--gold)'}">
+      <b>${esc(l.name||'(이름 미입력)')}</b> <span class="m">${esc(l.school)} ${esc(l.grade)} · ${esc(l.subject)}</span>
+      <div class="m">${l.consultDate?'상담 '+l.consultDate.slice(5)+(l.consultTime?' '+esc(l.consultTime):'')+' · ':''}${esc((l.memo||'').slice(0,30))}</div>
+      ${l.summary?'<div class="m">📝 초기상담 작성됨</div>':''}</div>`).join('')}</div>`}).join('');
+  k.querySelectorAll('.lead').forEach(c=>{
+    c.onclick=()=>editLead(c.dataset.id);
+    c.ondragstart=e=>e.dataTransfer.setData('id',c.dataset.id);
+  });
+  k.querySelectorAll('.col').forEach(c=>{
+    c.ondragover=e=>{e.preventDefault();c.classList.add('over')};
+    c.ondragleave=()=>c.classList.remove('over');
+    c.ondrop=e=>{e.preventDefault();c.classList.remove('over');const l=S.leads.find(x=>x.id===e.dataTransfer.getData('id'));if(!l)return;
+      const prev=l.stage;l.stage=c.dataset.st;if(l.stage==='등록완료'&&prev!=='등록완료'&&enrollFromLead(l))toast(`${l.name} 학생을 재원생 관리에 추가했어요`);mark();render()};
+  });
+}
+function editLead(id,ds){
+  const l=id?S.leads.find(x=>x.id===id):(ds?{id:uid(),stage:'방문상담예약',created:today(),consultDate:ds}:{id:uid(),stage:'신규문의',created:today()});
+  const prev=id?l.stage:'';
+  formModal(id?'상담 카드':'신규 문의 등록',LEAD_F,l,o=>{if(!id)S.leads.push(o);if(o.stage==='등록완료'&&prev!=='등록완료'&&enrollFromLead(o))toast(`${o.name} 학생을 재원생 관리에 추가했어요`)},id?()=>{S.leads=S.leads.filter(x=>x.id!==id)}:null);
+}
+
+/* ---------- 재원생 관리 ---------- */
+const ACT_F=[['name','이름','text'],['phone','연락처','text'],['school','학교','text'],['grade','학년','text'],['teacher','담당','sel',teacherOpts],['classTime','수업 요일 · 시간','text'],
+ ['start','등록일','date'],['progress','현재 진도','text'],['memo','메모','area']];
+let actTeacher='', actNeed=false;
+function rActive(m){
+  const q=(document.getElementById('aq')||{}).value||'';
+  const all=(S.students||[]).filter(s=>s.status==='재원');
+  const list=all.filter(s=>(!actTeacher||s.teacher===actTeacher)&&(!actNeed||needCounsel(s))&&(!q||[s.name,s.school,s.phone].join(' ').includes(q))).sort((a,b)=>a.name.localeCompare(b.name));
+  const nNeed=all.filter(needCounsel).length;
+  const ym=today().slice(0,7);const monthLogs=all.reduce((n,s)=>n+(s.logs||[]).filter(x=>(x.date||'').startsWith(ym)).length,0);
+  m.innerHTML=`<h2>재원생 관리</h2><p class="desc">상담 관리에서 '등록완료'로 옮긴 학생이 자동으로 들어와요. 학생마다 상담 기록을 남기고, 마지막 상담 후 ${LOG_DAYS}일이 지나면 '상담 필요'로 표시됩니다.</p>
+  <div class="grid g4" style="margin-bottom:14px">
+   <div class="card kpi"><div class="l">재원생</div><div class="n">${all.length}</div></div>
+   <div class="card kpi"><div class="l">이번 달 상담 기록</div><div class="n">${monthLogs}</div></div>
+   <div class="card kpi go" onclick="actNeed=true;render()" style="${nNeed?'border-top-color:var(--red)':''}"><div class="l">상담 필요 (${LOG_DAYS}일 이상)</div><div class="n" style="${nNeed?'color:var(--red)':''}">${nNeed}</div></div>
+  </div>
+  <div class="bar"><input id="aq" placeholder="이름·학교·연락처 검색" value="${esc(q)}" style="min-width:200px">
+   <select id="at">${teacherOpts().map(t=>`<option value="${esc(t)}" ${t===actTeacher?'selected':''}>${t?esc(t):'담당 전체'}</option>`).join('')}</select>
+   <label class="chk"><input type="checkbox" id="an" ${actNeed?'checked':''}> 상담 필요만 보기</label>
+   <span style="flex:1"></span><button class="btn gold" onclick="editActive()">+ 재원생 추가</button></div>
+  <div class="tw"><table><thead><tr><th>이름</th><th>학교·학년</th><th>담당</th><th>수업</th><th>연락처</th><th>등록일</th><th>진도</th><th>최근 상담</th><th>상담 기록</th><th>상태 변경</th></tr></thead><tbody>
+  ${list.map(s=>`<tr class="${needCounsel(s)?'warn':''}"><td style="cursor:pointer" onclick="editActive('${s.id}')"><b>${esc(s.name)}</b></td><td>${esc(s.school)} ${esc(s.grade)}</td><td>${esc(s.teacher)}</td><td>${esc(s.classTime)}</td><td>${esc(s.phone)}</td>
+   <td>${s.start||'-'}</td><td>${esc(s.progress)}</td><td>${counselCell(s)}</td><td><button class="btn line sm" onclick="openLogs('${s.id}')">💬 ${(s.logs||[]).length}건</button></td>
+   <td><select onchange="chgActive('${s.id}',this.value)">${[['재원','재원'],['휴원','휴원'],['퇴원','퇴원']].map(([k,l])=>`<option value="${k}" ${k===s.status?'selected':''}>${l}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="10" class="empty">해당 학생이 없습니다</td></tr>'}
+  </tbody></table></div>`;
+  const aq=m.querySelector('#aq');aq.oninput=()=>{const v=aq.value;rActive(m);const i=document.getElementById('aq');i.focus();i.setSelectionRange(v.length,v.length)};
+  m.querySelector('#at').onchange=e=>{actTeacher=e.target.value;rActive(m)};
+  m.querySelector('#an').onchange=e=>{actNeed=e.target.checked;rActive(m)};
+}
+function chgActive(id,v){const s=S.students.find(x=>x.id===id);s.status=v;if((v==='휴원'||v==='퇴원')&&!s.end)s.end=today();mark();
+  toast(v==='휴원'?`${s.name} → 휴원생 관리로 이동 (복귀 예정일을 입력해 주세요)`:`${s.name} → ${v}`);render()}
+function editActive(id){if(!S.students)S.students=[];
+  const s=id?S.students.find(x=>x.id===id):{id:uid(),status:'재원',start:today(),logs:[]};
+  formModal(id?'재원생 정보':'재원생 추가',ACT_F,s,o=>{if(!id)S.students.push(o)},id?()=>{S.students=S.students.filter(x=>x.id!==id)}:null);
+}
+
+/* ---------- 휴원생 관리 ---------- */
+const LV_STATUS=[['휴원','휴원 중'],['재원','복귀(재원)'],['퇴원','퇴원']];
+const LV_F=[['name','이름','text'],['status','상태','sel',['휴원','재원','퇴원']],['phone','연락처','text'],['teacher','담당','sel',teacherOpts],
+ ['school','학교','text'],['grade','학년','text'],['end','휴원일','date'],['ret','복귀 예정일 (1주일 전부터 알림)','date'],['memo','휴원 사유·메모','area']];
+let lvFilter='휴원';
+function rLeave(m){
+  const list=(S.students||[]).filter(s=>s.status===lvFilter).sort((a,b)=>(a.ret||'9').localeCompare(b.ret||'9'));
+  const st=s=>{if(s.status!=='휴원'||!s.ret)return '-';if(s.retChecked===s.ret)return '<span class="tag t-재원">✅ 확인 완료</span>';
+    if(addDays(s.ret,-7)<=today())return `<span class="tag t-공휴일">🔔 확인 필요</span> <button class="btn sm" onclick="event.stopPropagation();checkReturn('${s.id}')">확인 완료</button>`;
+    return `<span class="tag t-휴원">${dLabel(s.ret)}</span>`};
+  m.innerHTML=`<h2>휴원생 관리</h2><p class="desc">복귀 예정일을 입력해 두면 1주일 전부터 대시보드·상단 알림으로 알려드려요. 학부모님께 복귀 여부를 확인한 뒤 '확인 완료'를 누르면 알림이 사라집니다. (복귀 예정일을 바꾸면 다시 알림)</p>
+  ${returnBanner()}
+  <div class="bar"><div class="sub">${LV_STATUS.map(([k,l])=>`<button class="${k===lvFilter?'on':''}" onclick="lvFilter='${k}';render()">${l} (${(S.students||[]).filter(x=>x.status===k).length})</button>`).join('')}</div>
+  <span style="flex:1"></span><button class="btn gold" onclick="editLeave()">+ 휴원생 등록</button></div>
+  <div class="tw"><table><thead><tr><th>이름</th><th>학교·학년</th><th>담당</th><th>연락처</th><th>휴원일</th><th>복귀 예정일</th><th>복귀 확인</th><th>메모</th><th>상태 변경</th></tr></thead><tbody>
+  ${list.map(s=>`<tr style="cursor:pointer" onclick="editLeave('${s.id}')"><td><b>${esc(s.name)}</b></td><td>${esc(s.school)} ${esc(s.grade)}</td><td>${esc(s.teacher)}</td><td>${esc(s.phone)}</td>
+   <td>${s.end||'-'}</td><td>${s.ret||'-'}</td><td>${st(s)}</td><td>${esc((s.memo||'').slice(0,24))}</td>
+   <td onclick="event.stopPropagation()"><select onchange="chgLeave('${s.id}',this.value)">${LV_STATUS.map(([k,l])=>`<option value="${k}" ${k===s.status?'selected':''}>${l}</option>`).join('')}</select></td></tr>`).join('')||'<tr><td colspan="9" class="empty">해당 학생이 없습니다</td></tr>'}
+  </tbody></table></div>`;
+}
+function chgLeave(id,v){const s=S.students.find(x=>x.id===id);s.status=v;if(v==='휴원'&&!s.end)s.end=today();mark();toast(`${s.name} → ${LV_STATUS.find(x=>x[0]===v)[1]}`);render()}
+function editLeave(id){if(!S.students)S.students=[];
+  const s=id?S.students.find(x=>x.id===id):{id:uid(),status:'휴원',end:today()};
+  formModal(id?'휴원생 정보':'휴원생 등록',LV_F,s,o=>{if(!id)S.students.push(o)},id?()=>{S.students=S.students.filter(x=>x.id!==id)}:null);
+}
+
+/* ---------- 설정 ---------- */
+function openSettings(){
+  modal(`<h3>설정</h3><div class="fg">
+   <label class="full">학원명<input name="nm" value="${esc(S.settings.name)}"></label>
+   <label class="full">선생님·담당 목록 (쉼표로 구분)<input name="tc" value="${esc(S.settings.teachers.join(', '))}"></label>
+   ${logoField()}</div>
+   <div class="note" style="margin-top:14px">🔒 이 프로그램은 인터넷 연결 없이 내 PC에서만 동작하며, 입력한 데이터는 외부로 전송되지 않습니다.<br>작업 후 <b>💾 저장(파일)</b>로 JSON 파일을 내려받고, 다음에 <b>📂 불러오기</b>로 이어서 쓰세요.</div>
+   <div class="mfoot"><button class="btn red l" data-clr>예시 데이터 모두 지우기</button><button class="btn line" data-x>취소</button><button class="btn" data-s>저장</button></div>`,bg=>{
+    const lg={logo:S.settings.logo||''};bindLogo(bg,lg);
+    bg.querySelector('[data-x]').onclick=()=>bg.remove();
+    bg.querySelector('[data-s]').onclick=()=>{S.settings.logo=lg.logo;S.settings.name=bg.querySelector('[name=nm]').value.trim()||'우리 학원';
+      S.settings.teachers=bg.querySelector('[name=tc]').value.split(',').map(x=>x.trim()).filter(Boolean);bg.remove();mark();render()};
+    bg.querySelector('[data-clr]').onclick=()=>confirmBox('상담·휴원생 데이터를 모두 지우고 빈 상태로 시작할까요?',()=>{S.leads=[];S.students=[];bg.remove();mark();render()});
+  });
+}
+render();
+setTimeout(showReturnPopup,300);
+</script>
+</body>
+</html>
