@@ -76,6 +76,8 @@ td input.num{width:64px;text-align:right}
 .col.over{outline:2px dashed var(--gold)}
 .lead{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;cursor:pointer;border-left:4px solid var(--gold)}
 .lead:hover{box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.lead .mvsel{margin-top:8px;width:100%;height:26px;padding:0 6px;font-size:12px;color:var(--muted);background:var(--raised);box-shadow:none}
+.lead .mvsel:hover{color:var(--ink)}
 .lead b{font-size:14px}.lead .m{color:var(--muted);font-size:12px;margin-top:3px}
 /* calendar */
 .cal{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
@@ -296,6 +298,7 @@ const TABS=[
  ['cal','학원 일정'],['meet','주간 회의'],['stu','원생 관리'],['admin','행정']
 ];
 const STAGES=['신규문의','전화상담예약','방문상담예약','등록완료','미등록'];
+const GRADE_OPTS=['','초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업생'];
 const CATS=['학사일정','시험기간','공휴일','행정','선생님업무','상담OT','특강'];
 const OBS_ITEMS=['개념 이해','과제 수행력','오답 정리','숙제 완성도'];
 const ST_STATUS=['재원','휴원','퇴원','대기'];
@@ -451,12 +454,14 @@ function alertBox(msg){modal(`<h3>안내</h3><p>${esc(msg)}</p><div class="mfoot
 function confirmBox(msg,ok){modal(`<h3>확인</h3><p>${esc(msg)}</p><div class="mfoot"><button class="btn line" data-x>취소</button><button class="btn red" data-ok>삭제</button></div>`,bg=>{
   bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.querySelector('[data-ok]').onclick=()=>{bg.remove();ok()}})}
 /* fields: [key,label,type,opts] type: text,date,num,sel,area,sec */
+// 저장된 값이 목록에 없으면(예전에 직접 쓴 학년 등) 사라지지 않게 목록 끝에 붙인다
+function selOpts(o,v){const l=typeof o==='function'?o():o;return v&&!l.includes(v)?[...l,v]:l}
 function fieldHTML(f,v){
   const [k,l,t,o]=f;
   if(t==='sec')return `<div class="sec">${l}</div>`;
   const full=(t==='area'||(o&&o.full))?' full':'';
   let inp;
-  if(t==='sel')inp=`<select name="${k}">${(typeof o==='function'?o():o).map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
+  if(t==='sel')inp=`<select name="${k}">${selOpts(o,v).map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
   else if(t==='area')inp=`<textarea name="${k}">${esc(v)}</textarea>`;
   else inp=`<input name="${k}" type="${t==='num'?'number':t==='date'?'date':'text'}" value="${esc(v)}">`;
   return `<label class="${full}">${l}${inp}</label>`;
@@ -531,7 +536,7 @@ function rDash(m){
 /* ---------- 상담·등록 ---------- */
 const LEAD_F=[
  ['stage','단계','sel',STAGES],['created','문의일','date'],['name','학생 이름','text'],['phone','연락처','text'],
- ['subject','과목','sel',['수학','국어','영어','기타']],['school','학교','text'],['grade','학년','text'],['consultDate','상담 예약일','date'],
+ ['subject','과목','sel',['수학','국어','영어','기타']],['school','학교','text'],['grade','학년','sel',GRADE_OPTS],['consultDate','상담 예약일','date'],
  ['teacher','담당','sel',teacherOpts],['memo','문의·상담 내용','area'],
  ['','초기상담 기록','sec'],
  ['motive','알게 된 경로','text'],['prevMethod','이전 공부 방식 · 진도','text'],['leaveReason','학원을 옮기는 이유','text'],
@@ -539,7 +544,7 @@ const LEAD_F=[
  ['parentReq','학부모님이 바라는 점','area'],['summary','상담 후 종합 의견','area']
 ];
 function rLeads(m){
-  m.innerHTML=`<h2>상담·등록 관리</h2><p class="desc">카드를 끌어서 단계를 옮기세요. 카드를 누르면 연락처와 초기상담 기록지를 작성할 수 있어요.</p>
+  m.innerHTML=`<h2>상담·등록 관리</h2><p class="desc">카드를 끌어서 옮기거나, 카드 아래 단계 선택으로 옮기세요. 카드를 누르면 연락처와 초기상담 기록지를 작성할 수 있어요.</p>
   <div class="bar"><button class="btn gold" onclick="editLead()">+ 신규 문의</button><input id="lq" placeholder="이름·학교·연락처 검색" oninput="drawKan()" style="min-width:220px"></div>
   <div class="kan" id="kan"></div>`;
   drawKan();
@@ -551,18 +556,23 @@ function drawKan(){
     const items=S.leads.filter(l=>l.stage===st&&(!q||[l.name,l.school,l.phone].join(' ').includes(q))).sort((a,b)=>(b.created||'').localeCompare(a.created||''));
     return `<div class="col" data-st="${st}"><h4>${st}<span>${items.length}</span></h4>${items.map(l=>`<div class="lead" draggable="true" data-id="${l.id}" style="border-left-color:${st==='등록완료'?'var(--green)':st==='미등록'?'var(--red)':'var(--gold)'}">
       <b>${esc(l.name||'(이름 미입력)')}</b> <span class="m">${esc(l.school)} ${esc(l.grade)} · ${esc(l.subject)}</span>
-      <div class="m">${l.consultDate?'상담 '+l.consultDate.slice(5)+' · ':''}${esc((l.memo||'').slice(0,30))}</div></div>`).join('')}</div>`}).join('');
+      <div class="m">${l.consultDate?'상담 '+l.consultDate.slice(5)+' · ':''}${esc((l.memo||'').slice(0,30))}</div><select class="mvsel" title="단계 옮기기">${STAGES.map(x=>`<option value="${x}" ${x===l.stage?'selected':''}>${x===l.stage?'단계: '+x:'→ '+x}</option>`).join('')}</select></div>`).join('')}</div>`}).join('');
   k.querySelectorAll('.lead').forEach(c=>{
     c.onclick=()=>editLead(c.dataset.id);
-    c.ondragstart=e=>e.dataTransfer.setData('id',c.dataset.id);
+    c.ondragstart=e=>{dragId=c.dataset.id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',c.dataset.id)}catch(_){}};
+    c.ondragend=()=>{dragId=null;k.querySelectorAll('.col.over').forEach(x=>x.classList.remove('over'))};
   });
+  k.querySelectorAll('.mvsel').forEach(s=>{s.onclick=e=>e.stopPropagation();s.onmousedown=e=>e.stopPropagation();s.onchange=()=>moveLead(s.closest('.lead').dataset.id,s.value)});
   k.querySelectorAll('.col').forEach(c=>{
-    c.ondragover=e=>{e.preventDefault();c.classList.add('over')};
-    c.ondragleave=()=>c.classList.remove('over');
-    c.ondrop=e=>{e.preventDefault();c.classList.remove('over');const l=S.leads.find(x=>x.id===e.dataTransfer.getData('id'));if(!l)return;
-      const prev=l.stage;l.stage=c.dataset.st;mark();drawKan();if(l.stage==='등록완료'&&prev!=='등록완료')askEnroll(l)};
+    c.ondragenter=e=>e.preventDefault();
+    c.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect='move';c.classList.add('over')};
+    c.ondragleave=e=>{if(!c.contains(e.relatedTarget))c.classList.remove('over')};
+    c.ondrop=e=>{e.preventDefault();c.classList.remove('over');const id=dragId||e.dataTransfer.getData('text/plain');dragId=null;moveLead(id,c.dataset.st)};
   });
 }
+let dragId=null;
+// 카드 단계 옮기기: 드래그와 카드 아래 단계 선택이 같은 길로 들어온다
+function moveLead(id,st){const l=S.leads.find(x=>x.id===id);if(!l||l.stage===st)return;const prev=l.stage;l.stage=st;mark();drawKan();if(st==='등록완료'&&prev!=='등록완료')askEnroll(l)}
 function editLead(id){if(!id&&sampleGate(()=>editLead()))return;
   const l=id?S.leads.find(x=>x.id===id):{id:uid(),stage:'신규문의',created:today()};
   const prev=l.stage;
@@ -600,7 +610,7 @@ function editObs(id){if(!id&&sampleGate(()=>editObs()))return;
     <div class="obsrow"><span>5. 문제 풀이 소요 시간</span><input data-d="${i}" data-k="time" value="${esc(d.time)}" placeholder="예: 1시간 정도"></div>
     <div class="obsrow"><span>6. 관찰 메모</span><input data-d="${i}" data-k="note" value="${esc(d.note)}"></div></div>`;
   modal(`<h3>${isNew?'관찰 학생 추가':esc(o.name)+' 관찰 기록'}</h3>
-   <div class="fg">${[['name','학생 이름','text'],['teacher','담당 선생님','sel',teacherOpts],['school','학교','text'],['grade','학년','text'],['firstDay','첫 수업일','date']].map(f=>fieldHTML(f,o[f[0]])).join('')}
+   <div class="fg">${[['name','학생 이름','text'],['teacher','담당 선생님','sel',teacherOpts],['school','학교','text'],['grade','학년','sel',GRADE_OPTS],['firstDay','첫 수업일','date']].map(f=>fieldHTML(f,o[f[0]])).join('')}
    <label>상태<select name="done"><option value="0" ${!o.done?'selected':''}>관찰 진행중</option><option value="1" ${o.done?'selected':''}>관찰 완료</option></select></label>
    ${fieldHTML(['firstNote','첫 수업 메모','area'],o.firstNote)}${fieldHTML(['firstParent','첫 수업 후 학부모 연락','area'],o.firstParent)}</div>
    ${o.days.map(dayHTML).join('')}
@@ -723,7 +733,7 @@ function editMeet(id,carry){
 }
 
 /* ---------- 원생 관리 ---------- */
-const STU_F=[['name','이름','text'],['status','상태','sel',ST_STATUS],['school','학교','text'],['grade','학년','text'],['subject','과목','sel',['수학','국어','영어','기타']],['teacher','담당','sel',teacherOpts],
+const STU_F=[['name','이름','text'],['status','상태','sel',ST_STATUS],['school','학교','text'],['grade','학년','sel',GRADE_OPTS],['subject','과목','sel',['수학','국어','영어','기타']],['teacher','담당','sel',teacherOpts],
  ['phone','연락처','text'],['classTime','수업 요일 · 시간','text'],['start','등록일','date'],['progress','현재 진도 / 학기말 예상 진도','text'],['end','휴원·퇴원일','date'],['ret','복귀 예정일 (휴원 · 1주일 전 알림)','date'],['second','2차 연락일 (퇴원)','date'],['memo','메모','area']];
 function rStu(m){
   const q=(document.getElementById('sq')||{}).value||'';

@@ -76,6 +76,8 @@ td input.num{width:64px;text-align:right}
 .col.over{outline:2px dashed var(--gold)}
 .lead{background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 10px;margin-bottom:8px;cursor:pointer;border-left:4px solid var(--gold)}
 .lead:hover{box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.lead .mvsel{margin-top:8px;width:100%;height:26px;padding:0 6px;font-size:12px;color:var(--muted);background:var(--raised);box-shadow:none}
+.lead .mvsel:hover{color:var(--ink)}
 .lead b{font-size:14px}.lead .m{color:var(--muted);font-size:12px;margin-top:3px}
 /* calendar */
 .cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
@@ -299,6 +301,7 @@ tr:hover td{background:var(--raised)}
 /* ================= 데이터 ================= */
 const TABS=[['dash','대시보드'],['leads','상담 관리'],['active','재원생 관리'],['leave','휴원생 관리']];
 const STAGES=['신규문의','전화상담예약','방문상담예약','등록완료','미등록'];
+const GRADE_OPTS=['','초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업생'];
 const uid=()=>Math.random().toString(36).slice(2,10);
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
 const addDays=(d,n)=>{const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+n);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`};
@@ -423,12 +426,14 @@ function modal(html,onMount){
 function alertBox(msg){modal(`<h3>안내</h3><p>${esc(msg)}</p><div class="mfoot"><button class="btn" onclick="this.closest('.mbg').remove()">확인</button></div>`)}
 function confirmBox(msg,ok){modal(`<h3>확인</h3><p>${esc(msg)}</p><div class="mfoot"><button class="btn line" data-x>취소</button><button class="btn red" data-ok>삭제</button></div>`,bg=>{
   bg.querySelector('[data-x]').onclick=()=>bg.remove();bg.querySelector('[data-ok]').onclick=()=>{bg.remove();ok()}})}
+// 저장된 값이 목록에 없으면(예전에 직접 쓴 학년 등) 사라지지 않게 목록 끝에 붙인다
+function selOpts(o,v){const l=typeof o==='function'?o():o;return v&&!l.includes(v)?[...l,v]:l}
 function fieldHTML(f,v){
   const [k,l,t,o]=f;
   if(t==='sec')return `<div class="sec">${l}</div>`;
   const full=(t==='area'||(o&&o.full))?' full':'';
   let inp;
-  if(t==='sel')inp=`<select name="${k}">${(typeof o==='function'?o():o).map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
+  if(t==='sel')inp=`<select name="${k}">${selOpts(o,v).map(x=>`<option ${x==v?'selected':''}>${esc(x)}</option>`).join('')}</select>`;
   else if(t==='area')inp=`<textarea name="${k}">${esc(v)}</textarea>`;
   else inp=`<input name="${k}" type="${t==='date'?'date':'text'}" value="${esc(v)}">`;
   return `<label class="${full}">${l}${inp}</label>`;
@@ -468,7 +473,7 @@ function render(){
 /* ---------- 상담 관리 ---------- */
 const LEAD_F=[
  ['stage','단계','sel',STAGES],['created','문의일','date'],['name','학생 이름','text'],['phone','연락처','text'],
- ['subject','과목','sel',['수학','국어','영어','기타']],['school','학교','text'],['grade','학년','text'],['consultDate','상담 예약일','date'],['consultTime','상담 시간 (예: 16:00)','text'],
+ ['subject','과목','sel',['수학','국어','영어','기타']],['school','학교','text'],['grade','학년','sel',GRADE_OPTS],['consultDate','상담 예약일','date'],['consultTime','상담 시간 (예: 16:00)','text'],
  ['teacher','담당','sel',teacherOpts],['memo','문의·상담 내용','area'],
  ['','초기상담 기록','sec'],
  ['motive','알게 된 경로','text'],['prevMethod','이전 공부 방식 · 진도','text'],['leaveReason','학원을 옮기는 이유','text'],
@@ -517,7 +522,7 @@ function rDash(m){
   m.querySelectorAll('.cal .d').forEach(c=>c.onclick=e=>{const rs=e.target.closest('[data-sid]');if(rs)return editLeave(rs.dataset.sid);const it=e.target.closest('[data-id]');if(it)editLead(it.dataset.id);else editLead(null,c.dataset.ds)});
 }
 function rLeads(m){
-  m.innerHTML=`<h2>상담 관리</h2><p class="desc">문의부터 등록까지 단계별로 관리합니다. 카드를 끌어서 단계를 옮기고, 카드를 누르면 연락처와 초기상담 기록지를 작성할 수 있어요.</p>
+  m.innerHTML=`<h2>상담 관리</h2><p class="desc">문의부터 등록까지 단계별로 관리합니다. 카드를 끌어서(또는 카드 아래 단계 선택으로) 단계를 옮기고, 카드를 누르면 연락처와 초기상담 기록지를 작성할 수 있어요.</p>
   <div class="bar"><button class="btn gold" onclick="editLead()">+ 신규 문의</button><input id="lq" placeholder="이름·학교·연락처 검색" oninput="drawKan()" style="min-width:220px"></div>
   <div class="kan" id="kan"></div>`;
   drawKan();
@@ -530,18 +535,23 @@ function drawKan(){
     return `<div class="col" data-st="${st}"><h4>${st}<span>${items.length}</span></h4>${items.map(l=>`<div class="lead" draggable="true" data-id="${l.id}" style="border-left-color:${st==='등록완료'?'var(--green)':st==='미등록'?'var(--red)':'var(--gold)'}">
       <b>${esc(l.name||'(이름 미입력)')}</b> <span class="m">${esc(l.school)} ${esc(l.grade)} · ${esc(l.subject)}</span>
       <div class="m">${l.consultDate?'상담 '+l.consultDate.slice(5)+(l.consultTime?' '+esc(l.consultTime):'')+' · ':''}${esc((l.memo||'').slice(0,30))}</div>
-      ${l.summary?'<div class="m">📝 초기상담 작성됨</div>':''}</div>`).join('')}</div>`}).join('');
+      ${l.summary?'<div class="m">📝 초기상담 작성됨</div>':''}<select class="mvsel" title="단계 옮기기">${STAGES.map(x=>`<option value="${x}" ${x===l.stage?'selected':''}>${x===l.stage?'단계: '+x:'→ '+x}</option>`).join('')}</select></div>`).join('')}</div>`}).join('');
   k.querySelectorAll('.lead').forEach(c=>{
     c.onclick=()=>editLead(c.dataset.id);
-    c.ondragstart=e=>e.dataTransfer.setData('id',c.dataset.id);
+    c.ondragstart=e=>{dragId=c.dataset.id;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',c.dataset.id)}catch(_){}};
+    c.ondragend=()=>{dragId=null;k.querySelectorAll('.col.over').forEach(x=>x.classList.remove('over'))};
   });
+  k.querySelectorAll('.mvsel').forEach(s=>{s.onclick=e=>e.stopPropagation();s.onmousedown=e=>e.stopPropagation();s.onchange=()=>moveLead(s.closest('.lead').dataset.id,s.value)});
   k.querySelectorAll('.col').forEach(c=>{
-    c.ondragover=e=>{e.preventDefault();c.classList.add('over')};
-    c.ondragleave=()=>c.classList.remove('over');
-    c.ondrop=e=>{e.preventDefault();c.classList.remove('over');const l=S.leads.find(x=>x.id===e.dataTransfer.getData('id'));if(!l)return;
-      const prev=l.stage;l.stage=c.dataset.st;if(l.stage==='등록완료'&&prev!=='등록완료'&&enrollFromLead(l))toast(`${l.name} 학생을 재원생 관리에 추가했어요`);mark();render()};
+    c.ondragenter=e=>e.preventDefault();
+    c.ondragover=e=>{e.preventDefault();e.dataTransfer.dropEffect='move';c.classList.add('over')};
+    c.ondragleave=e=>{if(!c.contains(e.relatedTarget))c.classList.remove('over')};
+    c.ondrop=e=>{e.preventDefault();c.classList.remove('over');const id=dragId||e.dataTransfer.getData('text/plain');dragId=null;moveLead(id,c.dataset.st)};
   });
 }
+let dragId=null;
+// 카드 단계 옮기기: 드래그와 카드 아래 단계 선택이 같은 길로 들어온다
+function moveLead(id,st){const l=S.leads.find(x=>x.id===id);if(!l||l.stage===st)return;const prev=l.stage;l.stage=st;if(st==='등록완료'&&prev!=='등록완료'&&enrollFromLead(l))toast(`${l.name} 학생을 재원생 관리에 추가했어요`);mark();render()}
 function editLead(id,ds){if(!id&&sampleGate(()=>editLead(id,ds)))return;
   const l=id?S.leads.find(x=>x.id===id):(ds?{id:uid(),stage:'방문상담예약',created:today(),consultDate:ds}:{id:uid(),stage:'신규문의',created:today()});
   const prev=id?l.stage:'';
@@ -549,7 +559,7 @@ function editLead(id,ds){if(!id&&sampleGate(()=>editLead(id,ds)))return;
 }
 
 /* ---------- 재원생 관리 ---------- */
-const ACT_F=[['name','이름','text'],['phone','연락처','text'],['school','학교','text'],['grade','학년','text'],['teacher','담당','sel',teacherOpts],['classTime','수업 요일 · 시간','text'],
+const ACT_F=[['name','이름','text'],['phone','연락처','text'],['school','학교','text'],['grade','학년','sel',GRADE_OPTS],['teacher','담당','sel',teacherOpts],['classTime','수업 요일 · 시간','text'],
  ['start','등록일','date'],['progress','현재 진도','text'],['memo','메모','area']];
 let actTeacher='', actNeed=false;
 function rActive(m){
@@ -587,7 +597,7 @@ function editActive(id){if(!id&&sampleGate(()=>editActive()))return;if(!S.studen
 /* ---------- 휴원생 관리 ---------- */
 const LV_STATUS=[['휴원','휴원 중'],['재원','복귀(재원)'],['퇴원','퇴원']];
 const LV_F=[['name','이름','text'],['status','상태','sel',['휴원','재원','퇴원']],['phone','연락처','text'],['teacher','담당','sel',teacherOpts],
- ['school','학교','text'],['grade','학년','text'],['end','휴원일','date'],['ret','복귀 예정일 (1주일 전부터 알림)','date'],['memo','휴원 사유·메모','area']];
+ ['school','학교','text'],['grade','학년','sel',GRADE_OPTS],['end','휴원일','date'],['ret','복귀 예정일 (1주일 전부터 알림)','date'],['memo','휴원 사유·메모','area']];
 let lvFilter='휴원';
 function rLeave(m){
   const list=(S.students||[]).filter(s=>s.status===lvFilter).sort((a,b)=>(a.ret||'9').localeCompare(b.ret||'9'));

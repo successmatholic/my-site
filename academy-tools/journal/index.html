@@ -618,7 +618,7 @@ dialog[open] { animation: pop .22s var(--ease-out); }
    한 회차 일지 = 지난 과제 확인 + 오늘 지도 메모 + 다음 과제·지도 계획 (+ 선택: 매쓰홀릭 학습 결과).
    수업 후 한 번에 쓰고, '다음 과제·지도 계획'은 다음 수업 일지 맨 위로 이어진다. */
 const KEY = 'hakseup-ilji-v1';
-const GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','N수'];
+const GRADES = ['초1','초2','초3','초4','초5','초6','중1','중2','중3','고1','고2','고3','졸업생'];
 const LEVELS = ['초등','중등','고등'];
 const level = (g) => g.startsWith('초') ? '초등' : g.startsWith('중') ? '중등' : '고등';
 const WD = '일월화수목금토';
@@ -778,6 +778,8 @@ try { db = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { db = n
 // 예시 데이터는 새 형식으로 다시 만들고, 원장님이 쓴 기록은 지우지 않고 새 형식으로 옮긴다
 if (!db || !db.students || (db.sample && (db.v !== 3 || db.sampleV !== SAMPLE_V))) db = seed();
 else if (db.v !== 3) { for (const k of Object.keys(db.logs)) db.logs[k] = migrate(db.logs[k]); db.v = 3; }
+// 학년 'N수'는 '졸업생'으로 이름을 바꿨다
+db.students.forEach((s) => { if (s.grade === 'N수') s.grade = '졸업생'; });
 let storageOk = true;
 function persist() {
   try { localStorage.setItem(KEY, JSON.stringify(db)); storageOk = true; }
@@ -1464,22 +1466,27 @@ function gradeOf(s) {
   s = String(s || '').trim();
   if (GRADES.includes(s)) return s;
   const m = s.match(/(초등|중|고등)\S*\s*(\d)/);
-  return m ? { 초등: '초', 중: '중', 고등: '고' }[m[1]] + m[2] : 'N수';
+  return m ? { 초등: '초', 중: '중', 고등: '고' }[m[1]] + m[2] : '졸업생';
 }
 function cellDate(v) {
   if (typeof v === 'number') { const d = XLSX.SSF.parse_date_code(v); return d ? `${d.y}-${pad(d.m)}-${pad(d.d)}` : ''; }
   const m = String(v || '').match(/(\d{4})\s*[-./]\s*(\d{1,2})\s*[-./]\s*(\d{1,2})/);
   return m ? `${m[1]}-${pad(+m[2])}-${pad(+m[3])}` : '';
 }
+// 머리글은 띄어쓰기를 지우고 비교하고, 다르게 쓰인 이름도 받아 준다
+const normHead = (h) => String(h ?? '').replace(/\s+/g, '');
+const HEAD_ALIAS = { 이름: ['학생명', '학생이름', '성명'], 아이디: ['ID', '학생아이디'] };
 // 시트마다 머리글 줄을 찾아 열 이름으로 읽는다 (열 순서가 바뀌어도 동작)
 function readMatholic(wb) {
-  const out = { roster: [], rows: [] };
+  const out = { roster: [], rows: [], sheets: [] };
   for (const name of wb.SheetNames) {
     const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '', raw: true });
-    const hi = aoa.findIndex((r) => r.includes('이름') && r.includes('학년'));
+    const hi = aoa.findIndex((r) => { const n = r.map(normHead); return ['이름', ...HEAD_ALIAS.이름].some((a) => n.includes(a)) && n.includes('학년'); });
+    out.sheets.push(`${name}: ${(aoa[Math.max(hi, 0)] || []).map(normHead).filter(Boolean).slice(0, 8).join(', ') || '(빈 시트)'}`);
     if (hi < 0) continue;
-    const H = {}; aoa[hi].forEach((h, i) => { H[String(h).trim()] = i; });
-    const g = (r, k) => (H[k] === undefined ? '' : r[H[k]]);
+    const H = {}; aoa[hi].forEach((h, i) => { const k = normHead(h); if (H[k] === undefined) H[k] = i; });
+    for (const [k, alts] of Object.entries(HEAD_ALIAS)) if (H[k] === undefined) { const a = alts.find((x) => H[x] !== undefined); if (a) H[k] = H[a]; }
+    const g = (r, k) => { const i = H[normHead(k)]; return i === undefined ? '' : r[i]; };
     const body = aoa.slice(hi + 1).filter((r) => hasText(g(r, '이름')));
     if (H['학습명'] !== undefined) {
       body.forEach((r) => out.rows.push({ id: String(g(r, '아이디')).trim(), name: String(g(r, '이름')).trim(), grade: gradeOf(g(r, '학년')), cls: String(g(r, '반')).trim(), date: cellDate(g(r, '학습일')), title: String(g(r, '학습명')).trim(), type: String(g(r, '학습유형')).trim(), course: String(g(r, '수업명')).trim(), n: +g(r, '문제수') || 0, c: +g(r, '정답수') || 0, link: String(g(r, '모바일 보고서')).trim() }));
@@ -1676,7 +1683,7 @@ function openClass(c) {
   const isNew = !c; c = c || { id: 'c' + uid(), name: '', target: '', days: [], time: '' };
   dlg.innerHTML = `<form method="dialog"><h2>${isNew ? '반 추가' : '반 수정'}</h2>
     <div class="two"><label class="lbl"><span>반 이름</span><input class="input" name="name" required value="${esc(c.name)}" placeholder="예: 중2 B반"></label>
-    <label class="lbl"><span>대상 학년</span><input class="input" name="target" value="${esc(c.target)}" placeholder="예: 중2"></label></div>
+    <label class="lbl"><span>대상 학년</span><select class="input" name="target"><option value="">선택 안 함</option>${(c.target && !GRADES.includes(c.target) ? [...GRADES, c.target] : GRADES).map((g) => `<option${g === c.target ? ' selected' : ''}>${esc(g)}</option>`).join('')}</select></label></div>
     <div class="lbl"><span>수업 요일</span>${dayBoxes(c.days)}</div>
     <label class="lbl"><span>시작 시간</span><input class="input" type="time" name="time" value="${esc(c.time)}"></label>
     <div class="foot">${isNew ? '' : '<button type="button" class="btn danger left" data-act="class-del">반 삭제</button>'}<button type="button" class="btn" data-act="dlg-close">취소</button><button class="btn primary">저장</button></div></form>`;
@@ -1749,10 +1756,13 @@ document.addEventListener('change', (ev) => {
     const f = ev.target.files[0]; ev.target.value = ''; if (!f) return;
     if (!window.XLSX) return toast('엑셀 도구를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.');
     f.arrayBuffer().then((buf) => {
+      // 엑셀 파일은 PK(.xlsx) 또는 D0 CF(.xls)로 시작한다. 아니면 보안 프로그램(DRM)이 잠근 파일이거나 다른 형식이다
+      const b = new Uint8Array(buf.slice(0, 2));
+      if (!((b[0] === 0x50 && b[1] === 0x4b) || (b[0] === 0xd0 && b[1] === 0xcf))) return alert(`'${f.name}'은(는) 엑셀 파일로 읽을 수 없습니다.\n\n회사·학원 보안 프로그램(DRM)이 파일을 잠갔거나, 엑셀이 아닌 파일일 수 있어요.\n매쓰홀릭에서 엑셀을 다시 받아 열지 않은 채로 바로 올려 보세요.`);
       const parsed = readMatholic(XLSX.read(buf, { type: 'array' }));
-      if (!parsed.rows.length && !parsed.roster.length) return toast('매쓰홀릭 학습 이력 엑셀에서 학생을 찾지 못했습니다');
+      if (!parsed.rows.length && !parsed.roster.length) return alert(`매쓰홀릭 학습 이력 엑셀에서 학생을 찾지 못했습니다.\n\n매쓰홀릭 학습현황에서 받은 '학습 이력' 엑셀인지 확인해 주세요. (? 버튼: 엑셀 받는 곳 보기)\n\n읽은 시트와 첫 줄:\n${parsed.sheets.join('\n')}`);
       openImport(parsed, f.name);
-    }).catch(() => toast('엑셀 파일을 읽지 못했습니다'));
+    }).catch((e) => alert(`엑셀 파일을 읽지 못했습니다.\n암호가 걸려 있거나 보안 프로그램으로 잠긴 파일일 수 있어요.\n\n(${e && e.message ? e.message : e})`));
   }
   else if (k === 'restore') { const f = ev.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d.students || !d.logs) throw 0; if (confirm(`백업의 학생 ${d.students.length}명, 일지 ${Object.keys(d.logs).length}건으로 지금 기록을 바꿀까요?`)) { for (const key of Object.keys(d.logs)) d.logs[key] = migrate(d.logs[key]); d.v = 3; db = d; persist(); route(); toast('복원했습니다'); } } catch (e) { toast('학습일지 백업 파일이 아닙니다'); } }; r.readAsText(f); }
 });
