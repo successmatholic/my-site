@@ -551,6 +551,14 @@ dialog[open] { animation: pop .22s var(--ease-out); }
 }
 
 /* ---------- print: one compact record per lesson, grouped by student ---------- */
+/* 예시 데이터 안내 띠: 예시 학원이 남아 있는 동안 모든 화면 위에 */
+.samplebar { display: flex; align-items: center; gap: 14px; padding: 12px 14px 12px 16px; margin-bottom: 22px; border-radius: 12px; background: #eaf3ff; box-shadow: inset 0 0 0 .5px rgba(0, 122, 255, .3); color: #0b3b75; line-height: 20px; }
+.samplebar .sb-i { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--blue); color: #fff; display: grid; place-items: center; font: italic 700 13px Georgia, serif; }
+.samplebar .sb-t { flex: 1; min-width: 0; }
+.samplebar b { font-weight: 700; }
+.samplebar .btn { flex: none; }
+@media (max-width: 720px) { .samplebar { flex-wrap: wrap; } .samplebar .btn { width: 100%; } }
+
 #print-area { display: none; }
 @media print {
   @page { size: A4 portrait; margin: 12mm; }
@@ -596,7 +604,7 @@ dialog[open] { animation: pop .22s var(--ease-out); }
       <b>학습일지</b><span class="grow"></span>
       <a class="btn sm" href="#reports">주간·월간 기록</a>
     </div>
-    <main class="sheet" id="view"></main>
+    <main class="sheet"><div id="samplebar"></div><div id="view"></div></main>
   </div>
 </div>
 
@@ -774,7 +782,21 @@ let storageOk = true;
 function persist() {
   try { localStorage.setItem(KEY, JSON.stringify(db)); storageOk = true; }
   catch (e) { storageOk = false; toast('이 브라우저에 저장하지 못했습니다. 백업 파일로 내보내 두세요.'); }
+  sampleBar();
   return storageOk;
+}
+// 예시 학원이 남아 있으면 모든 화면 위에 안내 띠를 띄운다
+function sampleBar() {
+  const el = document.getElementById('samplebar');
+  if (el) el.innerHTML = db.sample ? `<div class="samplebar"><span class="sb-i">i</span><div class="sb-t"><b>지금 보시는 건 예시 학원(${esc(db.academy.name)}) 데이터예요.</b> 둘러보신 뒤 예시를 지우고 매쓰홀릭 엑셀이나 학생 등록으로 시작하세요.</div><button class="btn primary" data-act="sample-start">예시 지우고 시작하기</button></div>` : '';
+}
+function clearSampleData() { db.classes = []; db.students = []; db.logs = {}; db.sample = false; persist(); }
+// 예시가 남은 채로 학생·반을 직접 추가하려 하면 한 번 묻는다
+let sampleOk = false;
+function sampleGate() {
+  if (!db.sample || sampleOk) return;
+  if (confirm('예시 학원 데이터가 아직 남아 있어요.\n예시를 지우고 우리 학원 데이터로 시작할까요?\n\n[확인] 예시 지우고 추가   [취소] 예시와 함께 추가')) clearSampleData();
+  else sampleOk = true;
 }
 persist();
 
@@ -807,6 +829,7 @@ const view = document.getElementById('view');
 function route() {
   const [name, a, b] = location.hash.replace(/^#/, '').split('/');
   closeMenu();
+  sampleBar();
   if (name === 'log' && stu(a)) return renderEditor(stu(a), b || TODAY);
   if (name === 'students') return renderStudents();
   if (name === 'student' && stu(a)) return renderStudent(stu(a));
@@ -1685,10 +1708,11 @@ document.addEventListener('click', (ev) => {
   else if (act === 'extra') { const sid = document.getElementById('extra-st').value; if (sid) location.hash = `#log/${sid}/${t.dataset.date}`; }
   else if (act === 'print-one') printLogs([draft], full(draft.date));
   else if (act === 'lvl') { stFilter.level = t.dataset.v; document.querySelectorAll('[data-act=lvl]').forEach((b) => b.setAttribute('aria-pressed', b === t)); drawStudentTable(); }
-  else if (act === 'student-new') openStudent(null);
+  else if (act === 'student-new') { sampleGate(); openStudent(null); }
+  else if (act === 'sample-start') { if (confirm('예시 학원의 반, 학생, 일지를 모두 지우고 시작할까요?\n학원 이름과 로고는 설정에서 바꿀 수 있어요.')) { clearSampleData(); location.hash = '#welcome'; route(); toast('예시를 지웠어요. 매쓰홀릭 엑셀로 시작하거나 반을 추가하세요.'); } }
   else if (act === 'student-edit') openStudent(stu(t.dataset.id));
   else if (act === 'student-del') { const st = stu(dlg.dataset.id); const n = logsOf(st.id).length; if (confirm(`${st.name} 학생과 일지 ${n}건을 삭제할까요? 되돌릴 수 없습니다.`)) { db.students = db.students.filter((s) => s.id !== st.id); for (const k of Object.keys(db.logs)) if (db.logs[k].sid === st.id) delete db.logs[k]; persist(); dlg.close(); location.hash = '#students'; } }
-  else if (act === 'class-new') openClass(null);
+  else if (act === 'class-new') { sampleGate(); openClass(null); }
   else if (act === 'class-edit') openClass(cls(t.dataset.id));
   else if (act === 'class-del') { const c = cls(dlg.dataset.id); const n = db.students.filter((s) => s.classId === c.id).length; if (confirm(`${c.name}을(를) 삭제할까요? 학생 ${n}명은 '반 없음'으로 옮겨지고 일지는 그대로 남습니다.`)) { db.classes = db.classes.filter((x) => x.id !== c.id); db.students.forEach((s) => { if (s.classId === c.id) s.classId = ''; }); persist(); dlg.close(); route(); } }
   else if (act === 'dlg-close') dlg.close();

@@ -269,7 +269,16 @@ tr:hover td{background:var(--raised)}
   h2{font-size:21px;line-height:28px}
 }
 @media print{main{box-shadow:none;padding:0}}
-</style>
+/* 예시 데이터 안내 띠 */
+#sbar:empty{display:none}
+#sbar{width:calc(100% - 20px);margin:0 auto 8px}
+.samplebar{display:flex;align-items:center;gap:14px;padding:12px 14px 12px 16px;border-radius:12px;background:#eaf3ff;box-shadow:inset 0 0 0 .5px rgba(0,122,255,.3);color:#0b3b75;font-size:14px;line-height:20px}
+.samplebar .sb-i{flex:none;width:22px;height:22px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font:italic 700 13px Georgia,serif}
+.samplebar .sb-t{flex:1;min-width:0}
+.samplebar b{font-weight:700}
+.samplebar .btn{flex:none}
+@media(max-width:700px){#sbar{width:100%;margin:0 0 8px;padding:0 12px}.samplebar{flex-wrap:wrap}.samplebar .btn{width:100%}}
+@media print{#sbar{display:none}}</style>
 </head>
 <body>
 <header>
@@ -283,6 +292,7 @@ tr:hover td{background:var(--raised)}
   <input type="file" id="fileIn" accept=".json" hidden onchange="loadFile(this)">
 </header>
 <nav id="nav"></nav>
+<div id="sbar"></div>
 <main id="main"></main>
 
 <script>
@@ -314,7 +324,7 @@ function sample(){
    ]
   };
 }
-let S=sample(); let tab='dash'; let dirty=false; let dashMonth=new Date();
+let S=sample(); S.sample=true; let tab='dash'; let dirty=false; let dashMonth=new Date();
 
 function mark(){dirty=true;document.getElementById('dirty').textContent='● 저장되지 않은 변경사항'}
 window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
@@ -434,9 +444,23 @@ function formModal(title,fields,obj,onSave,onDel){
 }
 const teacherOpts=()=>['',...S.settings.teachers];
 
+/* ================= 예시 데이터 안내 (예시가 남아 있는 동안 상단 띠, 새 항목 추가 전 한 번 확인) ================= */
+let sampleOk=false;
+function sampleBarHTML(){return S.sample?`<div class="samplebar"><span class="sb-i">i</span><div class="sb-t"><b>지금 보시는 건 예시 데이터예요.</b> 둘러보신 뒤 예시를 지우고 우리 학원 데이터로 시작하세요. 저장해 둔 파일이 있으면 📂 불러오기를 누르세요.</div><button class="btn" onclick="startFresh()">예시 지우고 시작하기</button></div>`:''}
+function startFresh(){modal(`<h3>예시 지우고 시작하기</h3><p>예시 데이터를 모두 지우고 빈 상태로 시작할까요?<br>학원 이름과 선생님 목록은 그대로 남아요.</p><div class="mfoot"><button class="btn line" data-x>취소</button><button class="btn" data-ok>지우고 시작</button></div>`,bg=>{
+  bg.querySelector('[data-x]').onclick=()=>bg.remove();
+  bg.querySelector('[data-ok]').onclick=()=>{bg.remove();clearSample();render();toast('예시를 지웠어요. 우리 학원 데이터를 입력해 보세요.')}})}
+function sampleGate(go){if(!S.sample||sampleOk)return false;
+  modal(`<h3>예시 데이터가 아직 남아 있어요</h3><p>예시를 지우고 우리 학원 데이터로 시작할까요?<br>예시와 섞이지 않게 먼저 지우시는 걸 추천해요.</p><div class="mfoot"><button class="btn line l" data-keep>예시와 함께 추가</button><button class="btn line" data-x>취소</button><button class="btn" data-ok>예시 지우고 추가</button></div>`,bg=>{
+    bg.querySelector('[data-x]').onclick=()=>bg.remove();
+    bg.querySelector('[data-keep]').onclick=()=>{bg.remove();sampleOk=true;go()};
+    bg.querySelector('[data-ok]').onclick=()=>{bg.remove();clearSample();render();go()}});
+  return true}
+function clearSample(){S.leads=[];S.students=[];S.sample=false}
+
 /* ================= 렌더 ================= */
 function render(){
-  document.getElementById('acName').innerHTML=headerHTML('학생 관리');document.getElementById('bell').innerHTML=bellHTML();
+  document.getElementById('acName').innerHTML=headerHTML('학생 관리');document.getElementById('sbar').innerHTML=sampleBarHTML();document.getElementById('bell').innerHTML=bellHTML();
   document.getElementById('nav').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" onclick="tab='${k}';render()">${l}</button>`).join('');
   ({dash:rDash,leads:rLeads,active:rActive,leave:rLeave})[tab](document.getElementById('main'));
 }
@@ -518,7 +542,7 @@ function drawKan(){
       const prev=l.stage;l.stage=c.dataset.st;if(l.stage==='등록완료'&&prev!=='등록완료'&&enrollFromLead(l))toast(`${l.name} 학생을 재원생 관리에 추가했어요`);mark();render()};
   });
 }
-function editLead(id,ds){
+function editLead(id,ds){if(!id&&sampleGate(()=>editLead(id,ds)))return;
   const l=id?S.leads.find(x=>x.id===id):(ds?{id:uid(),stage:'방문상담예약',created:today(),consultDate:ds}:{id:uid(),stage:'신규문의',created:today()});
   const prev=id?l.stage:'';
   formModal(id?'상담 카드':'신규 문의 등록',LEAD_F,l,o=>{if(!id)S.leads.push(o);if(o.stage==='등록완료'&&prev!=='등록완료'&&enrollFromLead(o))toast(`${o.name} 학생을 재원생 관리에 추가했어요`)},id?()=>{S.leads=S.leads.filter(x=>x.id!==id)}:null);
@@ -555,7 +579,7 @@ function rActive(m){
 }
 function chgActive(id,v){const s=S.students.find(x=>x.id===id);s.status=v;if((v==='휴원'||v==='퇴원')&&!s.end)s.end=today();mark();
   toast(v==='휴원'?`${s.name} → 휴원생 관리로 이동 (복귀 예정일을 입력해 주세요)`:`${s.name} → ${v}`);render()}
-function editActive(id){if(!S.students)S.students=[];
+function editActive(id){if(!id&&sampleGate(()=>editActive()))return;if(!S.students)S.students=[];
   const s=id?S.students.find(x=>x.id===id):{id:uid(),status:'재원',start:today(),logs:[]};
   formModal(id?'재원생 정보':'재원생 추가',ACT_F,s,o=>{if(!id)S.students.push(o)},id?()=>{S.students=S.students.filter(x=>x.id!==id)}:null);
 }
@@ -581,7 +605,7 @@ function rLeave(m){
   </tbody></table></div>`;
 }
 function chgLeave(id,v){const s=S.students.find(x=>x.id===id);s.status=v;if(v==='휴원'&&!s.end)s.end=today();mark();toast(`${s.name} → ${LV_STATUS.find(x=>x[0]===v)[1]}`);render()}
-function editLeave(id){if(!S.students)S.students=[];
+function editLeave(id){if(!id&&sampleGate(()=>editLeave()))return;if(!S.students)S.students=[];
   const s=id?S.students.find(x=>x.id===id):{id:uid(),status:'휴원',end:today()};
   formModal(id?'휴원생 정보':'휴원생 등록',LV_F,s,o=>{if(!id)S.students.push(o)},id?()=>{S.students=S.students.filter(x=>x.id!==id)}:null);
 }
@@ -598,7 +622,7 @@ function openSettings(){
     bg.querySelector('[data-x]').onclick=()=>bg.remove();
     bg.querySelector('[data-s]').onclick=()=>{S.settings.logo=lg.logo;S.settings.name=bg.querySelector('[name=nm]').value.trim()||'우리 학원';
       S.settings.teachers=bg.querySelector('[name=tc]').value.split(',').map(x=>x.trim()).filter(Boolean);bg.remove();mark();render()};
-    bg.querySelector('[data-clr]').onclick=()=>confirmBox('상담·휴원생 데이터를 모두 지우고 빈 상태로 시작할까요?',()=>{S.leads=[];S.students=[];bg.remove();mark();render()});
+    bg.querySelector('[data-clr]').onclick=()=>confirmBox('상담·휴원생 데이터를 모두 지우고 빈 상태로 시작할까요?',()=>{clearSample();bg.remove();mark();render()});
   });
 }
 render();
