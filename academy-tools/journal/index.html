@@ -1759,7 +1759,10 @@ document.addEventListener('change', (ev) => {
       // 엑셀 파일은 PK(.xlsx) 또는 D0 CF(.xls)로 시작한다. 아니면 보안 프로그램(DRM)이 잠근 파일이거나 다른 형식이다
       const b = new Uint8Array(buf.slice(0, 2));
       if (!((b[0] === 0x50 && b[1] === 0x4b) || (b[0] === 0xd0 && b[1] === 0xcf))) return alert(`'${f.name}'은(는) 엑셀 파일로 읽을 수 없습니다.\n\n회사·학원 보안 프로그램(DRM)이 파일을 잠갔거나, 엑셀이 아닌 파일일 수 있어요.\n매쓰홀릭에서 엑셀을 다시 받아 열지 않은 채로 바로 올려 보세요.`);
-      const parsed = readMatholic(XLSX.read(buf, { type: 'array' }));
+      const wb = XLSX.read(buf, { type: 'array' }), wbNames = wb.SheetNames;
+      const parsed = readMatholic(wb);
+      // 학습일지에서 내려받은 엑셀(첫 시트 '학생별 요약')을 잘못 올린 경우
+      if (!parsed.rows.length && !parsed.roster.length && wbNames.includes('학생별 요약')) return alert(`'${f.name}'은(는) 학습일지에서 내려받은 엑셀이에요.\n\n여기에는 매쓰홀릭에서 받은 엑셀을 올려 주세요.\n매쓰홀릭 [학습현황]에서 날짜와 학생을 고르고 [학습 이력 n명]을 누르면 '매쓰홀릭_학습_이력' 파일이 받아집니다.`);
       if (!parsed.rows.length && !parsed.roster.length) return alert(`매쓰홀릭 학습 이력 엑셀에서 학생을 찾지 못했습니다.\n\n매쓰홀릭 학습현황에서 받은 '학습 이력' 엑셀인지 확인해 주세요. (? 버튼: 엑셀 받는 곳 보기)\n\n읽은 시트와 첫 줄:\n${parsed.sheets.join('\n')}`);
       openImport(parsed, f.name);
     }).catch((e) => alert(`엑셀 파일을 읽지 못했습니다.\n암호가 걸려 있거나 보안 프로그램으로 잠긴 파일일 수 있어요.\n\n(${e && e.message ? e.message : e})`));
