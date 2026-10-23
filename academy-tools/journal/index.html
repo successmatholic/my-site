@@ -372,6 +372,8 @@ dialog:has(.help-dlg) { width: min(640px, calc(100vw - 32px)); }
 .matrix td.name, .matrix th.name { position: sticky; left: 0; z-index: 1; background: var(--surface); text-align: left; padding-right: 12px; white-space: nowrap; width: 150px; }
 .matrix td.name { height: 26px; font-size: 13px; }
 .matrix td.name .sub { display: inline; margin-left: 6px; font-size: 12px; }
+.matrix .sel { width: 15px; height: 15px; margin: 0 8px 0 0; vertical-align: -3px; accent-color: var(--green, #5a9a2c); cursor: pointer; }
+.sel-chip { display: inline-flex; align-items: center; gap: 6px; margin-left: 6px; color: var(--ink, #1b1b1b); font-weight: 600; }
 .matrix tr.cls td { padding: 12px 0 4px; text-align: left; font-weight: 600; font-size: 13px; }
 .matrix tr.cls:first-child td { padding-top: 2px; }
 .mk { display: inline-block; width: 16px; height: 16px; border-radius: 4px; vertical-align: middle; }
@@ -583,6 +585,33 @@ dialog[open] { animation: pop .22s var(--ease-out); }
 .pr .d { width: 22mm; font-weight: 600; white-space: nowrap; }
 .pr .s { color: #555; font-size: 9pt; }
 .pr .none { color: #999; }
+/* 기간 요약: 수업 횟수·평균 정답률·오답 해결률·과제 */
+.pr-sum { display: flex; gap: 4mm; align-items: stretch; margin: 0 0 3mm; break-inside: avoid; }
+.pr-sum .k { border: 0.3mm solid #ccc; border-radius: 1.5mm; padding: 1.5mm 2.5mm; min-width: 24mm; }
+.pr-sum .k span { display: block; font-size: 8pt; color: #555; }
+.pr-sum .k b { font-size: 14pt; font-weight: 700; }
+.pr-sum .k small { display: block; font-size: 7.5pt; color: #777; }
+/* 학습 결과 칸: 정답률 → 오답 해결률 → 미해결 개념 → 미완료 과제 → 그 밖의 채점 */
+.pr td.mhc { white-space: normal; }
+.pr .mhc > div + div { margin-top: 0.8mm; }
+.pr .pc { font-weight: 700; font-size: 10.5pt; }
+.pr .pc.hi { color: #2e7d32; }
+.pr .pc.lo { color: #c0392b; }
+.pr .mhc i { font-style: normal; font-weight: 600; color: #333; }
+.pr .mhc .rp { font-weight: 700; color: #b26a00; }
+.pr-sum .k small.dl { color: #333; font-weight: 600; }
+/* 보완할 단원 / 다시 풀어 해결한 단원 */
+.pr .pp-cols { display: flex; gap: 4mm; margin: 0 0 3mm; break-inside: avoid; }
+.pr .pp-box { flex: 1; border: 0.3mm solid #ccc; border-radius: 1.5mm; padding: 2mm 3mm; }
+.pr .pp-box h3 { font-size: 10pt; margin: 0 0 1.5mm; }
+.pr .pp-box ul { margin: 0; padding-left: 4.5mm; font-size: 9pt; line-height: 1.55; }
+.pr .pp-box li.more { list-style: none; color: #666; }
+.pr .pp-box li.rp { font-weight: 700; }
+.pr .pp-box .dt { font-size: 8pt; font-weight: 400; color: #666; margin-left: 1mm; }
+.pr .pp-box .gl { font-size: 8.5pt; font-weight: 600; color: #555; margin: 1.2mm 0 0.3mm; }
+.pr .pp-box h3 + .gl { margin-top: 0; }
+.pr-foot { margin-top: 3mm; break-inside: avoid; }
+.pr-foot .note { font-size: 7.5pt; color: #777; margin-top: 2mm; }
 </style>
 </head>
 <body>
@@ -1142,7 +1171,7 @@ function renderStudent(st) {
 
 /* ================= 주간·월간 기록 ================= */
 // mode: week | month | custom(기간 직접 설정). tab: days(날짜별 기록) | summary(학생별 요약) | rate(정답률·해결률)
-let rep = { mode: 'week', anchor: TODAY, scope: 'all', q: '', tab: 'days', from: addDays(TODAY, -27), to: TODAY, sort: 'name' };
+let rep = { mode: 'week', anchor: TODAY, scope: 'all', q: '', tab: 'days', from: addDays(TODAY, -27), to: TODAY, sort: 'name', sel: new Set() };
 function rangeOf() {
   if (rep.mode === 'custom') return rep.from <= rep.to ? [rep.from, rep.to] : [rep.to, rep.from];
   if (rep.mode === 'week') { const s = mondayOf(rep.anchor); return [s, addDays(s, 6)]; }
@@ -1156,12 +1185,14 @@ function rangeLabel() {
 }
 /* 정답률과 해결률.
    정답률 = 수업 학습(확인학습·다시풀기·오답유사·유형도전)에서 맞힌 문항 ÷ 푼 문항.
-   해결률 = 처음에 틀린 학습 가운데 다시풀기·오답유사로 끝내 다 맞힌 비율. 엑셀에서 불러온 결과로만 센다. */
+   해결률(오답 해결률) = 다시풀기·오답유사 학습의 정답률 (fixOf). 엑셀에서 불러온 결과로만 센다.
+   solved/wrong은 '남은 미해결' 개수를 세는 데만 쓴다. */
 function rateStats(ls) {
-  const s = { days: 0, t: 0, c: 0, solved: 0, wrong: 0, left: {} };
+  const s = { days: 0, t: 0, c: 0, fc: 0, fn: 0, solved: 0, wrong: 0, left: {} };
   for (const l of ls) {
     const m = l.mh; if (!m) continue;
     if (rateOf(m) !== null) { s.days++; s.t += +m.total; s.c += +m.correct; }
+    const f = fixOf(m); if (f) { s.fc += f.c; s.fn += f.n; }
     if (m.src !== 'excel') continue;
     const sol = m.solvedList || (hasText(m.solved) ? m.solved.split(/,\s*(?=\d+(?:\.\d+)+\s)/) : []);
     const un = m.weakList || (hasText(m.weak) ? m.weak.split(/,\s*(?=\d+(?:\.\d+)+\s)/) : []);
@@ -1169,7 +1200,7 @@ function rateStats(ls) {
     un.forEach((u) => { s.left[u] = (s.left[u] || 0) + 1; });
   }
   s.rate = s.t ? Math.round((s.c / s.t) * 100) : null;
-  s.fix = s.wrong ? Math.round((s.solved / s.wrong) * 100) : null;
+  s.fix = s.fn ? Math.round((s.fc / s.fn) * 100) : null;
   s.top = Object.entries(s.left).sort((a, b) => b[1] - a[1]);
   return s;
 }
@@ -1191,6 +1222,15 @@ function summarize(st, s, e) {
 function repList(scope = rep.scope) {
   const q = scope === rep.scope ? rep.q.trim() : '';
   return scopeStudents(scope).filter((s) => !q || s.name.includes(q) || (s.mhId || '').includes(q));
+}
+// 인쇄·복사·내보내기 대상: 날짜별 기록에서 체크한 학생이 있으면 그 학생만, 없으면 목록 전체
+function targetList() {
+  const list = repList(), picked = list.filter((s) => rep.sel.has(s.id));
+  return picked.length ? picked : list;
+}
+function rangeLogs() {
+  const [s, e] = rangeOf(), [ps, pe, pl] = prevRange(), ids = new Set(targetList().map((x) => x.id));
+  return { logs: Object.values(db.logs).filter((l) => ids.has(l.sid) && l.date >= s && l.date <= e), rg: { s, e, ps, pe, pl } };
 }
 function renderReports() {
   renderNav('reports');
@@ -1231,7 +1271,7 @@ function drawReportsBody() {
   let mrows = '', lastC = null;
   for (const st of list) {
     if (st.classId !== lastC) { lastC = st.classId; mrows += `<tr class="cls"><td colspan="${days.length + 1}">${esc(cls(st.classId)?.name || '반 없음')}</td></tr>`; }
-    mrows += `<tr><td class="name"><a href="#student/${st.id}">${esc(st.name)}</a><span class="sub">${esc(st.grade)}</span></td>${days.map((d) => {
+    mrows += `<tr><td class="name"><input type="checkbox" class="sel" data-change="rep-sel" data-id="${st.id}"${rep.sel.has(st.id) ? ' checked' : ''} aria-label="${esc(st.name)} 선택"><a href="#student/${st.id}">${esc(st.name)}</a><span class="sub">${esc(st.grade)}</span></td>${days.map((d) => {
       const l = logOf(st.id, d), has = hasContent(l), sch = scheduled(st, d);
       const cellCls = 'cellwrap' + (d === TODAY ? ' todaycol' : '') + (wk ? ' wk' : '');
       if (has) {
@@ -1242,13 +1282,14 @@ function drawReportsBody() {
       return `<td class="${cellCls}">${sch ? `<a class="cell" href="#log/${st.id}/${d}" title="${esc(mdw(d))} 수업일" aria-label="${esc(st.name)} ${esc(mdw(d))} 수업일, 기록 없음"><span class="mk plan"></span></a>` : ''}</td>`;
     }).join('')}</tr>`;
   }
-  document.getElementById('rep-sub').innerHTML = `${esc(rangeLabel())} · ${esc(scopeName())}${q ? ` · '${esc(q)}' 검색` : ''} ${list.length}명 · 일지 <strong>${total}건</strong>`;
+  const picked = list.filter((x) => rep.sel.has(x.id)).length;
+  document.getElementById('rep-sub').innerHTML = `${esc(rangeLabel())} · ${esc(scopeName())}${q ? ` · '${esc(q)}' 검색` : ''} ${list.length}명 · 일지 <strong>${total}건</strong>${picked ? `<span class="sel-chip">· ${picked}명 선택 (인쇄·내보내기 대상)<button class="btn sm ghost" data-act="sel-clear">선택 해제</button></span>` : ''}`;
   const body = document.getElementById('rep-body');
   if (rep.tab === 'rate') { body.innerHTML = rateView(list, sums, empty); return; }
   if (rep.tab === 'days') body.innerHTML = `
     <section class="panel" aria-labelledby="h-mx">
       <header><h2 id="h-mx">날짜별 기록</h2><div class="legend"><span><i class="mk full"></i>선생님 기록</span><span><i class="mk half"></i>매쓰홀릭 결과만</span><span><i class="mk plan"></i>수업일</span></div></header>
-      ${list.length ? `<div class="table-wrap"><table class="matrix${wk ? ' fixed' : ''}"><thead><tr><th class="name">학생</th>${days.map((d) => `<th class="${dow(d) === 0 ? 'we' : ''}${d === TODAY ? ' today todaycol' : ''}${wk ? ' wkh' : ''}">${wk ? `${WD[dow(d)]}<br>${dot(d)}` : `${parse(d).getDate() === 1 || d === s ? `${parse(d).getMonth() + 1}/` : ''}${parse(d).getDate()}<br>${WD[dow(d)]}`}</th>`).join('')}</tr></thead><tbody>${mrows}</tbody></table></div>` : `<div class="empty">${empty}</div>`}
+      ${list.length ? `<div class="table-wrap"><table class="matrix${wk ? ' fixed' : ''}"><thead><tr><th class="name"><input type="checkbox" class="sel" data-change="rep-sel-all"${picked && picked === list.length ? ' checked' : ''} aria-label="모두 선택">학생</th>${days.map((d) => `<th class="${dow(d) === 0 ? 'we' : ''}${d === TODAY ? ' today todaycol' : ''}${wk ? ' wkh' : ''}">${wk ? `${WD[dow(d)]}<br>${dot(d)}` : `${parse(d).getDate() === 1 || d === s ? `${parse(d).getMonth() + 1}/` : ''}${parse(d).getDate()}<br>${WD[dow(d)]}`}</th>`).join('')}</tr></thead><tbody>${mrows}</tbody></table></div>` : `<div class="empty">${empty}</div>`}
     </section>`;
   if (rep.tab !== 'summary') return;
   body.innerHTML = `
@@ -1274,26 +1315,26 @@ function rateView(list, sums, empty) {
   const left = all.top.length;
   const by = (k) => (a, b) => (a.s[k] ?? 101) - (b.s[k] ?? 101) || a.st.name.localeCompare(b.st.name, 'ko');
   if (rep.sort === 'rate') rows.sort(by('rate')); else if (rep.sort === 'fix') rows.sort(by('fix'));
-  const learned = rows.filter((r) => r.s.days || r.s.wrong).length;
+  const learned = rows.filter((r) => r.s.days || r.s.fn || r.s.wrong).length;
   const meter = (v, a, b, unit) => v === null ? '<span class="dash">—</span>'
     : `<div class="meter${v < 60 ? ' low' : ''}"><span class="mbar"><i style="width:${v}%"></i></span><b class="num">${v}%</b><span class="dash num">${nf.format(a)}/${nf.format(b)}${unit}</span></div>`;
   return `
     <div class="kpis">
       <div class="kpi"><div class="kpi-label">정답률</div><div class="kpi-value">${all.rate ?? '—'}${all.rate !== null ? '<small>%</small>' : ''}</div><div class="note num">${all.t ? `${nf.format(all.c)}/${nf.format(all.t)}문항 · 수업 학습 기준` : '학습 결과 없음'}</div></div>
-      <div class="kpi"><div class="kpi-label">다시 풀어 해결</div><div class="kpi-value">${all.fix ?? '—'}${all.fix !== null ? '<small>%</small>' : ''}</div><div class="note num">${all.wrong ? `처음 틀린 학습 ${nf.format(all.wrong)}개 중 ${nf.format(all.solved)}개 해결` : '틀린 학습 없음'}</div></div>
+      <div class="kpi"><div class="kpi-label">오답 해결률</div><div class="kpi-value">${all.fix ?? '—'}${all.fix !== null ? '<small>%</small>' : ''}</div><div class="note num">${all.fn ? `다시풀기·오답유사 ${nf.format(all.fc)}/${nf.format(all.fn)}문항` : '다시 푼 문항 없음'}</div></div>
       <div class="kpi"><div class="kpi-label">학습한 학생</div><div class="kpi-value">${learned}<small>/ ${list.length}명</small></div><div class="note">기간 안에 매쓰홀릭 결과가 있는 학생</div></div>
       <div class="kpi"><div class="kpi-label">남은 미해결</div><div class="kpi-value">${nf.format(all.wrong - all.solved)}<small>개</small></div><div class="note">${left ? `학습 ${left}종` : '없음'}</div></div>
     </div>
     <section class="panel" aria-labelledby="h-rate">
       <header><h2 id="h-rate">학생별 정답률·해결률</h2>
         <div class="segmented" role="group" aria-label="정렬">${[['name', '이름순'], ['rate', '정답률 낮은 순'], ['fix', '해결률 낮은 순']].map(([v, l]) => `<button data-act="rep-sort" data-v="${v}" aria-pressed="${rep.sort === v}">${l}</button>`).join('')}</div></header>
-      <p class="lede">해결률은 처음 틀린 학습 가운데 다시풀기·오답유사로 끝내 다 맞힌 비율입니다. 매쓰홀릭 엑셀에서 불러온 결과로 계산합니다.</p>
+      <p class="lede">해결률은 다시풀기·오답유사 학습의 정답률입니다(맞힌 문항 ÷ 푼 문항). 매쓰홀릭 엑셀에서 불러온 결과로 계산합니다.</p>
       <div class="table-wrap"><table class="cards rate-table"><thead><tr><th>학생</th><th class="n">학습일</th><th>정답률</th><th>해결률</th><th>자주 남은 미해결</th></tr></thead><tbody>
       ${rows.map(({ st, s }) => `<tr class="click" data-go="#student/${st.id}">
         <td class="first"><div class="who">${avatar(st)}<div><b>${esc(st.name)}</b><span class="sub">${esc(st.grade)} · ${esc(cls(st.classId)?.name || '반 없음')}</span></div></div></td>
         <td class="n minor" data-l="학습일">${s.days ? s.days + '일' : '<span class="dash">—</span>'}</td>
         <td class="minor" data-l="정답률">${meter(s.rate, s.c, s.t, '문항')}</td>
-        <td class="minor" data-l="해결률">${meter(s.fix, s.solved, s.wrong, '개')}</td>
+        <td class="minor" data-l="해결률">${meter(s.fix, s.fc, s.fn, '문항')}</td>
         <td class="minor" style="max-width:300px">${s.top.length ? s.top.slice(0, 2).map(([u, n]) => `<span class="tag neg sm">${esc(u)}${n > 1 ? ` ×${n}` : ''}</span>`).join(' ') : '<span class="dash">—</span>'}</td></tr>`).join('')}
       </tbody></table></div>
     </section>`;
@@ -1303,19 +1344,19 @@ function rateView(list, sums, empty) {
 function sheets(list, s, e) {
   const C = (st) => cls(st.classId)?.name || '';
   const ratio = (a, b) => (b ? Math.round((a / b) * 100) / 100 : '');
-  const summary = [['학생', '학년', '반', '과정', '수업일', '기록', '과제 완료', '일부 완료', '미완료', '과제 완료율', '학습 결과 첨부(회)', '맞힌 문항', '정답률', '푼 문항', '처음 틀린 학습', '다시 풀어 해결', '해결률', '자주 남은 미해결', '최근 지도 메모', '최근 다음 계획']];
-  const head = ['날짜', '요일', '지난 과제', '과제 수행', '지도 메모', '다음 과제', '다음 수업 확인할 점', '맞힌 문항', '푼 문항', '정답률', '학습별 결과', '미해결', '다시 풀어 해결', '그 밖의 학습', '보고서 코멘트', '이전 형식 기록'];
+  const summary = [['학생', '학년', '반', '과정', '수업일', '기록', '과제 완료', '일부 완료', '미완료', '과제 완료율', '학습 결과 첨부(회)', '맞힌 문항', '정답률', '푼 문항', '다시풀기·오답유사 맞힌 문항', '다시풀기·오답유사 푼 문항', '오답 해결률', '자주 남은 미해결', '최근 지도 메모', '최근 다음 계획']];
+  const head = ['날짜', '요일', '지난 과제', '과제 수행', '지도 메모', '다음 과제', '다음 수업 확인할 점', '맞힌 문항', '푼 문항', '정답률', '오답 해결률', '학습별 결과', '미해결', '다시 풀어 해결', '그 밖의 학습', '보고서 코멘트', '이전 형식 기록'];
   const out = {}, used = new Set(['학생별 요약']);
   // 시트 이름: 엑셀이 허용하지 않는 문자를 빼고 31자 안에서 겹치지 않게
   const sheetName = (st) => { let base = `${st.name}(${st.grade})`.replace(/[\\/?*[\]:]/g, '').slice(0, 28), n = base, i = 2; while (used.has(n)) n = `${base}${i++}`; used.add(n); return n; };
   for (const st of list) {
     const r = summarize(st, s, e), rs = rateStats(r.ls);
-    summary.push([st.name, st.grade, C(st), st.course, r.need, r.ls.length, r.hs.done, r.hs.part, r.hs.miss, ratio(r.hs.done, r.hs.n), r.sc.n || '', r.sc.t ? r.sc.c : '', ratio(r.sc.c, r.sc.t), r.sc.t || '', rs.wrong || '', rs.wrong ? rs.solved : '', ratio(rs.solved, rs.wrong), rs.top.slice(0, 3).map(([u, n]) => n > 1 ? `${u} (×${n})` : u).join(', '), r.memo, r.plan]);
+    summary.push([st.name, st.grade, C(st), st.course, r.need, r.ls.length, r.hs.done, r.hs.part, r.hs.miss, ratio(r.hs.done, r.hs.n), r.sc.n || '', r.sc.t ? r.sc.c : '', ratio(r.sc.c, r.sc.t), r.sc.t || '', rs.fn ? rs.fc : '', rs.fn || '', ratio(rs.fc, rs.fn), rs.top.slice(0, 3).map(([u, n]) => n > 1 ? `${u} (×${n})` : u).join(', '), r.memo, r.plan]);
     if (!r.ls.length) continue;
     const rows = [['학생', st.name, '학년', st.grade, '반', C(st), '기간', `${s} ~ ${e}`], [], head];
     for (const l of r.ls) {
-      const m = l.mh || {}, p = rateOf(l.mh);
-      rows.push([l.date, WD[dow(l.date)], l.hw.text, l.hw.status, l.memo, l.next.hw, l.next.check, p === null ? '' : +m.correct, p === null ? '' : +m.total, p === null ? '' : p / 100, m.units || '', m.weak || '', m.solved || '', m.extra || '', m.comment || '', legacyRows(l).map(([k, v]) => `${k}: ${v}`).join('\n')]);
+      const m = l.mh || {}, p = rateOf(l.mh), f = fixOf(l.mh);
+      rows.push([l.date, WD[dow(l.date)], l.hw.text, l.hw.status, l.memo, l.next.hw, l.next.check, p === null ? '' : +m.correct, p === null ? '' : +m.total, p === null ? '' : p / 100, f ? f.p / 100 : '', m.units || '', m.weak || '', m.solved || '', m.extra || '', m.comment || '', legacyRows(l).map(([k, v]) => `${k}: ${v}`).join('\n')]);
     }
     out[sheetName(st)] = rows;
   }
@@ -1323,7 +1364,7 @@ function sheets(list, s, e) {
 }
 const fileBase = (s, e, scope) => `학습일지_${{ week: '주간', month: '월간', custom: '기간' }[rep.mode]}_${rep.mode === 'month' ? s.slice(0, 7) : `${s}_${e}`}_${scopeName(scope)}${scope === rep.scope && rep.q.trim() ? '_' + rep.q.trim() : ''}`.replace(/[\\/:*?"<>|\s]+/g, '');
 function exportXlsx(scope = rep.scope) {
-  const [s, e] = rangeOf(); const sh = sheets(repList(scope), s, e);
+  const [s, e] = rangeOf(); const sh = sheets(scope === rep.scope ? targetList() : repList(scope), s, e);
   if (!window.XLSX) { toast('엑셀 도구를 불러오지 못해 CSV로 받습니다.'); return exportCsv(scope); }
   const wb = XLSX.utils.book_new();
   for (const [name, rows] of Object.entries(sh)) {
@@ -1338,7 +1379,7 @@ function exportXlsx(scope = rep.scope) {
   toast(`엑셀 파일을 내려받았습니다 · 학생 ${Object.keys(sh).length - 1}명, 1명당 시트 1개`);
 }
 function exportCsv(scope = rep.scope) {
-  const [s, e] = rangeOf(); const sh = sheets(repList(scope), s, e);
+  const [s, e] = rangeOf(); const sh = sheets(scope === rep.scope ? targetList() : repList(scope), s, e);
   const cell = (v) => { const t = String(v ?? ''); return /[",\n\r]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
   const body = Object.entries(sh).map(([name, rows]) => `[${name}]\r\n` + rows.map((r) => r.map(cell).join(',')).join('\r\n')).join('\r\n\r\n');
   download(new Blob(['﻿' + body], { type: 'text/csv;charset=utf-8' }), fileBase(s, e, scope) + '.csv');
@@ -1346,35 +1387,117 @@ function exportCsv(scope = rep.scope) {
 }
 function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); }
 
-/* ---------- print: 학생별로 날짜순 기록을 모은 표. 빈 항목은 '—' 한 글자로만 ---------- */
-function printLogs(logs, title) {
+/* 오답 해결률 = 다시풀기·오답유사 학습의 정답률. 엑셀에서 불러온 결과의 학습별 점수('다시풀기 5/8 · 오답유사 4/6')로 센다 */
+function fixOf(m) {
+  if (!m || m.src !== 'excel' || !hasText(m.units)) return null;
+  let n = 0, c = 0;
+  for (const x of m.units.matchAll(/(?:다시풀기|오답유사)\s+(\d+)\/(\d+)/g)) { c += +x[1]; n += +x[2]; }
+  return n ? { c, n, p: Math.round((c / n) * 100) } : null;
+}
+const weakOf = (m) => (!m ? [] : m.weakList || (hasText(m.weak) ? m.weak.split(/,\s*(?=\d+(?:\.\d+)+\s)/) : []));
+/* 미해결은 두 종류: 매쓰홀릭 교재('3.2.1 선대칭도형'처럼 단원 번호)와 쌍둥이 문제('[디딤돌 …] 초등 5-2 (2022개정)P.58-81 오답유사 학습'처럼 시중 교재 쪽수) */
+const isTwin = (u) => /^\[|P\.\s*\d/.test(u);
+// '[디딤돌 초등수학 응용] 초등 5-2 (2022개정)P.58-81 오답유사 학습' → '디딤돌 초등수학 응용 5-2 P.58-81'
+const shortTwin = (u) => u.replace(/[[\]]/g, ' ').replace(/\(\d{4}\s*개정\)/g, ' ').replace(/오답\s*유사\s*(학습)?\s*$/, '').replace(/\s(초등|중등|고등)\s+(?=\d-\d)/, ' ').replace(/\s*(P\.)/, ' $1').replace(/\s+/g, ' ').trim();
+const rateCls = (p) => (p === null ? '' : p >= 80 ? 'hi' : p < 60 ? 'lo' : '');
+
+/* ---------- 기간 비교·출석: 인쇄·학부모용·AI 총평이 같은 계산을 쓴다 ---------- */
+// 바로 앞 같은 길이의 기간 (월간이면 지난달)
+function prevRange() {
+  const [s, e] = rangeOf();
+  if (rep.mode === 'month') { const d = parse(s); return [ymd(new Date(d.getFullYear(), d.getMonth() - 1, 1)), addDays(s, -1), '지난달']; }
+  const n = Math.round((parse(e) - parse(s)) / 864e5) + 1;
+  return [addDays(s, -n), addDays(s, -1), rep.mode === 'week' ? '지난주' : '직전 기간'];
+}
+const delta = (a, b) => (a === null || b === null ? '' : a > b ? `▲${a - b}%p` : a < b ? `▼${b - a}%p` : '변화 없음');
+// 학생 한 명의 기간 묶음. rg = { s, e, ps, pe, pl } (기간 인쇄일 때만; 하루 인쇄는 null)
+function packOf(st, ls, rg) {
+  ls = [...ls].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const seen = {};
+  ls.forEach((l) => weakOf(l.mh).forEach((u) => (seen[u] = seen[u] || []).push(l.date)));
+  const repeat = Object.entries(seen).filter(([, ds]) => ds.length >= 2).sort((a, b) => b[1].length - a[1].length);
+  const p = { st, ls, seen, repeat, rs: rateStats(ls), hs: hwStats(ls), need: 0, prev: null, pl: '' };
+  if (rg) {
+    for (let d = rg.s; d <= rg.e && d <= TODAY; d = addDays(d, 1)) if (scheduled(st, d)) p.need++;
+    const pls = logsOf(st.id).filter((l) => l.date >= rg.ps && l.date <= rg.pe);
+    if (pls.length) { p.prev = rateStats(pls); p.pl = rg.pl; }
+  }
+  return p;
+}
+function groupLogs(logs) {
+  const order = studentOrder().map((s) => s.id), bySt = {};
+  logs.forEach((l) => (bySt[l.sid] = bySt[l.sid] || []).push(l));
+  return Object.keys(bySt).sort((a, b) => order.indexOf(a) - order.indexOf(b)).map((sid) => [stu(sid), bySt[sid]]);
+}
+// 요약 카드: 수업(예정 대비), 평균 정답률·오답 해결률(직전 기간 대비), 과제
+function sumCards(p) {
+  const { rs, hs, prev } = p, vs = (v, pv) => (prev && v !== null && pv !== null ? `<small class="dl">${p.pl} ${pv}% → ${delta(v, pv)}</small>` : '');
+  return `<div class="pr-sum">
+      <div class="k"><span>수업</span><b>${p.ls.length}회</b>${p.need ? `<small>예정 ${p.need}회</small>` : ''}</div>
+      ${rs.rate !== null ? `<div class="k"><span>평균 정답률</span><b class="pc ${rateCls(rs.rate)}">${rs.rate}%</b><small>${nf.format(rs.c)}/${nf.format(rs.t)}문항</small>${vs(rs.rate, prev?.rate)}</div>` : ''}
+      ${rs.fix !== null ? `<div class="k"><span>오답 해결률</span><b class="pc ${rateCls(rs.fix)}">${rs.fix}%</b><small>다시풀기·오답유사 ${nf.format(rs.fc)}/${nf.format(rs.fn)}</small>${vs(rs.fix, prev?.fix)}</div>` : ''}
+      ${hs.n ? `<div class="k"><span>과제 완료</span><b>${hs.done}/${hs.n}</b><small>일부 ${hs.part} · 미완료 ${hs.miss}</small></div>` : ''}
+    </div>`;
+}
+const prHead = (title, sub) => `<header class="pr-head"><div class="t">${esc(db.academy.name)} <em>${sub}</em></div><div class="r">${db.academy.logo ? `<img src="${db.academy.logo}" alt="">` : ''}${esc(title)}</div></header>`;
+const RATE_NOTE = '정답률 = 확인학습·다시풀기·오답유사·유형도전에서 맞힌 문항 ÷ 푼 문항 · 오답 해결률 = 다시풀기·오답유사 학습의 정답률';
+function showPrint(body) {
+  document.getElementById('print-area').innerHTML = `<div class="pr">${body}</div>`;
+  setTimeout(() => window.print(), 60);
+}
+
+/* ---------- print: 학생별로 기간 요약 → 반복 미해결 → 날짜순 기록 → 총평란. 빈 항목은 '—' 한 글자로만 ---------- */
+function printLogs(logs, title, rg = null) {
   logs = logs.filter(hasContent);
   if (!logs.length) return toast('인쇄할 기록이 없습니다');
-  const order = studentOrder().map((s) => s.id);
-  const bySt = {};
-  logs.forEach((l) => (bySt[l.sid] = bySt[l.sid] || []).push(l));
-  const ids = Object.keys(bySt).sort((a, b) => order.indexOf(a) - order.indexOf(b));
   const none = '<span class="none">—</span>';
-  const logo = db.academy.logo ? `<img src="${db.academy.logo}" alt="">` : '';
-  const body = ids.map((sid) => {
-    const st = stu(sid), ls = bySt[sid].sort((a, b) => (a.date < b.date ? -1 : 1));
+  const body = groupLogs(logs).map(([st, sl]) => {
+    const pk = packOf(st, sl, rg), { ls, seen } = pk;
     const withMh = ls.some((l) => l.mh);
+    // 기록이 하나도 없는 칸은 접어서 남은 칸에 자리를 준다 (메모를 하나도 안 쓴 기간이면 메모 칸도 뺀다)
+    const withHw = ls.some((l) => l.hw.status || hasText(l.hw.text));
+    const withMemo = ls.some((l) => hasText(l.memo) || l.legacy) || !withMh;
+    const withNext = ls.some((l) => hasText(l.next.hw) || hasText(l.next.check));
     const rows = ls.map((l) => {
       const hw = l.hw.status || hasText(l.hw.text) ? `${esc(l.hw.status || '확인 안 함')}${hasText(l.hw.text) ? `\n<span class="s">${esc(l.hw.text)}</span>` : ''}` : none;
       const next = [hasText(l.next.hw) ? `과제: ${esc(l.next.hw)}` : '', hasText(l.next.check) ? `확인: ${esc(l.next.check)}` : ''].filter(Boolean).join('\n') || none;
       const legacy = l.legacy && !hasText(l.memo) ? legacyRows(l).slice(0, 3).map(([k, v]) => `${k}: ${v}`).join('\n') : '';
-      const m = l.mh, p = rateOf(m);
-      const mh = !withMh ? '' : `<td>${m ? [p !== null ? `${esc(m.correct)}/${esc(m.total)} (${p}%)` : '', hasText(m.weak) ? `<span class="s">${m.src === 'excel' ? '미해결' : '취약'}: ${esc(m.weak)}</span>` : '', ...(m.others || []).map((o) => `<span class="s">${esc(o.type)} ${o.c}/${o.n}</span>`)].filter(Boolean).join('\n') || none : none}</td>`;
-      return `<tr><td class="d">${esc(dot(l.date))} (${WD[dow(l.date)]})</td><td>${hw}</td><td>${hasText(l.memo) ? esc(l.memo) : legacy ? `<span class="s">${esc(legacy)}</span>` : none}</td><td>${next}</td>${mh}</tr>`;
+      const m = l.mh, p = rateOf(m), fx = fixOf(m), wk = weakOf(m);
+      const tag = (u) => (seen[u]?.length >= 2 ? `<span class="rp">${esc(u)}(반복)</span>` : esc(u));
+      const label = m?.src === 'excel' ? '미해결' : '취약';
+      const book = wk.filter((u) => !isTwin(u)), twin = wk.filter(isTwin);
+      const mh = !withMh ? '' : `<td class="mhc">${m ? [
+        p !== null ? `<div><b class="pc ${rateCls(p)}">정답률 ${p}%</b> <span class="s">정답 ${esc(m.correct)} / ${esc(m.total)}문항</span></div>` : '',
+        fx ? `<div>오답 해결률 <b class="pc ${rateCls(fx.p)}">${fx.p}%</b> <span class="s">다시풀기·오답유사 ${fx.c}/${fx.n}</span></div>` : '',
+        book.length ? `<div class="s"><i>${m.src === 'excel' ? '매쓰홀릭 교재 미해결' : label}</i> ${book.map(tag).join(', ')}</div>` : '',
+        twin.length ? `<div class="s"><i>쌍둥이 문제 미해결</i> ${twin.map((u) => (seen[u]?.length >= 2 ? `<span class="rp">${esc(shortTwin(u))}(반복)</span>` : esc(shortTwin(u)))).join(', ')}</div>` : '',
+        ...(m.others || []).map((o) => `<div class="s">${esc(o.type)} ${o.c}/${o.n}${o.n ? ` (${Math.round((o.c / o.n) * 100)}%)` : ''}</div>`),
+      ].filter(Boolean).join('') || none : none}</td>`;
+      return `<tr><td class="d">${esc(dot(l.date))} (${WD[dow(l.date)]})</td>${withHw ? `<td>${hw}</td>` : ''}${withMemo ? `<td>${hasText(l.memo) ? esc(l.memo) : legacy ? `<span class="s">${esc(legacy)}</span>` : ''}</td>` : ''}${withNext ? `<td>${next}</td>` : ''}${mh}</tr>`;
     }).join('');
-    const cols = withMh ? '<col style="width:20mm"><col style="width:26mm"><col><col style="width:40mm"><col style="width:58mm">' : '<col style="width:22mm"><col style="width:34mm"><col><col style="width:60mm">';
+    const cols = '<col style="width:19mm">' + (withHw ? '<col style="width:24mm">' : '') + (withMemo ? '<col>' : '') + (withNext ? '<col style="width:36mm">' : '') + (withMh ? (withMemo ? '<col style="width:64mm">' : '<col>') : '');
+    // 기간 요약: 정답률은 문항 합계로, 오답 해결률은 다시풀기·오답유사 문항 합계로
+    const sum = !withMh && !pk.hs.n ? '' : sumCards(pk);
+    // 보완할 단원(매쓰홀릭 교재 / 쌍둥이 문제로 나눠서) / 다시 풀어 해결한 단원. 모든 항목에 몇 번·언제 미해결이었는지
+    const byCount = (a, b) => b[1].length - a[1].length;
+    const book = Object.entries(seen).filter(([u]) => !isTwin(u)).sort(byCount);
+    const twin = Object.entries(seen).filter(([u]) => isTwin(u)).sort(byCount);
+    const good = [...new Set(ls.flatMap((l) => l.mh?.solvedList || []))].filter((u) => !isTwin(u) && !seen[u]);
+    const li = (arr, n, f) => `<ul>${arr.slice(0, n).map(f).join('')}${arr.length > n ? `<li class="more">외 ${arr.length - n}개</li>` : ''}</ul>`;
+    const item = (name) => ([u, ds]) => `<li${ds.length >= 2 ? ' class="rp"' : ''}>${esc(name(u))} <span class="dt">${ds.length}번 미해결 · ${ds.map(dot).join(', ')}</span></li>`;
+    const grp = (label, arr, name) => (arr.length ? `<div class="gl">${label}</div>${li(arr, 6, item(name))}` : '');
+    const units = !withMh ? '' : `<div class="pp-cols">
+        <div class="pp-box"><h3>이번 기간 보완할 단원</h3>${book.length || twin.length ? grp('매쓰홀릭 교재', book, (u) => u) + grp('쌍둥이 문제', twin, shortTwin) : '<p class="s">남은 단원이 없습니다.</p>'}</div>
+        <div class="pp-box"><h3>스스로 다시 풀어 해결한 단원</h3>${good.length ? li(good, 8, (u) => `<li>${esc(u)}</li>`) : '<p class="s">—</p>'}</div>
+      </div>`;
     // 학생 1명 = 1장: 학생마다 새 쪽에서 시작하고 머리말을 다시 붙인다
-    return `<section class="pr-st"><header class="pr-head"><div class="t">${esc(db.academy.name)} <em>학습일지</em></div><div class="r">${logo}${esc(title)}</div></header>
+    return `<section class="pr-st">${prHead(title, '학습일지')}
       <h2>${esc(st.name)}<span>${esc(st.grade)} · ${esc(cls(st.classId)?.name || '반 없음')} · ${esc(st.course)} · ${ls.length}회</span></h2>
-      <table>${cols}<thead><tr><th>날짜</th><th>과제 수행</th><th>지도 메모</th><th>다음 과제·지도 계획</th>${withMh ? '<th>학습 결과</th>' : ''}</tr></thead><tbody>${rows}</tbody></table></section>`;
+      ${sum}${units}
+      <table>${cols}<thead><tr><th>날짜</th>${withHw ? '<th>과제 수행</th>' : ''}${withMemo ? '<th>오늘 지도 메모</th>' : ''}${withNext ? '<th>다음 과제·지도 계획</th>' : ''}${withMh ? '<th>학습 결과</th>' : ''}</tr></thead><tbody>${rows}</tbody></table>
+      ${withMh ? `<div class="pr-foot"><div class="note">${RATE_NOTE} · 교재 채점은 정답률에 넣지 않고 따로 표시</div></div>` : ''}</section>`;
   }).join('');
-  document.getElementById('print-area').innerHTML = `<div class="pr">${body}</div>`;
-  setTimeout(() => window.print(), 60);
+  showPrint(body);
 }
 
 /* ================= 매쓰홀릭 엑셀 가져오기 =================
@@ -1731,7 +1854,8 @@ document.addEventListener('click', (ev) => {
   else if (act === 'step') { const n = +t.dataset.v; if (rep.mode === 'week') rep.anchor = addDays(mondayOf(rep.anchor), 7 * n); else { const d = parse(rep.anchor); rep.anchor = ymd(new Date(d.getFullYear(), d.getMonth() + n, 1)); } renderReports(); }
   else if (act === 'export-xlsx') exportXlsx();
   else if (act === 'export-csv') exportCsv();
-  else if (act === 'print-range') { const [s, e] = rangeOf(); const ids = new Set(repList().map((x) => x.id)); printLogs(Object.values(db.logs).filter((l) => ids.has(l.sid) && l.date >= s && l.date <= e), `${rangeLabel()} · ${scopeName()}`); }
+  else if (act === 'print-range') { const { logs, rg } = rangeLogs(); printLogs(logs, rangeLabel(), rg); }
+  else if (act === 'sel-clear') { rep.sel.clear(); drawReportsBody(); }
   else if (act === 'export-student') { const keep = { ...rep }; rep.mode = 'month'; rep.anchor = TODAY; exportXlsx('s:' + t.dataset.id); rep = keep; }
   else if (act === 'backup') { download(new Blob([JSON.stringify(db, null, 1)], { type: 'application/json' }), `학습일지_백업_${TODAY}.json`); toast('백업 파일을 내려받았습니다'); }
   else if (act === 'logo-rm') { db.academy.logo = ''; persist(); renderSettings(); }
@@ -1749,6 +1873,8 @@ document.addEventListener('change', (ev) => {
   if (k === 'today-date' && ev.target.value) location.hash = '#today/' + ev.target.value;
   else if (k === 'st-cls') { stFilter.cls = ev.target.value; drawStudentTable(); }
   else if (k === 'scope') { rep.scope = ev.target.value; renderReports(); }
+  else if (k === 'rep-sel') { const id = ev.target.dataset.id; if (ev.target.checked) rep.sel.add(id); else rep.sel.delete(id); drawReportsBody(); }
+  else if (k === 'rep-sel-all') { const list = repList(); if (ev.target.checked) list.forEach((s) => rep.sel.add(s.id)); else list.forEach((s) => rep.sel.delete(s.id)); drawReportsBody(); }
   else if ((k === 'rep-from' || k === 'rep-to') && ev.target.value) { rep[k === 'rep-from' ? 'from' : 'to'] = ev.target.value; drawReportsBody(); }
   else if (k === 'academy-name') { db.academy.name = ev.target.value.trim() || '우리 학원'; persist(); renderNav('settings'); toast('저장했습니다'); }
   else if (k === 'logo') { const f = ev.target.files[0]; if (!f) return; if (f.size > 400000) return toast('로고는 400KB 이하 이미지로 올려 주세요'); const r = new FileReader(); r.onload = () => { db.academy.logo = r.result; persist(); renderSettings(); }; r.readAsDataURL(f); }
