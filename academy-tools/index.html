@@ -11,9 +11,10 @@
   --paper: #fbfcfe; --grid: #e6ecf6; --surface: #ffffff;
   --ink: #1d2740; --sub: #58617a; --faint: #8089a0; --line: #dfe5ef;
   /* 도구별 색: 진한 색은 버튼·기호, 연한 색은 형광펜 */
-  --pink: #d24a78; --pink-hl: #ffd5e3;
-  --blue: #2f68d0; --blue-hl: #cfe1ff;
-  --green: #3c8a37; --green-hl: #d5efc1;
+  /* 로고(matholic-logo.png)에서 가져온 색 */
+  --pink: #d34a6c; --pink-hl: #ffd6e0;
+  --blue: #2f8796; --blue-hl: #c8ebef;
+  --green: #4a8a3a; --green-hl: #d9efc6;
   --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, "Malgun Gothic", sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; }
@@ -27,9 +28,10 @@ a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 3px solid rgba(47, 104, 208, .35); outline-offset: 3px; }
 
 .page { max-width: 960px; margin: 0 auto; padding: 64px 24px 56px; }
-.brand { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--sub); }
-.brand i { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: var(--ink); color: #fff; font-style: normal; font-size: 13px; font-weight: 700; }
-h1 { margin-top: 12px; font-size: 36px; line-height: 46px; font-weight: 800; letter-spacing: -0.04em; }
+.brand { display: flex; align-items: center; gap: 14px; font-size: 14px; font-weight: 600; color: var(--sub); }
+.brand img { display: block; height: 30px; width: auto; }
+.brand span { padding-left: 14px; border-left: 1.5px solid var(--line); }
+h1 { margin-top: 20px; font-size: 36px; line-height: 46px; font-weight: 800; letter-spacing: -0.04em; }
 .lede { margin-top: 14px; max-width: 34em; color: var(--sub); font-size: 17px; line-height: 28px; }
 
 .group { margin-top: 48px; }
@@ -72,6 +74,9 @@ h1 { margin-top: 12px; font-size: 36px; line-height: 46px; font-weight: 800; let
 
 @media (max-width: 760px) {
   .page { padding: 40px 16px 40px; }
+  .brand { gap: 10px; font-size: 13px; }
+  .brand img { height: 22px; }
+  .brand span { padding-left: 10px; }
   h1 { font-size: 28px; line-height: 36px; }
   .lede { font-size: 16px; line-height: 26px; }
   .tool { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 24px 20px; }
@@ -84,7 +89,7 @@ h1 { margin-top: 12px; font-size: 36px; line-height: 46px; font-weight: 800; let
 </head>
 <body>
 <main class="page">
-  <p class="brand"><i aria-hidden="true">M</i>매쓰홀릭 프리미엄 자료실</p>
+  <p class="brand"><img src="matholic-logo.png" alt="매쓰홀릭" width="250" height="30"><span>프리미엄 자료실</span></p>
   <h1>원장님을 위한 학원 운영 도구</h1>
   <p class="lede">설치나 가입 없이 바로 여는 학원 관리 프로그램 3종입니다. 하고 싶은 일에 맞는 도구를 골라 시작하세요.</p>
 
