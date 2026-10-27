@@ -385,6 +385,9 @@ dialog:has(.help-dlg) { width: min(640px, calc(100vw - 32px)); }
 .matrix a.cell { display: grid; place-items: center; width: 100%; height: 26px; border-radius: 4px; }
 .matrix a.cell:hover { background: var(--raised); }
 .matrix .todaycol { background: var(--raised); }
+/* 체크한 학생: 이름부터 마지막 날짜까지 한 줄 전체에 배경색 */
+.matrix tr.on td { background: #e9f5df; }
+.matrix tr.on td.name { font-weight: 600; }
 .matrix.fixed { table-layout: fixed; width: 100%; min-width: 720px; }
 .matrix td.wk { width: auto; padding: 0 3px; }
 .matrix td.wk a.cell { display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 8px; }
@@ -598,6 +601,7 @@ dialog[open] { animation: pop .22s var(--ease-out); }
 .pr .pc.hi { color: #2e7d32; }
 .pr .pc.lo { color: #c0392b; }
 .pr .mhc i { font-style: normal; font-weight: 600; color: #333; }
+.pr .mhc .ot { color: #222; }
 .pr .mhc .rp { font-weight: 700; color: #b26a00; }
 .pr-sum .k small.dl { color: #333; font-weight: 600; }
 /* 보완할 단원 / 다시 풀어 해결한 단원 */
@@ -822,7 +826,16 @@ function seed() {
     const mhOf = (unit) => {
       const total = 12 + Math.floor(rnd() * 16), a1 = Math.min(1, Math.max(0.3, acc + (rnd() - 0.5) * 0.25)), correct = Math.round(total * a1);
       const b1 = Math.ceil(total / 2), bOk = Math.min(b1, Math.round(b1 * Math.min(1, a1 + 0.12)));
-      return { total: String(total), correct: String(correct), units: `${unit} 기본 ${bOk}/${b1}, ${unit} 응용 ${correct - bOk}/${total - b1}`, weak: a1 < 0.75 ? WEAK(unit) : '', progress: String(prog), comment: '' };
+      return { total: String(total), correct: String(correct), units: `${unit} 기본 ${bOk}/${b1}, ${unit} 응용 ${correct - bOk}/${total - b1}`, weak: a1 < 0.75 ? WEAK(unit) : '', progress: String(prog), comment: '', others: othersOf(unit, a1) };
+    };
+    // 수업 밖 채점(학습지·교재채점): 인쇄에서 이름이 보이는지, 같은 학습지가 두 번 들어간 날도 미리 볼 수 있게 가끔 넣는다
+    const othersOf = (unit, a1) => {
+      if (rnd() > 0.35) return [];
+      const one = (type, title) => { const n = 10 + Math.floor(rnd() * 15); return { type, title, c: Math.round(n * Math.min(1, a1 + (rnd() - 0.5) * 0.2)), n }; };
+      const list = [one('학습지', pick([`${unit} 단원평가`, `${unit} 오답 보충`, `${unit} 서술형 연습`]))];
+      if (rnd() < 0.3) list.push(one('학습지', list[0].title));
+      if (rnd() < 0.4) list.push(one('교재채점', `${st.book} ${unit}`));
+      return list;
     };
     // 선생님이 쓰지 않은 날의 매쓰홀릭 결과만 있는 일지: 수업 없는 날의 집 학습, 일지를 건너뛴 수업일
     const mhOnly = (d) => { const log = newLog(st, d); log.mh = mhOf(U[u % U.length]); logs[st.id + '|' + d] = log; };
@@ -846,7 +859,7 @@ function seed() {
   }
   return { v: 3, academy: { name: 'OO수학학원', logo: '' }, classes, students, logs, sample: true, sampleV: SAMPLE_V };
 }
-const SAMPLE_V = 2;   // 예시 데이터 구성이 바뀌면 올린다: 저장된 예시 데이터를 새로 만든다
+const SAMPLE_V = 3;   // 예시 데이터 구성이 바뀌면 올린다: 저장된 예시 데이터를 새로 만든다
 
 let db;
 try { db = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { db = null; }
@@ -1317,7 +1330,7 @@ function drawReportsBody() {
   let mrows = '', lastC = null;
   for (const st of list) {
     if (st.classId !== lastC) { lastC = st.classId; mrows += `<tr class="cls"><td colspan="${days.length + 1}">${esc(cls(st.classId)?.name || '반 없음')}</td></tr>`; }
-    mrows += `<tr><td class="name"><input type="checkbox" class="sel" data-change="rep-sel" data-id="${st.id}"${rep.sel.has(st.id) ? ' checked' : ''} aria-label="${esc(st.name)} 선택"><a href="#student/${st.id}">${esc(st.name)}</a><span class="sub">${esc(st.grade)}</span></td>${days.map((d) => {
+    mrows += `<tr${rep.sel.has(st.id) ? ' class="on"' : ''}><td class="name"><input type="checkbox" class="sel" data-change="rep-sel" data-id="${st.id}"${rep.sel.has(st.id) ? ' checked' : ''} aria-label="${esc(st.name)} 선택"><a href="#student/${st.id}">${esc(st.name)}</a><span class="sub">${esc(st.grade)}</span></td>${days.map((d) => {
       const l = logOf(st.id, d), has = hasContent(l), sch = scheduled(st, d);
       const cellCls = 'cellwrap' + (d === TODAY ? ' todaycol' : '') + (wk ? ' wk' : '');
       if (has) {
@@ -1515,9 +1528,10 @@ function printLogs(logs, title, rg = null) {
       const mh = !withMh ? '' : `<td class="mhc">${m ? [
         p !== null ? `<div><b class="pc ${rateCls(p)}">정답률 ${p}%</b> <span class="s">정답 ${esc(m.correct)} / ${esc(m.total)}문항</span></div>` : '',
         fx ? `<div>오답 해결률 <b class="pc ${rateCls(fx.p)}">${fx.p}%</b> <span class="s">다시풀기·오답유사 ${fx.c}/${fx.n}</span></div>` : '',
-        book.length ? `<div class="s"><i>${m.src === 'excel' ? '매쓰홀릭 교재 미해결' : label}</i> ${book.map(tag).join(', ')}</div>` : '',
+        book.length ? `<div class="s"><i>${m.src === 'excel' ? '매쓰홀릭 교재 오답 미해결' : label}</i> ${book.map(tag).join(', ')}</div>` : '',
         twin.length ? `<div class="s"><i>쌍둥이 문제 미해결</i> ${twin.map((u) => (seen[u]?.length >= 2 ? `<span class="rp">${esc(shortTwin(u))}(반복)</span>` : esc(shortTwin(u)))).join(', ')}</div>` : '',
-        ...(m.others || []).map((o) => `<div class="s">${esc(o.type)} ${o.c}/${o.n}${o.n ? ` (${Math.round((o.c / o.n) * 100)}%)` : ''}</div>`),
+        // 학습지·교재채점은 이름까지 적어야 어떤 학습인지, 같은 학습이 두 번 들어갔는지 알 수 있다
+        ...(m.others || []).map((o) => `<div class="s">${esc(o.type)}${hasText(o.title) && o.title !== o.type ? ` <span class="ot">${esc(o.title)}</span>` : ''} ${o.c}/${o.n}${o.n ? ` (${Math.round((o.c / o.n) * 100)}%)` : ''}</div>`),
       ].filter(Boolean).join('') || none : none}</td>`;
       return `<tr><td class="d">${esc(dot(l.date))} (${WD[dow(l.date)]})</td>${withHw ? `<td>${hw}</td>` : ''}${withMemo ? `<td>${hasText(l.memo) ? esc(l.memo) : legacy ? `<span class="s">${esc(legacy)}</span>` : ''}</td>` : ''}${withNext ? `<td>${next}</td>` : ''}${mh}</tr>`;
     }).join('');
@@ -1551,22 +1565,23 @@ function printLogs(logs, title, rg = null) {
    '학생_학습별_상세_사용량' 시트(이름·학년·반)로 학생과 반을 등록한다. 선생님이 쓴 칸은 건드리지 않는다. */
 const helpIcon = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M6.2 6.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.3"/><circle cx="8" cy="11.6" r=".4" fill="currentColor"/></svg>';
 const importBtn = (primary) => `<span class="imp-wrap"><label class="btn${primary ? ' primary' : ''}">매쓰홀릭 엑셀 올리기<input type="file" accept=".xlsx,.xls" data-change="mh-import" hidden></label><button type="button" class="btn ghost icon-btn help" data-act="help-import" aria-label="매쓰홀릭 엑셀 받는 방법" title="매쓰홀릭 엑셀 받는 방법">${helpIcon}</button></span>`;
-/* 매쓰홀릭에서 엑셀을 받는 곳: [학습현황] → 날짜 체크 → 학생 체크 → [학습 이력 n명].
+/* 매쓰홀릭에서 엑셀을 받는 곳: [학습현황] → 오른쪽 위 날짜 칸에 기간 지정 → 학생 체크 → [학습 이력 n명].
+   요일 체크박스가 아니라 날짜 칸의 기간이 엑셀에 담긴다.
    화면을 단순하게 그린 그림 위에 누를 곳을 표시한다 (실제 화면 캡처 아님). */
 function downloadGuide() {
   return `<div class="guide">
     <div class="mock" aria-hidden="true">
       <div class="m-top"><span>수업</span><span>학습지</span><span>교재채점</span><span class="hit">학습현황<i>1</i></span><span>진단평가</span><span>더보기</span></div>
-      <div class="m-bar"><span class="m-range">‹ 10/12 ~ 10/18 ›</span><span class="m-sp"></span><span class="m-date">2026-10-14 → 2026-10-21</span><span class="m-btn hit">학습 이력 5명<i>4</i></span></div>
+      <div class="m-bar"><span class="m-range">‹ 10/5 ~ 10/11 ›</span><span class="m-sp"></span><span class="m-date hit">2026-10-01 → 2026-10-27<i>2</i></span><span class="m-btn hit">학습 이력 33명<i>4</i></span></div>
       <div class="m-grid">
-        <span class="m-cell hit">☑ 모두선택<i>3</i></span><span class="m-cell">☐ 월</span><span class="m-cell">☐ 화</span><span class="m-cell hit">☑ 수<i>2</i></span><span class="m-cell">☐ 목</span><span class="m-cell">☐ 금</span>
+        <span class="m-cell hit">☑ 모두선택<i>3</i></span><span class="m-cell">☑ 7 수</span><span class="m-cell">☑ 8 목</span><span class="m-cell">☑ 9 금</span><span class="m-cell">☑ 10 토</span><span class="m-cell">☑ 11 일</span>
       </div>
     </div>
     <ol class="steps">
       <li><b>매쓰홀릭 상단 메뉴에서 [학습현황]</b>을 엽니다.</li>
-      <li>날짜 줄에서 <b>받을 날짜를 체크</b>합니다. 주간 보기에서 여러 날을 체크할 수 있어요.</li>
+      <li>오른쪽 위 <b>날짜 칸에서 받을 기간의 시작일과 종료일을 지정</b>합니다. 아래 요일 체크박스가 아니라 이 날짜 칸의 기간이 엑셀에 담깁니다.</li>
       <li>왼쪽에서 <b>학생을 체크</b>합니다. 반 전체라면 [모두선택]을 누르세요.</li>
-      <li>오른쪽 위 <b>[학습 이력 n명]</b>을 누르면 엑셀이 내려받아집니다. 버튼 옆의 기간이 맞는지 확인하세요.</li>
+      <li>날짜 칸 옆 <b>[학습 이력 n명]</b>을 누르면 엑셀이 내려받아집니다.</li>
       <li>학습일지에서 <b>[매쓰홀릭 엑셀 올리기]</b>로 그 파일을 고르면 끝입니다.</li>
     </ol>
   </div>`;
@@ -1620,7 +1635,7 @@ function renderWelcome() {
     </section>
 
     <section class="wel-guide" aria-labelledby="h-guide">
-      <div><h2 id="h-guide">매쓰홀릭에서 엑셀 받는 곳</h2><p class="muted">[학습현황]에서 날짜와 학생을 고르고 [학습 이력 n명]을 누르면 됩니다.</p></div>
+      <div><h2 id="h-guide">매쓰홀릭에서 엑셀 받는 곳</h2><p class="muted">[학습현황]에서 날짜 칸에 기간을 지정하고 학생을 고른 뒤 [학습 이력 n명]을 누르면 됩니다.</p></div>
       ${downloadGuide()}
       <div class="wel-cta">${upload}<a class="btn" href="#students">학생 직접 등록</a></div>
     </section>
@@ -1940,7 +1955,7 @@ function importExcel(f) {
     const wb = XLSX.read(buf, { type: 'array' });
     const parsed = readMatholic(wb);
     // 학습일지에서 내려받은 엑셀(첫 시트 '학생별 요약')을 잘못 올린 경우
-    if (!parsed.rows.length && !parsed.roster.length && wb.SheetNames.includes('학생별 요약')) return alert(`학습일지에서 내려받은 엑셀이 골라졌어요.\n\n여기에는 매쓰홀릭에서 받은 '매쓰홀릭_학습_이력' 엑셀을 올려 주세요.\n매쓰홀릭 [학습현황]에서 날짜와 학생을 고르고 [학습 이력 n명]을 누르면 받아집니다.\n\n${fileInfo(f)}`);
+    if (!parsed.rows.length && !parsed.roster.length && wb.SheetNames.includes('학생별 요약')) return alert(`학습일지에서 내려받은 엑셀이 골라졌어요.\n\n여기에는 매쓰홀릭에서 받은 '매쓰홀릭_학습_이력' 엑셀을 올려 주세요.\n매쓰홀릭 [학습현황]에서 날짜 칸에 기간을 지정하고 학생을 고른 뒤 [학습 이력 n명]을 누르면 받아집니다.\n\n${fileInfo(f)}`);
     if (!parsed.rows.length && !parsed.roster.length) return alert(`매쓰홀릭 학습 이력 엑셀에서 학생을 찾지 못했습니다.\n\n매쓰홀릭 학습현황에서 받은 '학습 이력' 엑셀인지 확인해 주세요. (? 버튼: 엑셀 받는 곳 보기)\n\n${fileInfo(f)}\n읽은 시트와 첫 줄:\n${parsed.sheets.join('\n')}`);
     openImport(parsed, f.name);
   }).catch((e) => alert(`엑셀 파일을 읽지 못했습니다.\n암호가 걸려 있거나 보안 프로그램으로 잠긴 파일일 수 있어요.\n\n${fileInfo(f)}\n(${e && e.message ? e.message : e})`));
