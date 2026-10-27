@@ -1492,7 +1492,7 @@ function renderReports() {
   const opt = (v, l) => `<option value="${esc(v)}"${rep.scope === v ? ' selected' : ''}>${esc(l)}</option>`;
   view.innerHTML = `
   <div class="title-row"><div><h1>학습 통계</h1><p class="sub" id="rep-sub"></p></div>
-    <div class="actions">${importBtn()}${saveBtn()}<button class="btn" data-act="print-range" title="학생당 1장. 인쇄 창에서 'PDF로 저장'을 고르면 파일로 받습니다">학습 일지 다운로드</button><button class="btn" data-act="export-csv">CSV</button><button class="btn primary" data-act="export-xlsx">엑셀로 받기</button></div></div>
+    <div class="actions">${importBtn()}${saveBtn()}<button class="btn" data-act="print-range" title="학생당 1장. 인쇄 창에서 'PDF로 저장'을 고르면 파일로 받습니다">학습 일지 다운로드</button></div></div>
   <div class="filters">
     <div class="segmented" role="group" aria-label="기간 단위"><button data-act="mode" data-v="week" aria-pressed="${rep.mode === 'week'}">주간</button><button data-act="mode" data-v="month" aria-pressed="${rep.mode === 'month'}">월간</button><button data-act="mode" data-v="custom" aria-pressed="${rep.mode === 'custom'}">기간</button></div>
     ${rep.mode === 'custom'
@@ -1538,7 +1538,7 @@ function drawReportsBody() {
     }).join('')}</tr>`;
   }
   const picked = list.filter((x) => rep.sel.has(x.id)).length;
-  document.getElementById('rep-sub').innerHTML = `${esc(rangeLabel())} · ${esc(scopeName())}${q ? ` · '${esc(q)}' 검색` : ''} ${list.length}명 · 기록 <strong>${total}건</strong>${picked ? `<span class="sel-chip">· ${picked}명 선택 (인쇄·내보내기 대상)<button class="btn sm ghost" data-act="sel-clear">선택 해제</button></span>` : ''}`;
+  document.getElementById('rep-sub').innerHTML = `${esc(rangeLabel())} · ${esc(scopeName())}${q ? ` · '${esc(q)}' 검색` : ''} ${list.length}명 · 기록 <strong>${total}건</strong>${picked ? `<span class="sel-chip">· ${picked}명 선택 (학습 일지 다운로드 대상)<button class="btn sm ghost" data-act="sel-clear">선택 해제</button></span>` : ''}`;
   const body = document.getElementById('rep-body');
   if (rep.tab === 'rate') { body.innerHTML = rateView(list, sums, empty); return; }
   if (rep.tab === 'group') { body.innerHTML = q && !list.length ? `<div class="empty">${empty}</div>` : groupView(list); return; }
@@ -1766,7 +1766,7 @@ function printLogs(logs, title, rg = null) {
    '학생_학습별_상세_사용량' 시트(이름·학년·반)로 학생과 반을 등록한다. 선생님이 쓴 칸은 건드리지 않는다. */
 const helpIcon = '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M6.2 6.2a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.3"/><circle cx="8" cy="11.6" r=".4" fill="currentColor"/></svg>';
 // 상단 '매쓰홀릭 엑셀 올리기' 오른쪽에 두는 저장 버튼 (데이터 관리 화면의 '파일로 저장'과 같다)
-const saveBtn = () => `<button class="btn" data-act="html-save" title="지금 기록이 담긴 파일을 내 PC에 받습니다. 이 파일을 열면 인터넷 없이도 이어서 쓸 수 있어요">파일로 저장</button>`;
+const saveBtn = () => `<button class="btn primary" data-act="html-save" title="지금 기록이 담긴 파일을 내 PC에 받습니다. 이 파일을 열면 인터넷 없이도 이어서 쓸 수 있어요">파일로 저장</button>`;
 const importBtn = (primary) => `<span class="imp-wrap"><label class="btn${primary ? ' primary' : ''}">매쓰홀릭 엑셀 올리기<input type="file" accept=".xlsx,.xls" data-change="mh-import" hidden></label><button type="button" class="btn ghost icon-btn help" data-act="help-import" aria-label="매쓰홀릭 엑셀 받는 방법" title="매쓰홀릭 엑셀 받는 방법">${helpIcon}</button></span>`;
 /* 매쓰홀릭에서 엑셀을 받는 곳: [학습현황] → 오른쪽 위 날짜 칸에 기간 지정 → 학생 체크 → [학습 이력 n명].
    요일 체크박스가 아니라 날짜 칸의 기간이 엑셀에 담긴다.
@@ -2433,8 +2433,6 @@ document.addEventListener('click', (ev) => {
   else if (act === 'rep-tab') { rep.tab = t.dataset.v; document.querySelectorAll('[data-act=rep-tab]').forEach((b) => b.setAttribute('aria-selected', b === t)); drawReportsBody(); }
   else if (act === 'rep-sort') { rep.sort = t.dataset.v; drawReportsBody(); }
   else if (act === 'step') { const n = +t.dataset.v; if (rep.mode === 'week') rep.anchor = addDays(mondayOf(rep.anchor), 7 * n); else { const d = parse(rep.anchor); rep.anchor = ymd(new Date(d.getFullYear(), d.getMonth() + n, 1)); } renderReports(); }
-  else if (act === 'export-xlsx') exportXlsx();
-  else if (act === 'export-csv') exportCsv();
   else if (act === 'print-range') { const { logs, rg } = rangeLogs(); printLogs(logs, rangeLabel(), rg); }
   else if (act === 'sel-clear') { rep.sel.clear(); drawReportsBody(); }
   else if (act === 'export-student') { const keep = { ...rep }; rep.mode = 'month'; rep.anchor = TODAY; exportXlsx('s:' + t.dataset.id); rep = keep; }
