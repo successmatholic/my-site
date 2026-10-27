@@ -612,6 +612,52 @@ dialog[open] { animation: pop .22s var(--ease-out); }
 .pr .pp-box h3 + .gl { margin-top: 0; }
 .pr-foot { margin-top: 3mm; break-inside: avoid; }
 .pr-foot .note { font-size: 7.5pt; color: #777; margin-top: 2mm; }
+
+/* ---------- 매쓰홀릭 공책 톤: 도구 목록(../index.html)과 같은 모눈종이 바탕 + 로고 색 + 사칙연산 스티커 ---------- */
+:root {
+  --tool: #437f34; --tool-hover: #36692a; --tool-hl: #d9efc6;
+  --text: #1d2740; --muted: #58617a; --faint: #8089a0;
+  --border: #dfe5ef; --rule: #edf0f5; --raised: #f5f7fb; --active: #e9eef5; --control: #cfd6e2;
+  --primary: var(--tool); --blue: var(--tool); --blue-hover: var(--tool-hover);
+  --ring: 0 0 0 3.5px rgba(67, 127, 52, .28);
+  --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, "Malgun Gothic", sans-serif;
+}
+body { letter-spacing: -0.01em; }
+@media screen {
+  body { background-color: #fbfcfe; background-image: linear-gradient(#e6ecf6 1px, transparent 1px), linear-gradient(90deg, #e6ecf6 1px, transparent 1px); background-size: 24px 24px; background-position: -1px -1px; }
+}
+/* 왼쪽 위 표시: 책 아이콘 대신 = 스티커 */
+.brand .mark, .topbar .mark { display: none; }
+.brand::before, .topbar b::before { content: "="; display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--tool); color: #fff; font-size: 19px; font-weight: 700; line-height: 1;
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4.5px var(--tool-hl); transform: rotate(-6deg); }
+.topbar b { display: inline-flex; align-items: center; gap: 10px; }
+.topbar b::before { width: 24px; height: 24px; font-size: 16px; }
+.brand b { font-weight: 700; }
+.nav-item { border-radius: 999px; }
+.nav-item[aria-current="page"] { background: var(--tool-hl); }
+@media (max-width: 1100px) { .app .topbar { background: rgba(251, 252, 254, .9); } }
+.sheet { border-radius: 20px; box-shadow: 0 0 0 1.5px var(--border), 0 3px 0 1.5px var(--border); }
+.title-row h1 { width: fit-content; padding: 0 3px; font-weight: 800; letter-spacing: -0.035em; background: linear-gradient(transparent 58%, var(--tool-hl) 58%); }
+.btn { border-radius: 999px; box-shadow: inset 0 0 0 1.5px var(--border); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { box-shadow: 0 2px 0 rgba(0, 0, 0, .14); font-weight: 600; }
+.btn.primary:active { transform: translateY(2px); box-shadow: none; }
+.btn.ghost, .btn.help { box-shadow: none; }
+.segmented, .ox, .ws-seg { border-radius: 999px; }
+.segmented button, .ox button { border-radius: 999px; }
+.panel, .mh, .mock, .wel-shot { box-shadow: 0 0 0 1.5px var(--border); }
+.panel { border-radius: 16px; }
+.kpis { border-radius: 16px; }
+.kpi-value { font-weight: 700; }
+.wel-shot { box-shadow: 0 0 0 1.5px var(--border), 0 12px 30px rgba(29, 39, 64, .08); }
+.ws-lights i { background: #c43d61; box-shadow: none; }
+.ws-lights i:nth-child(2) { background: #2a7b89; }
+.ws-lights i:nth-child(3) { background: #437f34; }
+dialog { border-radius: 20px; }
+.samplebar { background: #fff; box-shadow: inset 0 0 0 1.5px var(--tool-hl); color: var(--text); }
+.samplebar .sb-i { background: var(--tool); font-family: inherit; font-style: normal; font-size: 14px; }
+@media (max-width: 1100px) { .sheet { box-shadow: none; border-radius: 0; } }
+@media print { .title-row h1 { background: none; } }
 </style>
 </head>
 <body>
