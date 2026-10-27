@@ -150,6 +150,7 @@ header h1:not(:has(img.logo))::before{content:"";width:28px;height:28px;flex:non
   background:var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Cpath d='M8 7h9a3 3 0 0 1 3 3v11H11a3 3 0 0 1-3-3z' fill='%23fff'/%3E%3Cpath d='M11 12h6M11 15.5h6M11 19h3.5' stroke='%23007aff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/28px no-repeat}
 header img.logo{height:32px;background:#fff;border-radius:7px;box-shadow:var(--shadow-ctl)}
 #dirty{color:#9a5b00;font-weight:500}
+#dirty.ok{color:var(--muted)}
 .hbtn{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 13px;border:0;border-radius:7px;background:#fff;color:var(--ink);box-shadow:var(--shadow-ctl);font-size:13.5px;font-weight:500;
   transition:background-color .15s ease,transform .12s var(--ease-out)}
 .hbtn:hover{background:#fafafb;color:var(--ink);border-color:transparent}
@@ -320,13 +321,56 @@ main>h2{width:fit-content;padding:0 3px;font-weight:800;letter-spacing:-.035em;b
   <button class="hbtn" onclick="openSettings()">⚙ 설정</button>
   <button class="hbtn" onclick="document.getElementById('fileIn').click()">📂 불러오기</button>
   <button class="hbtn gold" onclick="saveFile()">💾 저장(파일)</button>
+  <button class="hbtn" id="htmlGet" onclick="downloadOriginal()">⬇ HTML 다운로드</button>
+  <button class="hbtn" onclick="saveHtml()">🗂 현재 내용 HTML로 저장</button>
   <input type="file" id="fileIn" accept=".json" hidden onchange="loadFile(this)">
 </header>
 <nav id="nav"></nav>
 <div id="sbar"></div>
 <main id="main"></main>
 
+<!-- '현재 내용 HTML로 저장'을 누르면 이 칸에 데이터가 들어간다 -->
+<script type="application/json" id="saved-data"></script>
 <script>
+/* ================= 자동 저장 · HTML 파일로 저장 =================
+   웹에서는 이 브라우저(localStorage)에 자동 저장한다. 내려받은 HTML 파일은 파일마다 따로 자동 저장하고,
+   '현재 내용 HTML로 저장'을 누르면 데이터를 위 saved-data 칸에 넣은 새 HTML을 내려받는다.
+   열 때는 파일 안 데이터와 브라우저 저장본 중 나중에 저장한 것을 쓰고, 예시 데이터는 실제 데이터를 이기지 못한다. */
+const KEY='matholic-operation-v1';
+const ON_WEB=/^https?:$/.test(location.protocol);
+const SLOT=ON_WEB?KEY:KEY+'@'+decodeURIComponent(location.pathname);
+// 화면을 그리기 전의 페이지 원본(내려받기용)과 파일 안에 저장된 데이터
+const PAGE=(()=>{const el=document.getElementById('saved-data');let d=null;try{d=JSON.parse(el.textContent||'null')}catch(e){}
+  el.textContent='';return {data:d,html:document.documentElement.outerHTML}})();
+function readSlot(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}}
+function pickSaved(ok){const c=[PAGE.data,readSlot(SLOT)];if(!ON_WEB&&!PAGE.data)c.push(readSlot(KEY));
+  return c.filter(d=>d&&ok(d)).sort((a,b)=>(!!a.sample-!!b.sample)||String(b.savedAt||'').localeCompare(String(a.savedAt||'')))[0]||null}
+let saveOk=true;
+function persist(){
+  S.savedAt=new Date().toISOString();
+  try{const cur=readSlot(SLOT);
+    if(S.sample&&cur&&!cur.sample)saveOk=false;  // 예시 데이터로 실제 데이터를 덮어쓰지 않는다
+    else{localStorage.setItem(SLOT,JSON.stringify(S));saveOk=true}}
+  catch(e){saveOk=false}
+  showSaveState();return saveOk;
+}
+function showSaveState(){const el=document.getElementById('dirty');if(!el)return;
+  const t=S.savedAt?new Date(S.savedAt):null;
+  el.className=saveOk?'ok':'';
+  el.textContent=!saveOk?'⚠ 자동 저장 안 됨 · 💾 저장(파일)로 보관하세요':t?`✓ 자동 저장됨 ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`:'✓ 자동 저장 켜짐'}
+// 페이지 원본에 데이터를 넣고, 인터넷 없이도 열리도록 외부 스크립트를 파일 안에 넣는다
+async function pageHtml(data){
+  const doc=new DOMParser().parseFromString(PAGE.html,'text/html');
+  doc.getElementById('saved-data').textContent=data?JSON.stringify(data).replace(/</g,'\\u003c'):'';
+  for(const s of doc.querySelectorAll('script[src]')){try{const r=await fetch(s.src);if(!r.ok)continue;
+    const t=await r.text();s.removeAttribute('src');s.removeAttribute('defer');s.textContent=t.replace(/<\/script/gi,'<\\/script').replace(/<!-{2}/g,'<\\!--')}catch(e){}}
+  return '<!DOCTYPE html>\n'+doc.documentElement.outerHTML;
+}
+function downloadHtml(html,name){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+  a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+async function downloadOriginal(){downloadHtml(await pageHtml(null),'학원_운영관리.html');toast('HTML 파일을 내려받았습니다. 인터넷 없이도 열려요')}
+async function saveHtml(){persist();downloadHtml(await pageHtml(S),`학원_운영관리_${today()}.html`);toast('현재 내용을 HTML 파일로 저장했습니다')}
+
 /* ================= 데이터 ================= */
 const TABS=[
  ['dash','대시보드'],['leads','상담·등록'],['obs','신규생 관찰'],['exam','내신 성적'],
@@ -389,10 +433,10 @@ function sample(){
    ]
   };
 }
-let S=sample(); S.sample=true; let tab='dash'; let dirty=false; let calCur=new Date(); let examId='e1'; let stuFilter='재원'; let stuNeed=false; let obsFilter='진행중';
+let S=pickSaved(d=>d.settings&&Array.isArray(d.exams)); if(!S){S=sample();S.sample=true} let tab='dash'; let calCur=new Date(); let examId=(S.exams[0]||{}).id; let stuFilter='재원'; let stuNeed=false; let obsFilter='진행중';
 
-function mark(){dirty=true;document.getElementById('dirty').textContent='● 저장되지 않은 변경사항'}
-window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+function mark(){persist()}
+window.addEventListener('beforeunload',e=>{if(!saveOk){e.preventDefault();e.returnValue=''}});
 function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
 
 /* ================= 로고 ================= */
@@ -408,7 +452,7 @@ function readLogo(file,cb){
 function logoField(){return `<div class="full lgfield">학원 로고
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div id="lgPrev" class="lgprev">${S.settings.logo?`<img src="${S.settings.logo}" alt="">`:'없음'}</div>
   <button type="button" class="btn line sm" id="lgUp">이미지 선택</button><button type="button" class="btn red sm" id="lgDel">로고 삭제</button><input type="file" id="lgIn" accept="image/*" hidden></div>
-  <span style="font-weight:400">PNG·JPG 권장 · 상단 학원명 옆에 표시되고, 💾 저장(파일) 시 데이터와 함께 저장돼요.</span></div>`}
+  <span style="font-weight:400">PNG·JPG 권장 · 상단 학원명 옆에 표시되고, 데이터와 함께 자동 저장돼요.</span></div>`}
 function bindLogo(bg,st){
   bg.querySelector('#lgUp').onclick=()=>bg.querySelector('#lgIn').click();
   bg.querySelector('#lgIn').onchange=e=>{const f=e.target.files[0];if(f)readLogo(f,u=>{st.logo=u;bg.querySelector('#lgPrev').innerHTML=`<img src="${u}" alt="">`})};
@@ -471,11 +515,11 @@ function enrollFromLead(l){
 function saveFile(){
   const blob=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`학원관리_${today()}.json`;a.click();dirty=false;document.getElementById('dirty').textContent='';toast('내 PC에 저장했습니다');
+  a.download=`학원관리_${today()}.json`;a.click();toast('내 PC에 저장했습니다');
 }
 function loadFile(inp){
   const f=inp.files[0];if(!f)return;const r=new FileReader();
-  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.settings)throw 0;S=d;S.sample=false;(S.obs||[]).forEach(o=>o.days.forEach(x=>{if(x.s&&x.s.length===5)x.s.splice(1,1)}));examId=(S.exams[0]||{}).id;dirty=false;document.getElementById('dirty').textContent='';render();toast('데이터를 불러왔습니다');setTimeout(showReturnPopup,300)}catch(e){alertBox('올바른 데이터 파일이 아닙니다.')}};
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.settings)throw 0;S=d;S.sample=false;(S.obs||[]).forEach(o=>o.days.forEach(x=>{if(x.s&&x.s.length===5)x.s.splice(1,1)}));examId=(S.exams[0]||{}).id;persist();render();toast('데이터를 불러왔습니다');setTimeout(showReturnPopup,300)}catch(e){alertBox('올바른 데이터 파일이 아닙니다.')}};
   r.readAsText(f);inp.value='';
 }
 
@@ -526,7 +570,7 @@ function sampleGate(go){if(!S.sample||sampleOk)return false;
     bg.querySelector('[data-keep]').onclick=()=>{bg.remove();sampleOk=true;go()};
     bg.querySelector('[data-ok]').onclick=()=>{bg.remove();clearSample();render();go()}});
   return true}
-function clearSample(){S.leads=[];S.obs=[];S.events=[];S.meetings=[];S.students=[];S.exams=[{id:'e1',title:'새 시험',scope:'',rows:[]}];examId='e1';S.sample=false}
+function clearSample(){S.leads=[];S.obs=[];S.events=[];S.meetings=[];S.students=[];S.exams=[{id:'e1',title:'새 시험',scope:'',rows:[]}];examId='e1';S.sample=false;persist()}
 
 /* ================= 렌더 ================= */
 function render(){
@@ -810,7 +854,7 @@ function openSettings(){
    <label class="full">학원명<input name="nm" value="${esc(S.settings.name)}"></label>
    <label class="full">선생님·담당 목록 (쉼표로 구분)<input name="tc" value="${esc(S.settings.teachers.join(', '))}"></label>
    ${logoField()}</div>
-   <div class="note" style="margin-top:14px">🔒 이 프로그램은 인터넷 연결 없이 내 PC에서만 동작하며, 입력한 데이터는 외부로 전송되지 않습니다.<br>작업 후 <b>💾 저장(파일)</b>로 JSON 파일을 내려받고, 다음에 <b>📂 불러오기</b>로 이어서 쓰세요.</div>
+   <div class="note" style="margin-top:14px">🔒 입력한 데이터는 외부로 전송되지 않고 <b>이 컴퓨터의 이 브라우저에 자동 저장</b>됩니다. 같은 PC·같은 브라우저로 다시 열면 그대로 이어서 쓸 수 있어요.<br><b>🗂 현재 내용 HTML로 저장</b>을 누르면 데이터가 든 HTML 파일을 받아, 인터넷 없이 그 파일만 열어도 이어서 쓸 수 있어요. 백업은 <b>💾 저장(파일)</b>(JSON)과 <b>📂 불러오기</b>로 할 수 있어요.</div>
    <div class="mfoot"><button class="btn red l" data-clr>예시 데이터 모두 지우기</button><button class="btn line" data-x>취소</button><button class="btn" data-s>저장</button></div>`,bg=>{
     const lg={logo:S.settings.logo||''};bindLogo(bg,lg);
     bg.querySelector('[data-x]').onclick=()=>bg.remove();
@@ -820,6 +864,8 @@ function openSettings(){
       clearSample();bg.remove();mark();render()});
   });
 }
+if(!ON_WEB)document.getElementById('htmlGet').remove();  // 내려받은 파일에서는 '현재 내용 HTML로 저장'만 쓴다
+showSaveState();
 render();
 setTimeout(showReturnPopup,300);
 </script>
