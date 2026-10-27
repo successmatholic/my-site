@@ -758,7 +758,7 @@ dialog { border-radius: 20px; }
       <button class="btn ghost icon-btn" data-act="menu-open" aria-label="메뉴 열기"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 5h12M3 9h12M3 13h12"/></svg></button>
       <svg class="mark" viewBox="0 0 28 28" aria-hidden="true" style="width:24px;height:24px"><rect width="28" height="28" rx="7" fill="#5a9a2c"/><path d="M8 7h9a3 3 0 0 1 3 3v11H11a3 3 0 0 1-3-3z" fill="#fff"/></svg>
       <b>학습노트</b><span class="grow"></span>
-      <a class="btn sm" href="#reports">학습통계</a>
+      <a class="btn sm" href="#reports">학습 통계</a>
     </div>
     <main class="sheet"><div id="samplebar"></div><div id="view"></div></main>
   </div>
@@ -1040,9 +1040,9 @@ function renderNav(cur) {
   document.getElementById('nav').innerHTML =
     item('welcome', '#welcome', '학습노트 안내') +
     `<div class="nav-sep"></div>` +
-    item('today', '#today', '학습기록') +
+    item('today', '#today', '학습 기록') +
     item('students', '#students', '학생별 기록', `<span class="count num">${db.students.length}명</span>`) +
-    item('reports', '#reports', '학습통계') +
+    item('reports', '#reports', '학습 통계') +
     `<div class="group-label">학원</div>` +
     item('settings', '#settings', '데이터 관리');
   document.getElementById('scope').textContent = `${db.academy.name} · 원장`;
@@ -1088,7 +1088,7 @@ function renderToday(d) {
   </div>
   <div class="grid">
     <section class="panel span-8" aria-labelledby="h-roster">
-      <header><h2 id="h-roster">반별 학습기록</h2><span class="meta">학생을 누르면 그날 기록이 열립니다</span></header>
+      <header><h2 id="h-roster">반별 학습 기록</h2><span class="meta">학생을 누르면 그날 기록이 열립니다</span></header>
       ${roster.length ? `<div class="filters">
         <input class="input" type="search" placeholder="이름 검색" value="${esc(tdFilter.q)}" data-input="td-q" aria-label="이름 검색" style="width:160px">
         <select class="input" data-change="td-cls" aria-label="반"><option value="">모든 반</option>${db.classes.filter((c) => roster.some((r) => r.st.classId === c.id)).map((c) => `<option value="${c.id}"${tdFilter.cls === c.id ? ' selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
@@ -1431,7 +1431,7 @@ function renderReports() {
   renderNav('reports');
   const opt = (v, l) => `<option value="${esc(v)}"${rep.scope === v ? ' selected' : ''}>${esc(l)}</option>`;
   view.innerHTML = `
-  <div class="title-row"><div><h1>학습통계</h1><p class="sub" id="rep-sub"></p></div>
+  <div class="title-row"><div><h1>학습 통계</h1><p class="sub" id="rep-sub"></p></div>
     <div class="actions">${importBtn()}<button class="btn" data-act="print-range" title="학생당 1장. 인쇄 창에서 'PDF로 저장'을 고르면 파일로 받습니다">학습 일지 다운로드</button><button class="btn" data-act="export-csv">CSV</button><button class="btn primary" data-act="export-xlsx">엑셀로 받기</button></div></div>
   <div class="filters">
     <div class="segmented" role="group" aria-label="기간 단위"><button data-act="mode" data-v="week" aria-pressed="${rep.mode === 'week'}">주간</button><button data-act="mode" data-v="month" aria-pressed="${rep.mode === 'month'}">월간</button><button data-act="mode" data-v="custom" aria-pressed="${rep.mode === 'custom'}">기간</button></div>
@@ -2065,12 +2065,12 @@ function showImportResult(r, vf) {
       ${vf.cls || vf.st ? (vf.bad.length ? `<li class="warn-line">매쓰홀릭 요약 시트와 다른 곳 ${vf.bad.length}곳 (기간 차이일 수 있음)</li>` : `<li class="ok-line">✓ 매쓰홀릭 집계와 문항 수·정답 수 일치</li>`) : ''}
       <li>선생님 기록은 그대로 남아 있습니다</li>
     </ul>
-    ${r.created && db.classes.some((c) => !c.days.length) ? '<p class="notice">새로 만든 반은 수업 요일이 비어 있습니다. 데이터 관리 › 반 관리에서 요일을 정하면 학습기록 화면에 수업 학생이 미리 나옵니다.</p>' : ''}
-    <div class="foot"><a class="btn" href="#today/${r.to || TODAY}" data-act="dlg-close">학습기록 보기</a><button class="btn primary">반별·학년별 정답률 보기</button></div></form>`;
+    ${r.created && db.classes.some((c) => !c.days.length) ? '<p class="notice">새로 만든 반은 수업 요일이 비어 있습니다. 데이터 관리 › 반 관리에서 요일을 정하면 학습 기록 화면에 수업 학생이 미리 나옵니다.</p>' : ''}
+    <div class="foot"><a class="btn" href="#today/${r.to || TODAY}" data-act="dlg-close">학습 기록 보기</a><button class="btn primary">반별·학년별 정답률 보기</button></div></form>`;
   dlg.showModal();
 }
 
-/* ================= 학습 현황 계산: 보고서(반별·학년별), 학습기록, 학생 화면이 함께 쓴다 =================
+/* ================= 학습 현황 계산: 보고서(반별·학년별), 학습 기록, 학생 화면이 함께 쓴다 =================
    정답률 = 맞힌 문항 ÷ 푼 문항. 학생 정답률을 평균 내지 않고 문항 수로 합산한다 (반·학년도 마찬가지).
    오답 재학습 정답률 = 다시풀기·오답유사학습에서 맞힌 문항 ÷ 푼 문항. 재학습 문항이 없으면 0%가 아니라 '데이터 없음'.
    '오답 해결률'(처음 틀린 문제를 결국 맞혔는지)은 엑셀에 문제 단위 연결이 없어 계산하지 않는다.
